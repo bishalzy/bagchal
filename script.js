@@ -46,8 +46,8 @@ const ctx = canvas.getContext('2d');                    // Get the "drawing pen"
 // Using constants makes code easier to understand and modify.
 
 const BOARD_SIZE = 500;         // The actual game board is 500x500 pixels
-const PADDING = BOARD_SIZE * 0.05;  // 5% padding around the board (25 pixels)
-const CANVAS_SIZE = BOARD_SIZE + (PADDING * 2);  // Canvas size: 500 + 50 = 550 pixels
+const PADDING = BOARD_SIZE * 0.1;  // 10% padding around the board (50 pixels)
+const CANVAS_SIZE = BOARD_SIZE + (PADDING * 2);  // Canvas size: 500 + 100 = 600 pixels
 const GRID_SIZE = 4;            // 4 divisions create 5 lines (like a tic-tac-toe grid but bigger)
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE;  // Each cell is 125x125 pixels (500÷4=125)
 const CLICK_TOLERANCE = 20;     // Allow clicks within 20 pixels of intersection points
@@ -122,11 +122,11 @@ function calculateIntersections() {
     // CENTER INTERSECTION (1 point)
     // =============================
     // This is where the two main diagonal lines cross in the middle
-    points.push({
-        x: BOARD_SIZE / 2 + PADDING,        // Middle X coordinate (275)
-        y: BOARD_SIZE / 2 + PADDING,        // Middle Y coordinate (275)
-        type: 'center'             // Label this as the center intersection
-    });
+    // points.push({
+    //     x: BOARD_SIZE / 2 + PADDING,        // Middle X coordinate (275)
+    //     y: BOARD_SIZE / 2 + PADDING,        // Middle Y coordinate (275)
+    //     type: 'center'             // Label this as the center intersection
+    // });
     
     return points;  // Send back the complete list of intersection points
 }
@@ -260,11 +260,45 @@ function drawGrid() {
     ctx.lineTo(topMid.x, topMid.y);        // Draw to top middle
     ctx.stroke();
     
+    
+    // PART 5: DRAW INDEXING TEXT (LABELS)
+    // ===================================
+    // Add letters (a-e) horizontally and numbers (1-5) vertically for reference
+    // This helps players identify specific intersection points
+    
+    // SET TEXT STYLE
+    ctx.fillStyle = '#000';          // Black text color
+    ctx.font = '16px Arial';         // Font size and family
+    ctx.textAlign = 'center';        // Center text horizontally
+    ctx.textBaseline = 'middle';     // Center text vertically
+    
+    
+    
+    // DRAW VERTICAL LABELS (1, 2, 3, 4, 5)
+    // ====================================
+    const numbers = ['5', '4', '3', '2', '1'];
+    for (let i = 0; i <= GRID_SIZE; i++) {
+        const x = PADDING / 2;                 // X position: halfway in left padding area
+        const y = i * CELL_SIZE + PADDING;     // Y position of each grid line
+        ctx.fillText(numbers[i], x, y);        // Draw the number
+    }
+    
+    // DRAW HORIZONTAL LABELS (a, b, c, d, e)
+    // =============================================
+    // Add the letters at the bottom for better reference
+    const letters = ['a', 'b', 'c', 'd', 'e'];
+    for (let i = 0; i <= GRID_SIZE; i++) {
+        const x = i * CELL_SIZE + PADDING;     // X position of each grid line
+        const y = BOARD_SIZE + PADDING + (PADDING / 2);  // Y position: halfway in bottom padding area
+        ctx.fillText(letters[i], x, y);        // Draw the letter
+    }
+    
     // FINAL RESULT:
     // We now have a complete Bagchal board with:
     // - 5×5 grid of squares
     // - Two diagonal lines crossing the entire board
     // - A diamond pattern in the center
+    // - Indexing labels (a-e at bottom, 1-5 on left side)
 }
 
 // ============================================================================
@@ -338,6 +372,107 @@ function drawX(x, y) {
     // isn't affected by our X marker settings
     ctx.strokeStyle = originalColor;
     ctx.lineWidth = originalWidth;
+}
+
+/**
+ * DRAW BAGH (TIGER) PIECE
+ * =======================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Draws a black circular piece representing a "bagh" (tiger) in the traditional
+ * Bagchal game. Tigers are the predator pieces that try to capture goats.
+ * 
+ * VISUAL APPEARANCE:
+ * - Solid black circle
+ * - Medium size to fit nicely on intersection points
+ * - Clean, bold appearance for easy identification
+ * 
+ * PARAMETERS:
+ * x - horizontal position where to draw the bagh
+ * y - vertical position where to draw the bagh
+ */
+function drawBagh(x, y) {
+    
+    // SAVE CURRENT DRAWING SETTINGS
+    // =============================
+    const originalFillStyle = ctx.fillStyle;
+    const originalStrokeStyle = ctx.strokeStyle;
+    
+    // SET STYLE FOR BAGH (TIGER) PIECE
+    // ================================
+    const radius = 18;              // Circle radius in pixels (36px diameter)
+    ctx.fillStyle = '#000000';      // Solid black color for the tiger
+    
+    // DRAW THE BAGH CIRCLE
+    // ===================
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);  // Draw a complete circle
+    ctx.fill();                              // Fill the circle with black color
+    
+    // UNDERSTANDING ctx.arc():
+    // arc(x, y, radius, startAngle, endAngle)
+    // - (x, y): center point of the circle
+    // - radius: distance from center to edge
+    // - 0: start angle (0 radians = rightmost point)
+    // - 2 * Math.PI: end angle (full circle = 2π radians)
+    
+    // RESTORE ORIGINAL DRAWING SETTINGS
+    // =================================
+    ctx.fillStyle = originalFillStyle;
+    ctx.strokeStyle = originalStrokeStyle;
+}
+
+/**
+ * DRAW BAKHRA (GOAT) PIECE  
+ * ========================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Draws a yellow/golden circular piece with black border representing a "bakhra" 
+ * (goat) in the traditional Bagchal game. Goats are the prey pieces that try 
+ * to block the tigers.
+ * 
+ * VISUAL APPEARANCE:
+ * - Yellow/golden filled circle
+ * - Black circular border for definition
+ * - Same size as bagh for consistency
+ * - Bright color for easy distinction from tigers
+ * 
+ * PARAMETERS:
+ * x - horizontal position where to draw the bakhra
+ * y - vertical position where to draw the bakhra
+ */
+function drawBakhra(x, y) {
+    
+    // SAVE CURRENT DRAWING SETTINGS
+    // =============================
+    const originalFillStyle = ctx.fillStyle;
+    const originalStrokeStyle = ctx.strokeStyle;
+    const originalLineWidth = ctx.lineWidth;
+    
+    // SET STYLE FOR BAKHRA (GOAT) PIECE
+    // =================================
+    const radius = 10;              // Same radius as bagh for consistency
+    ctx.fillStyle = '#FFD700';      // Golden yellow color (#FFD700 = gold)
+    ctx.strokeStyle = '#000000';    // Black border color
+    ctx.lineWidth = 2;              // Border thickness
+    
+    // DRAW THE BAKHRA CIRCLE
+    // =====================
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);  // Draw a complete circle
+    ctx.fill();                              // Fill with golden color
+    ctx.stroke();                            // Add black border
+    
+    // WHY BOTH fill() AND stroke()?
+    // - fill(): creates the solid golden interior
+    // - stroke(): adds the black outline for definition
+    // - This creates a golden circle with black border
+    
+    // RESTORE ORIGINAL DRAWING SETTINGS
+    // =================================
+    ctx.fillStyle = originalFillStyle;
+    ctx.strokeStyle = originalStrokeStyle;
+    ctx.lineWidth = originalLineWidth;
 }
 
 // ============================================================================
@@ -510,7 +645,8 @@ function handleCanvasClick(event) {
         
         // DRAW THE X MARKER
         // ================
-        drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
+        drawBakhra(nearestPoint.x, nearestPoint.y); // Draw a bagh (tiger) piece
+        // drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
         
         // This calls the function from Section 4 to actually draw the red X
         // at the intersection point coordinates
