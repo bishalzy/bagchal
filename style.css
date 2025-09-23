@@ -10,14 +10,25 @@ body{
     flex-direction: column;
 }
 .header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
     height: 10vh;
     width: 100vw;
+    background-color: lightgray;
 }
+
 .bagchal-board{
-    height: 80vh;
+    height: 88vh;
     width: 100vw;
+    background-color: lightblue;   
 }
 .footer{
-    height: 10vh;
+    height: 2vh;
     width: 100vw;
+    text-align: center;
+    justify-content: center;
+    background-color: lightgray;
 }
