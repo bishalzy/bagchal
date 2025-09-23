@@ -23,7 +23,22 @@ body{
 .bagchal-board{
     height: 88vh;
     width: 100vw;
-    background-color: lightblue;   
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameCanvas {
+    border: 2px solid #333;
+    background-color: white;
+    cursor: pointer;
 }
 .footer{
     height: 2vh;
