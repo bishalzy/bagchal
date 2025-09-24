@@ -35,6 +35,20 @@ const board = document.querySelector('.board');          // Find the container d
 const canvas = document.getElementById('gameCanvas');    // Find our drawing canvas
 const ctx = canvas.getContext('2d');                    // Get the "drawing pen" for canvas
 
+// let index = {"a1":20,"b1":21,"c1":22,"d1":23,"e1":24,
+//             "a2":15,"b2":16,"c2":17,"d2":18,"e2":19,
+//             "a3":10,"b3":11,"c3":12,"d3":13,"e3":14,
+//             "a4":5,"b4":6,"c4":7,"d4":8,"e4":9,
+//             "a5":0,"b5":1,"c5":2,"d5":3,"e5":4};
+
+// let index = {"a1":0,"b1":1,"c1":2,"d1":3,"e1":4,
+//             "a2":5,"b2":6,"c2":7,"d2":8,"e2":9,
+//             "a3":10,"b3":11,"c3":12,"d3":13,"e3":14,
+//             "a4":15,"b4":16,"c4":17,"d4":18,"e4":19,
+//             "a5":20,"b5":21,"c5":22,"d5":23,"e5":24};
+
+
+
 // WHAT IS CANVAS CONTEXT?
 // Think of 'ctx' as a digital paintbrush. It's what we use to draw lines, 
 // shapes, and text on the canvas. The '2d' means we're drawing flat graphics
@@ -62,8 +76,12 @@ const CLICK_TOLERANCE = 20;     // Allow clicks within 20 pixels of intersection
 // These variables track what's happening in our game
 
 const intersections = [];       // Array = list of all clickable points on the board
-const markedPoints = new Set(); // Set = collection that prevents duplicate entries
-
+const markedPoints = new Set(); //fetch from backend for position Set = collection that prevents duplicate entries this is just for trial 
+const markedPointsBagh = new Set();// position for bagh
+const markedPointsBakhra = new Set();// position for bakhra
+// let indexs = ['a1','b1','c1','d1','e1','a2','b2','c2','d2','e2','a3','b3','c3','d3','e3','a4','b4','c4','d4','e4','a5','b5','c5','d5','e5'];
+let reverseIndexs = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
+let index = {};
 // WHAT'S THE DIFFERENCE BETWEEN ARRAY AND SET?
 // Array: Can have duplicates, has order, access by index
 //        Example: [1, 2, 2, 3] - allows duplicate 2
@@ -108,7 +126,7 @@ function calculateIntersections() {
             points.push({
                 x: col * CELL_SIZE + PADDING,    // X position: column number × cell width + padding offset
                 y: row * CELL_SIZE + PADDING,    // Y position: row number × cell height + padding offset
-                type: 'grid'           // Label this as a grid intersection
+         // Label this as a grid intersection
             });
             
             // COORDINATE SYSTEM (with padding):
@@ -646,10 +664,14 @@ function handleCanvasClick(event) {
         // DRAW THE X MARKER
         // ================
         drawBakhra(nearestPoint.x, nearestPoint.y); // Draw a bagh (tiger) piece
+
         // drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
         
         // This calls the function from Section 4 to actually draw the red X
         // at the intersection point coordinates
+
+        console.log(Object.keys(index)[nearestPoint.index]);
+        console.log(nearestPoint.index);
     }
     
     // WHAT HAPPENS IF CONDITIONS AREN'T MET?
@@ -684,6 +706,12 @@ function handleCanvasClick(event) {
  * This function is called once when the webpage finishes loading.
  * After that, the game is ready for players to start clicking.
  */
+
+const initIndex = () => {
+    for(let i=0; i<reverseIndexs.length; i++){
+        index[reverseIndexs[i]] = intersections[i];
+    }
+}
 function init() {
     
     // STEP 1: CALCULATE ALL INTERSECTION POINTS
@@ -691,6 +719,9 @@ function init() {
     // This finds all the spots where players can place their markers
     
     intersections.push(...calculateIntersections());
+    initIndex();
+    console.log(index);
+    // WHY USE push(...array)?
     
     // UNDERSTANDING THE SPREAD OPERATOR (...):
     // calculateIntersections() returns an array of points
