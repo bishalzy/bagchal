@@ -66,6 +66,7 @@ const GRID_SIZE = 4;            // 4 divisions create 5 lines (like a tic-tac-to
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE;  // Each cell is 125x125 pixels (500÷4=125)
 const CLICK_TOLERANCE = 20;     // Allow clicks within 20 pixels of intersection points
 
+
 // WHY USE CONSTANTS?
 // 1. Easy to change later (just change one number to resize everything)
 // 2. Makes code more readable (CANVAS_SIZE is clearer than just "500")
@@ -80,13 +81,75 @@ const markedPoints = new Set(); //fetch from backend for position Set = collecti
 const markedPointsBagh = new Set();// position for bagh
 const markedPointsBakhra = new Set();// position for bakhra
 // let indexs = ['a1','b1','c1','d1','e1','a2','b2','c2','d2','e2','a3','b3','c3','d3','e3','a4','b4','c4','d4','e4','a5','b5','c5','d5','e5'];
-let reverseIndexs = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
+let indexs = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
 let index = {};
+let player = 'bagh';
 // WHAT'S THE DIFFERENCE BETWEEN ARRAY AND SET?
 // Array: Can have duplicates, has order, access by index
 //        Example: [1, 2, 2, 3] - allows duplicate 2
 // Set:   No duplicates, good for checking "is this already marked?"
 //        Example: {1, 2, 3} - automatically removes duplicates
+
+
+let baghCount = 4;
+let bakhraCount = 0;
+
+const MAX_BAGH = 4;
+const MAX_BAKHRA = 20;
+
+
+const fetchGameState = async (url) => {
+    // Simulate fetching data from backend
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.position;
+}
+const updateGameState = async (url, position, player) => {
+    // Simulate sending data to backend
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ position, player })
+    });
+    const data = await response.json();
+    return data.success;
+}
+
+const drawPieces = (baghPosition, bakhraPosition) => {
+    // Draw Bagh pieces
+
+    for (const pos of baghPosition) {
+        drawBagh(intersections[pos].x , intersections[pos].y);
+    }
+        
+
+    // Draw Bakhra pieces
+    
+    for (const pos of bakhraPosition) {
+        drawBakhra(intersections[pos].x , intersections[pos].y);
+    }
+};
+
+// const updateGameState = (position, player) => {
+//     if (player === 'bagh') {
+//         if (baghCount < MAX_BAGH) {
+//             markedPoints.add(position);
+//             baghCount++;
+//         } else {
+//             console.log("Max bagh reached");
+//         }
+//     } else if (player === 'bakhra') {
+//         if (bakhraCount < MAX_BAKHRA) {
+//             markedPoints.add(position);
+//             bakhraCount++;
+//         } else {
+//             console.log("Max bakhra reached");
+//         }
+//     }
+// };
+
 
 // ============================================================================
 // SECTION 2: CALCULATING WHERE PLAYERS CAN PLACE MARKERS
@@ -663,7 +726,13 @@ function handleCanvasClick(event) {
         
         // DRAW THE X MARKER
         // ================
-        drawBakhra(nearestPoint.x, nearestPoint.y); // Draw a bagh (tiger) piece
+        if(player === 'bagh'){
+            drawBagh(nearestPoint.x,nearestPoint.y);
+            markedPointsBagh.add(nearestPoint.index);
+        }else{
+            drawBakhra(nearestPoint.x, nearestPoint.y); 
+            markedPointsBakhra.add(nearestPoint.index);
+        }
 
         // drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
         
