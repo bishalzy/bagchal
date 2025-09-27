@@ -35,19 +35,6 @@ const board = document.querySelector('.board');          // Find the container d
 const canvas = document.getElementById('gameCanvas');    // Find our drawing canvas
 const ctx = canvas.getContext('2d');                    // Get the "drawing pen" for canvas
 
-// let index = {"a1":20,"b1":21,"c1":22,"d1":23,"e1":24,
-//             "a2":15,"b2":16,"c2":17,"d2":18,"e2":19,
-//             "a3":10,"b3":11,"c3":12,"d3":13,"e3":14,
-//             "a4":5,"b4":6,"c4":7,"d4":8,"e4":9,
-//             "a5":0,"b5":1,"c5":2,"d5":3,"e5":4};
-
-// let index = {"a1":0,"b1":1,"c1":2,"d1":3,"e1":4,
-//             "a2":5,"b2":6,"c2":7,"d2":8,"e2":9,
-//             "a3":10,"b3":11,"c3":12,"d3":13,"e3":14,
-//             "a4":15,"b4":16,"c4":17,"d4":18,"e4":19,
-//             "a5":20,"b5":21,"c5":22,"d5":23,"e5":24};
-
-
 
 // WHAT IS CANVAS CONTEXT?
 // Think of 'ctx' as a digital paintbrush. It's what we use to draw lines, 
@@ -77,19 +64,24 @@ const CLICK_TOLERANCE = 20;     // Allow clicks within 20 pixels of intersection
 // These variables track what's happening in our game
 
 const intersections = [];       // Array = list of all clickable points on the board
-const markedPoints = new Set(); //fetch from backend for position Set = collection that prevents duplicate entries this is just for trial 
+// const markedPoints = new Set(); //fetch from backend for position Set = collection that prevents duplicate entries this is just for trial 
 const markedPointsBagh = new Set();// position for bagh
 const markedPointsBakhra = new Set();// position for bakhra
 // let indexs = ['a1','b1','c1','d1','e1','a2','b2','c2','d2','e2','a3','b3','c3','d3','e3','a4','b4','c4','d4','e4','a5','b5','c5','d5','e5'];
-let indexs = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
+let indexValue = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
 let index = {};
-let player = 'bagh';
-// WHAT'S THE DIFFERENCE BETWEEN ARRAY AND SET?
-// Array: Can have duplicates, has order, access by index
-//        Example: [1, 2, 2, 3] - allows duplicate 2
-// Set:   No duplicates, good for checking "is this already marked?"
-//        Example: {1, 2, 3} - automatically removes duplicates
+let player = 'bakhra';
 
+
+//==================================================
+//Experiment code for
+//===================================================
+
+markedPointsBagh.add('e5');
+markedPointsBagh.add('e1');
+markedPointsBagh.add('a1');
+markedPointsBagh.add('a5');
+markedPointsBakhra.add('b4');
 
 let baghCount = 4;
 let bakhraCount = 0;
@@ -121,35 +113,63 @@ const drawPieces = (baghPosition, bakhraPosition) => {
     // Draw Bagh pieces
 
     for (const pos of baghPosition) {
-        drawBagh(intersections[pos].x , intersections[pos].y);
+        drawBagh(index[pos].x , index[pos].y);
     }
         
 
     // Draw Bakhra pieces
     
     for (const pos of bakhraPosition) {
-        drawBakhra(intersections[pos].x , intersections[pos].y);
+        drawBakhra(index[pos].x , index[pos].y);
     }
 };
 
-// const updateGameState = (position, player) => {
-//     if (player === 'bagh') {
-//         if (baghCount < MAX_BAGH) {
-//             markedPoints.add(position);
-//             baghCount++;
-//         } else {
-//             console.log("Max bagh reached");
-//         }
-//     } else if (player === 'bakhra') {
-//         if (bakhraCount < MAX_BAKHRA) {
-//             markedPoints.add(position);
-//             bakhraCount++;
-//         } else {
-//             console.log("Max bakhra reached");
-//         }
-//     }
-// };
 
+//generate legal moves for the specific piece
+//===================================================
+const generateLegalMoves = (pieceType, position) => {
+
+    const legalMoves = [];
+
+    // Get the current position of the piece
+    const currentPos = index[position];
+
+    // Define the movement patterns for each piece type
+    const movementPatterns = {
+        'bagh': [
+            { x: -1, y: 0 },  // Move left
+            { x: 1, y: 0 },   // Move right
+            { x: 0, y: -1 },  // Move up
+            { x: 0, y: 1 },   // Move down
+        ],
+        'bakhra': [
+            { x: -1, y: 0 },  // Move left
+            { x: 1, y: 0 },   // Move right
+            { x: 0, y: -1 },  // Move up
+            { x: 0, y: 1 },   // Move down
+            { x: -1, y: -1 }, // Move diagonally up-left
+            { x: 1, y: -1 },  // Move diagonally up-right
+            { x: -1, y: 1 },  // Move diagonally down-left
+            { x: 1, y: 1 },   // Move diagonally down-right
+        ]
+    };
+
+    // Get the movement pattern for the current piece type
+    const pattern = movementPatterns[pieceType];
+
+    // Generate all possible moves based on the movement pattern
+    for (const move of pattern) {
+        const newX = currentPos.x + move.x;
+        const newY = currentPos.y + move.y;
+
+        // Check if the new position is within bounds
+        if (newX >= 0 && newX < GRID_SIZE && newY >= 0 && newY < GRID_SIZE) {
+            legalMoves.push({ x: newX, y: newY });
+        }
+    }
+
+    return legalMoves;
+};
 
 // ============================================================================
 // SECTION 2: CALCULATING WHERE PLAYERS CAN PLACE MARKERS
@@ -649,6 +669,112 @@ function findNearestIntersection(clickX, clickY) {
     // 3. Player clicked near multiple intersections → return the closest one
 }
 
+
+/**
+ * REMOVE PIECE FROM BOARD
+ * ======================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * This function removes both Bagh (tiger) and Bakhra (goat) pieces from a specific
+ * intersection point on the board. It's useful for:
+ * - Correcting mistakes (removing wrongly placed pieces)
+ * - Implementing game moves (capturing or moving pieces)
+ * - Resetting specific board positions
+ * 
+ * HOW IT WORKS:
+ * 1. Takes x,y coordinates of the intersection point
+ * 2. Finds the nearest valid intersection (with tolerance)
+ * 3. Removes the piece from both Bagh and Bakhra tracking sets
+ * 4. Redraws the entire board to reflect the change
+ * 
+ * PARAMETERS:
+ * @param {number} x - The x-coordinate where we want to remove a piece
+ * @param {number} y - The y-coordinate where we want to remove a piece
+ * 
+ * USAGE EXAMPLES:
+ * removePiece(150, 150);  // Remove any piece at coordinates (150, 150)
+ * removePiece(300, 450);  // Remove any piece at coordinates (300, 450)
+ */
+function removePiece(x, y) {
+
+    
+    const nearestPoint = findNearestIntersection(x, y);
+    
+    if (nearestPoint !== null) {
+        let removedBagh = false;
+        let removedBakhra = false;
+        if (markedPointsBagh.has(nearestPoint.index)) {
+            markedPointsBagh.delete(nearestPoint.index);  // Remove the Bagh piece
+            removedBagh = true;
+        }
+
+        if (markedPointsBakhra.has(nearestPoint.index)) {
+            markedPointsBakhra.delete(nearestPoint.index);  // Remove the Bakhra piece
+            removedBakhra = true;
+        }
+        
+        // STEP 4: REDRAW THE BOARD IF SOMETHING WAS REMOVED
+        // ================================================
+        // Only redraw if we actually removed a piece to avoid unnecessary redraws
+        
+        if (removedBagh || removedBakhra) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas
+            drawGrid();                                          // Redraw board lines
+            drawPieces(markedPointsBagh, markedPointsBakhra);   // Redraw all remaining pieces
+            
+            // Get coordinate name for logging
+            const coordinateName = Object.keys(index)[nearestPoint.index];
+            console.log(`Successfully removed piece from ${coordinateName}`);
+        } else {
+            // STEP 5: LOG IF NO PIECE WAS FOUND
+            // =================================
+            const coordinateName = Object.keys(index)[nearestPoint.index];
+            console.log(`No piece found at ${coordinateName} to remove`);
+        }
+    } else {
+
+        console.log('Click too far from any intersection - no piece removed');
+    }
+}
+
+/**
+ * REMOVE PIECE BY COORDINATE NAME
+ * ==============================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * This is a convenience function that allows removing pieces using
+ * chess-style notation like "a1", "c3", "e5" instead of pixel coordinates.
+ * 
+ * HOW IT WORKS:
+ * 1. Takes a coordinate string (like "c3")
+ * 2. Looks up the actual x,y pixel coordinates from our index
+ * 3. Calls the main removePiece function with those coordinates
+ * 
+ * PARAMETERS:
+ * @param {string} coordinate - Chess-style coordinate (e.g., "a1", "c3", "e5")
+ * 
+ * USAGE EXAMPLES:
+ * removePieceByCoordinate("a1");  // Remove piece from bottom-left corner
+ * removePieceByCoordinate("c3");  // Remove piece from center of board
+ * removePieceByCoordinate("e5");  // Remove piece from top-right corner
+ */
+function removePieceByCoordinate(coordinate) {
+    // STEP 1: CHECK IF COORDINATE EXISTS
+    // =================================
+    if (index[coordinate]) {
+        // STEP 2: GET PIXEL COORDINATES AND REMOVE
+        // =======================================
+        const point = index[coordinate];
+        removePiece(point.x, point.y);
+        console.log(`Attempted to remove piece from ${coordinate} at (${point.x}, ${point.y})`);
+    } else {
+        // STEP 3: HANDLE INVALID COORDINATES
+        // =================================
+        console.log(`Invalid coordinate: ${coordinate}. Valid coordinates are a1-e5.`);
+        console.log('Available coordinates:', Object.keys(index).sort());
+    }
+}
+
 // ============================================================================
 // SECTION 6: HANDLING MOUSE CLICKS
 // ============================================================================
@@ -713,12 +839,10 @@ function handleCanvasClick(event) {
     // 1. We found a nearby intersection point (nearestPoint is not null)
     // 2. That intersection hasn't been marked yet (!markedPoints.has...)
     
-    if (nearestPoint && !markedPoints.has(nearestPoint.index)) {
+    if (nearestPoint && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index)) {
         
         // MARK THIS INTERSECTION AS USED
         // ==============================
-        markedPoints.add(nearestPoint.index);  // Add to our "used intersections" set
-        
         // WHY USE A SET?
         // Sets automatically prevent duplicates. If we try to add the same
         // intersection twice, the set ignores the second attempt.
@@ -729,9 +853,10 @@ function handleCanvasClick(event) {
         if(player === 'bagh'){
             drawBagh(nearestPoint.x,nearestPoint.y);
             markedPointsBagh.add(nearestPoint.index);
-        }else{
+        }else if(bakhraCount < 20){
             drawBakhra(nearestPoint.x, nearestPoint.y); 
             markedPointsBakhra.add(nearestPoint.index);
+            bakhraCount++;
         }
 
         // drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
@@ -776,9 +901,241 @@ function handleCanvasClick(event) {
  * After that, the game is ready for players to start clicking.
  */
 
+// ============================================================================
+// SECTION 7: DRAG AND DROP FUNCTIONALITY
+// ============================================================================
+
+// DRAG STATE VARIABLES
+// ===================
+let isDragging = false;        // Track if we're currently dragging
+let draggedPiece = null;       // Which piece is being dragged
+let draggedFromIndex = null;   // Where the piece was dragged from
+let mouseX = 0, mouseY = 0;    // Current mouse position
+
+/**
+ * SETUP DRAG EVENT HANDLERS
+ * =========================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Sets up all the mouse event listeners needed for drag and drop functionality.
+ * This includes mousedown (start drag), mousemove (during drag), and mouseup (end drag).
+ */
+function setupDragHandlers() {
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseUp); // End drag if mouse leaves canvas
+}
+
+/**
+ * HANDLE MOUSE DOWN (START DRAG)
+ * ==============================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Detects when user starts dragging a piece. Checks if they clicked on an existing
+ * piece and starts the drag operation.
+ */
+function handleMouseDown(event) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    
+    const nearestPoint = findNearestIntersection(clickX, clickY);
+    
+    if (nearestPoint) {
+        // Check if there's a Bagh piece at this location
+        if (markedPointsBagh.has(nearestPoint.index)) {
+            isDragging = true;
+            draggedPiece = 'bagh';
+            draggedFromIndex = nearestPoint.index;
+            mouseX = clickX;
+            mouseY = clickY;
+            
+            // Remove piece from its current position temporarily
+            markedPointsBagh.delete(nearestPoint.index);
+            redrawBoard();
+            console.log('Started dragging Bagh from', Object.keys(index)[nearestPoint.index]);
+            
+        } 
+        // Check if there's a Bakhra piece at this location
+        else if (markedPointsBakhra.has(nearestPoint.index)) {
+            isDragging = true;
+            draggedPiece = 'bakhra';
+            draggedFromIndex = nearestPoint.index;
+            mouseX = clickX;
+            mouseY = clickY;
+            
+            // Remove piece from its current position temporarily
+            markedPointsBakhra.delete(nearestPoint.index);
+            redrawBoard();
+            console.log('Started dragging Bakhra from', Object.keys(index)[nearestPoint.index]);
+        }
+    }
+}
+
+/**
+ * HANDLE MOUSE MOVE (DURING DRAG)
+ * ===============================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Updates the position of the dragged piece as the mouse moves.
+ */
+function handleMouseMove(event) {
+    if (!isDragging) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
+    
+    // Redraw board and show piece following mouse
+    redrawBoard();
+    if (draggedPiece === 'bagh') {
+        drawBagh(mouseX, mouseY);
+    } else if (draggedPiece === 'bakhra') {
+        drawBakhra(mouseX, mouseY);
+    }
+}
+
+/**
+ * HANDLE MOUSE UP (END DRAG)
+ * ==========================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Handles the end of drag operation. Either places the piece at a new valid location
+ * or returns it to its original position if dropped on invalid location.
+ */
+function handleMouseUp(event) {
+    if (!isDragging) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const dropX = event.clientX - rect.left;
+    const dropY = event.clientY - rect.top;
+    
+    const nearestPoint = findNearestIntersection(dropX, dropY);
+    
+    // Check if drop location is valid (intersection exists and is empty)
+    if (nearestPoint && 
+        !markedPointsBagh.has(nearestPoint.index) && 
+        !markedPointsBakhra.has(nearestPoint.index)) {
+        
+        // Place piece at new location
+        if (draggedPiece === 'bagh') {
+            markedPointsBagh.add(nearestPoint.index);
+        } else if (draggedPiece === 'bakhra') {
+            markedPointsBakhra.add(nearestPoint.index);
+        }
+        
+        console.log(`Moved ${draggedPiece} to ${Object.keys(index)[nearestPoint.index]}`);
+    } else {
+        // Invalid drop location - return piece to original position
+        if (draggedPiece === 'bagh') {
+            markedPointsBagh.add(draggedFromIndex);
+        } else if (draggedPiece === 'bakhra') {
+            markedPointsBakhra.add(draggedFromIndex);
+        }
+        
+        console.log(`Invalid drop location - returned ${draggedPiece} to original position`);
+    }
+    
+    // Reset drag state
+    isDragging = false;
+    draggedPiece = null;
+    draggedFromIndex = null;
+    
+    // Final redraw
+    redrawBoard();
+}
+
+/**
+ * MOVE PIECE TO SPECIFIC POSITION
+ * ===============================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Programmatically moves a piece from one position to another using coordinate names.
+ * This is useful for implementing game logic or AI moves.
+ * 
+ * PARAMETERS:
+ * @param {string} fromCoordinate - Source position (e.g., "a1", "c3")
+ * @param {string} toCoordinate - Destination position (e.g., "b2", "d4")
+ * @param {string} pieceType - Type of piece ("bagh" or "bakhra")
+ * 
+ * USAGE EXAMPLES:
+ * movePieceToPosition("c3", "d4", "bagh");    // Move Bagh from c3 to d4
+ * movePieceToPosition("a1", "b2", "bakhra");  // Move Bakhra from a1 to b2
+ */
+function movePieceToPosition(fromCoordinate, toCoordinate, pieceType) {
+    // STEP 1: VALIDATE COORDINATES
+    if (!index[fromCoordinate] || !index[toCoordinate]) {
+        console.error(`Invalid coordinates: ${fromCoordinate} or ${toCoordinate}`);
+        return false;
+    }
+    
+    // STEP 2: FIND THE PIECE AT SOURCE LOCATION
+    const fromIndex = intersections.findIndex(point => 
+        point.x === index[fromCoordinate].x && point.y === index[fromCoordinate].y
+    );
+    
+    const toIndex = intersections.findIndex(point => 
+        point.x === index[toCoordinate].x && point.y === index[toCoordinate].y
+    );
+    
+    // STEP 3: CHECK IF PIECE EXISTS AT SOURCE
+    let pieceFound = false;
+    if (pieceType === 'bagh' && markedPointsBagh.has(fromIndex)) {
+        markedPointsBagh.delete(fromIndex);
+        pieceFound = true;
+    } else if (pieceType === 'bakhra' && markedPointsBakhra.has(fromIndex)) {
+        markedPointsBakhra.delete(fromIndex);
+        pieceFound = true;
+    }
+    
+    if (!pieceFound) {
+        console.error(`No ${pieceType} found at ${fromCoordinate}`);
+        return false;
+    }
+    
+    // STEP 4: CHECK IF DESTINATION IS EMPTY
+    if (markedPointsBagh.has(toIndex) || markedPointsBakhra.has(toIndex)) {
+        // Return piece to original position
+        if (pieceType === 'bagh') {
+            markedPointsBagh.add(fromIndex);
+        } else {
+            markedPointsBakhra.add(fromIndex);
+        }
+        console.error(`Destination ${toCoordinate} is occupied`);
+        return false;
+    }
+    
+    // STEP 5: MOVE PIECE TO DESTINATION
+    if (pieceType === 'bagh') {
+        markedPointsBagh.add(toIndex);
+    } else {
+        markedPointsBakhra.add(toIndex);
+    }
+    
+    // STEP 6: REDRAW BOARD AND LOG SUCCESS
+    redrawBoard();
+    console.log(`Successfully moved ${pieceType} from ${fromCoordinate} to ${toCoordinate}`);
+    return true;
+}
+
+/**
+ * REDRAW BOARD HELPER FUNCTION
+ * ============================
+ * 
+ * WHAT DOES THIS FUNCTION DO?
+ * Clears the canvas and redraws the entire board with all pieces.
+ * This is used during drag operations and after moves.
+ */
+const redrawBoard = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    drawPieces(markedPointsBagh, markedPointsBakhra);
+}
+
 const initIndex = () => {
-    for(let i=0; i<reverseIndexs.length; i++){
-        index[reverseIndexs[i]] = intersections[i];
+    for(let i=0; i<indexValue.length; i++){
+        index[indexValue[i]] = intersections[i];
     }
 }
 function init() {
@@ -808,19 +1165,26 @@ function init() {
     // This creates all the lines that make up the Bagchal board pattern
     
     drawGrid();
+
+
     
     // After this call, players will see:
     // - 5×5 grid of squares
     // - Two diagonal lines crossing the board
     // - Diamond pattern connecting edge midpoints
     
-    
+    drawPieces(markedPointsBagh, markedPointsBakhra);
     // STEP 3: SET UP CLICK EVENT HANDLING
     // ==================================
     // This tells the browser: "when someone clicks on the canvas,
     // call our handleCanvasClick function"
     
     canvas.addEventListener('click', handleCanvasClick);
+    
+    // STEP 4: SET UP DRAG EVENT HANDLING
+    // ==================================
+    // Add drag functionality for moving pieces
+    setupDragHandlers();
     
     // UNDERSTANDING EVENT LISTENERS:
     // addEventListener is how we "listen" for user actions
