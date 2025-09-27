@@ -71,6 +71,7 @@ const markedPointsBakhra = new Set();// position for bakhra
 let indexValue = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
 let index = {};
 let player = 'bakhra';
+let selectedPiece = null; // Track which piece is selected for moving
 
 
 //==================================================
@@ -839,34 +840,21 @@ function handleCanvasClick(event) {
     // 1. We found a nearby intersection point (nearestPoint is not null)
     // 2. That intersection hasn't been marked yet (!markedPoints.has...)
     
-    if (nearestPoint && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index)) {
-        
-        // MARK THIS INTERSECTION AS USED
-        // ==============================
-        // WHY USE A SET?
-        // Sets automatically prevent duplicates. If we try to add the same
-        // intersection twice, the set ignores the second attempt.
-        
-        
-        // DRAW THE X MARKER
-        // ================
-        if(player === 'bagh'){
-            drawBagh(nearestPoint.x,nearestPoint.y);
-            markedPointsBagh.add(nearestPoint.index);
-        }else if(bakhraCount < 20){
-            drawBakhra(nearestPoint.x, nearestPoint.y); 
-            markedPointsBakhra.add(nearestPoint.index);
-            bakhraCount++;
-        }
+    if (nearestPoint && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index) && player === 'bakhra' && bakhraCount <= MAX_BAKHRA) {
 
-        // drawX(nearestPoint.x, nearestPoint.y);  // Call our drawing function
-        
-        // This calls the function from Section 4 to actually draw the red X
-        // at the intersection point coordinates
+        drawBakhra(nearestPoint.x, nearestPoint.y); 
+        markedPointsBakhra.add(nearestPoint.index);
+        bakhraCount++;
 
         console.log(Object.keys(index)[nearestPoint.index]);
         console.log(nearestPoint.index);
     }
+    // else if(player){
+
+    // } else if(nearestPoint && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index) && player === 'bagh' && baghCount >= MAX_BAGH){
+            
+           
+    // }
     
     // WHAT HAPPENS IF CONDITIONS AREN'T MET?
     // ======================================
@@ -1198,60 +1186,6 @@ function init() {
 }
 
 
-// ============================================================================
-// SECTION 8: PROGRAM EXECUTION
-// ============================================================================
 
-/**
- * START THE GAME
- * =============
- * 
- * This single line starts everything! When the JavaScript file loads,
- * this calls our initialization function, which sets up the entire game.
- * 
- * EXECUTION ORDER:
- * 1. Browser loads this JavaScript file
- * 2. All the functions above are defined (but not executed yet)
- * 3. This line runs, calling init()
- * 4. init() sets up the game board and click detection
- * 5. Game is now ready for player interaction!
- * 
- * FROM HERE ON:
- * - Players can click on intersection points
- * - Each click triggers handleCanvasClick()
- * - X markers appear where players click
- * - The game continues until players stop playing
- */
 init();
 
-// ============================================================================
-// END OF PROGRAM
-// ============================================================================
-
-/*
- * CONGRATULATIONS! 
- * 
- * You now have a complete, interactive Bagchal board game! Here's what you've built:
- * 
- * ✅ A traditional Bagchal board with proper line patterns
- * ✅ Interactive clicking to place markers
- * ✅ Visual feedback with red X symbols
- * ✅ Duplicate prevention (can't click same spot twice)
- * ✅ Smart click detection (don't need to click exactly on intersections)
- * 
- * POSSIBLE ENHANCEMENTS:
- * - Add different colored markers for two players
- * - Add game rules and win conditions
- * - Add animation effects
- * - Add sound effects
- * - Save game state to continue later
- * - Add AI opponent
- * 
- * LEARNING CONCEPTS COVERED:
- * - HTML5 Canvas API for drawing
- * - JavaScript event handling
- * - Coordinate geometry and distance calculations
- * - Data structures (arrays, sets, objects)
- * - Function design and organization
- * - Game state management
- */
