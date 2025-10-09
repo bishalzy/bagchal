@@ -20,7 +20,7 @@ const markedPointsBakhra = new Set();// position for bakhra
 // let indexs = ['a1','b1','c1','d1','e1','a2','b2','c2','d2','e2','a3','b3','c3','d3','e3','a4','b4','c4','d4','e4','a5','b5','c5','d5','e5'];
 let indexValue = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
 let index = {};
-let bakhraInsertationCompletation = false;
+let bakhraInsertationComplete = false;
 let player = 'bakhra';
 let selectedPiece = null; // Track which piece is selected for moving
 
@@ -31,8 +31,7 @@ markedPointsBagh.add('a1');
 markedPointsBagh.add('a5');
 markedPointsBakhra.add('b4');
 
-let baghCount = 4;
-let bakhraCount = 0;
+let bakhraCount = markedPointsBakhra.size;
 
 const MAX_BAGH = 4;
 const MAX_BAKHRA = 20;
@@ -122,113 +121,39 @@ const generateLegalMoves = (pieceType, position) => {
 function calculateIntersections() {
     const points = [];  // Empty array to store all intersection points
     
-    // GRID INTERSECTIONS (25 points total)
-    // ===================================
-    // Think of this like a tic-tac-toe grid, but 5x5 instead of 3x3
-    // We use nested loops to visit every intersection point
-    
     for (let row = 0; row <= GRID_SIZE; row++) {        // 5 rows: 0,1,2,3,4
         for (let col = 0; col <= GRID_SIZE; col++) {    // 5 columns: 0,1,2,3,4
-            
-            // NESTED LOOPS EXPLANATION:
-            // Outer loop (row): goes through each horizontal line
-            // Inner loop (col): goes through each vertical line  
-            // Together: they visit every crossing point
-            
+         
             points.push({
                 x: col * CELL_SIZE + PADDING,    // X position: column number × cell width + padding offset
                 y: row * CELL_SIZE + PADDING,    // Y position: row number × cell height + padding offset
          // Label this as a grid intersection
             });
             
-            // COORDINATE SYSTEM (with padding):
-            // (25,25) = top-left corner of the board
-            // (525,25) = top-right corner of the board
-            // (25,525) = bottom-left corner of the board
-            // (525,525) = bottom-right corner of the board
         }
     }
-    
-    // CENTER INTERSECTION (1 point)
-    // =============================
-    // This is where the two main diagonal lines cross in the middle
-    // points.push({
-    //     x: BOARD_SIZE / 2 + PADDING,        // Middle X coordinate (275)
-    //     y: BOARD_SIZE / 2 + PADDING,        // Middle Y coordinate (275)
-    //     type: 'center'             // Label this as the center intersection
-    // });
     
     return points;  // Send back the complete list of intersection points
 }
 
-// ============================================================================
-// SECTION 3: DRAWING THE GAME BOARD
-// ============================================================================
 
-/**
- * DRAW THE GAME BOARD
- * ==================
- * 
- * WHAT DOES THIS FUNCTION DO?
- * This is like an artist painting the game board. It draws all the lines
- * that make up the Bagchal board pattern using the HTML5 Canvas API.
- * 
- * BAGCHAL BOARD CONSISTS OF:
- * 1. Grid lines (horizontal and vertical) - creates the basic square grid
- * 2. Corner-to-corner diagonals - long lines connecting opposite corners
- * 3. Diamond pattern - connects the middle points of each edge
- * 
- * CANVAS DRAWING CONCEPTS:
- * - beginPath(): Start drawing a new line
- * - moveTo(x,y): Move the "pen" to a position without drawing
- * - lineTo(x,y): Draw a line from current position to x,y
- * - stroke(): Actually draw the line on the canvas
- */
 function drawGrid() {
-    
-    // SET DRAWING STYLE
-    // ================
-    // Before drawing, we need to set how the lines should look
     
     ctx.strokeStyle = '#000';  // Line color: black (#000 is hex code for black)
     ctx.lineWidth = 2;         // Line thickness: 2 pixels wide
     
-    // HEX COLOR CODES EXPLAINED:
-    // #000 = black, #fff = white, #ff0000 = red, #00ff00 = green, #0000ff = blue
-    
-    
-    // PART 1: DRAW HORIZONTAL LINES (5 lines total)
-    // =============================================
-    // These are the lines that go left-to-right across the board
     
     for (let i = 0; i <= GRID_SIZE; i++) {
-        
-        // LOOP EXPLANATION:
-        // i=0: top line (y=25)
-        // i=1: second line (y=150) 
-        // i=2: middle line (y=275)
-        // i=3: fourth line (y=400)
-        // i=4: bottom line (y=525)
-        
+  
         ctx.beginPath();                                    // Start a new line
         ctx.moveTo(PADDING, i * CELL_SIZE + PADDING);      // Move to left edge at this row (with padding)
         ctx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING); // Draw to right edge (with padding)
         ctx.stroke();                                       // Make the line visible
     }
     
-    
-    // PART 2: DRAW VERTICAL LINES (5 lines total)  
-    // ===========================================
-    // These are the lines that go top-to-bottom down the board
+
     
     for (let i = 0; i <= GRID_SIZE; i++) {
-        
-        // LOOP EXPLANATION:
-        // i=0: leftmost line (x=25)
-        // i=1: second line (x=150)
-        // i=2: middle line (x=275) 
-        // i=3: fourth line (x=400)
-        // i=4: rightmost line (x=525)
         
         ctx.beginPath();                                    // Start a new line
         ctx.moveTo(i * CELL_SIZE + PADDING, PADDING);      // Move to top edge at this column (with padding)
@@ -236,12 +161,6 @@ function drawGrid() {
         ctx.stroke();                                       // Make the line visible
     }
     
-    
-    // PART 3: DRAW CORNER-TO-CORNER DIAGONALS
-    // =======================================
-    // These are the two long diagonal lines that make an X across the entire board
-    
-    // MAIN DIAGONAL: top-left to bottom-right (\)
     ctx.beginPath();
     ctx.moveTo(PADDING, PADDING);                                   // Start at top-left corner (25,25)
     ctx.lineTo(BOARD_SIZE + PADDING, BOARD_SIZE + PADDING);         // Draw to bottom-right (525,525)
@@ -254,11 +173,7 @@ function drawGrid() {
     ctx.stroke();
     
     
-    // PART 4: DRAW DIAMOND PATTERN
-    // ============================
-    // This creates a diamond shape by connecting the middle points of each edge
-    
-    // Calculate where the middle of each edge is located
+
     const topMid    = { x: BOARD_SIZE / 2 + PADDING, y: PADDING };                    // Top edge middle (275,25)
     const rightMid  = { x: BOARD_SIZE + PADDING, y: BOARD_SIZE / 2 + PADDING };      // Right edge middle (525,275)  
     const bottomMid = { x: BOARD_SIZE / 2 + PADDING, y: BOARD_SIZE + PADDING };      // Bottom edge middle (275,525)
@@ -291,7 +206,7 @@ function drawGrid() {
     ctx.stroke();
     
     
-    // PART 5: DRAW INDEXING TEXT (LABELS)
+    //  INDEXING TEXT (LABELS)
     // ===================================
     // Add letters (a-e) horizontally and numbers (1-5) vertically for reference
     // This helps players identify specific intersection points
@@ -323,104 +238,9 @@ function drawGrid() {
         ctx.fillText(letters[i], x, y);        // Draw the letter
     }
     
-    // FINAL RESULT:
-    // We now have a complete Bagchal board with:
-    // - 5×5 grid of squares
-    // - Two diagonal lines crossing the entire board
-    // - A diamond pattern in the center
-    // - Indexing labels (a-e at bottom, 1-5 on left side)
 }
 
-// ============================================================================
-// SECTION 4: PLAYER INTERACTION - DRAWING X MARKERS
-// ============================================================================
 
-/**
- * DRAW X MARKER
- * =============
- * 
- * WHAT DOES THIS FUNCTION DO?
- * When a player clicks on a valid intersection point, this function draws
- * a red X symbol at that location to show where they placed their marker.
- * 
- * HOW IT WORKS:
- * An X is made of two diagonal lines that cross each other:
- * - One line goes from top-left to bottom-right (\)
- * - Another line goes from top-right to bottom-left (/)
- * 
- * PARAMETERS:
- * x - horizontal position where to draw the X
- * y - vertical position where to draw the X
- */
-function drawX(x, y) {
-    
-    // SAVE CURRENT DRAWING SETTINGS
-    // =============================
-    // We'll change the color and thickness for the X, but we need to
-    // remember the current settings so we can restore them later
-    const originalColor = ctx.strokeStyle;
-    const originalWidth = ctx.lineWidth;
-    
-    // SET STYLE FOR X MARKER
-    // ======================
-    ctx.strokeStyle = '#ff0000';  // Red color (#ff0000 = bright red)
-    ctx.lineWidth = 3;            // Make lines thicker for better visibility
-    const size = 15;              // Half the width/height of the X (total size = 30 pixels)
-    
-    // UNDERSTANDING THE SIZE:
-    // If size = 15, the X will be 30×30 pixels total
-    // We draw from (x-15, y-15) to (x+15, y+15)
-    
-    
-    // DRAW FIRST LINE OF X: top-left to bottom-right (\)
-    // ==================================================
-    ctx.beginPath();
-    ctx.moveTo(x - size, y - size);  // Start at top-left of the X
-    ctx.lineTo(x + size, y + size);  // Draw to bottom-right of the X
-    ctx.stroke();
-    
-    // COORDINATE EXPLANATION:
-    // (x-size, y-size) = top-left corner of the X
-    // (x+size, y+size) = bottom-right corner of the X
-    
-    
-    // DRAW SECOND LINE OF X: top-right to bottom-left (/)
-    // ===================================================
-    ctx.beginPath();
-    ctx.moveTo(x + size, y - size);  // Start at top-right of the X
-    ctx.lineTo(x - size, y + size);  // Draw to bottom-left of the X
-    ctx.stroke();
-    
-    // COORDINATE EXPLANATION:
-    // (x+size, y-size) = top-right corner of the X
-    // (x-size, y+size) = bottom-left corner of the X
-    
-    
-    // RESTORE ORIGINAL DRAWING SETTINGS
-    // =================================
-    // Put back the original color and line width so future drawing
-    // isn't affected by our X marker settings
-    ctx.strokeStyle = originalColor;
-    ctx.lineWidth = originalWidth;
-}
-
-/**
- * DRAW BAGH (TIGER) PIECE
- * =======================
- * 
- * WHAT DOES THIS FUNCTION DO?
- * Draws a black circular piece representing a "bagh" (tiger) in the traditional
- * Bagchal game. Tigers are the predator pieces that try to capture goats.
- * 
- * VISUAL APPEARANCE:
- * - Solid black circle
- * - Medium size to fit nicely on intersection points
- * - Clean, bold appearance for easy identification
- * 
- * PARAMETERS:
- * x - horizontal position where to draw the bagh
- * y - vertical position where to draw the bagh
- */
 function drawBagh(x, y) {
     
     // SAVE CURRENT DRAWING SETTINGS
@@ -439,38 +259,13 @@ function drawBagh(x, y) {
     ctx.arc(x, y, radius, 0, 2 * Math.PI);  // Draw a complete circle
     ctx.fill();                              // Fill the circle with black color
     
-    // UNDERSTANDING ctx.arc():
-    // arc(x, y, radius, startAngle, endAngle)
-    // - (x, y): center point of the circle
-    // - radius: distance from center to edge
-    // - 0: start angle (0 radians = rightmost point)
-    // - 2 * Math.PI: end angle (full circle = 2π radians)
-    
+
     // RESTORE ORIGINAL DRAWING SETTINGS
     // =================================
     ctx.fillStyle = originalFillStyle;
     ctx.strokeStyle = originalStrokeStyle;
 }
 
-/**
- * DRAW BAKHRA (GOAT) PIECE  
- * ========================
- * 
- * WHAT DOES THIS FUNCTION DO?
- * Draws a yellow/golden circular piece with black border representing a "bakhra" 
- * (goat) in the traditional Bagchal game. Goats are the prey pieces that try 
- * to block the tigers.
- * 
- * VISUAL APPEARANCE:
- * - Yellow/golden filled circle
- * - Black circular border for definition
- * - Same size as bagh for consistency
- * - Bright color for easy distinction from tigers
- * 
- * PARAMETERS:
- * x - horizontal position where to draw the bakhra
- * y - vertical position where to draw the bakhra
- */
 function drawBakhra(x, y) {
     
     // SAVE CURRENT DRAWING SETTINGS
@@ -493,10 +288,6 @@ function drawBakhra(x, y) {
     ctx.fill();                              // Fill with golden color
     ctx.stroke();                            // Add black border
     
-    // WHY BOTH fill() AND stroke()?
-    // - fill(): creates the solid golden interior
-    // - stroke(): adds the black outline for definition
-    // - This creates a golden circle with black border
     
     // RESTORE ORIGINAL DRAWING SETTINGS
     // =================================
@@ -826,16 +617,12 @@ const initIndex = () => {
 }
 function init() {
     
-
-    
     intersections.push(...calculateIntersections());
     initIndex();
     console.log(index);
-
     
     drawGrid();
 
-    
     drawPieces(markedPointsBagh, markedPointsBakhra);
     
     canvas.addEventListener('click', handleCanvasClick);
