@@ -303,8 +303,7 @@ body {
 }
 
 .board-wrapper {
-    width: 55vw;
-    height: 77vh;
+    width: min(55vw, 77vh);
     min-height: 400px;
     aspect-ratio: 1 / 1;
     border-radius: var(--radius);
@@ -387,6 +386,88 @@ body {
     }
 }
 
+/* ---- Replay Bar ---- */
+.replay-bar {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.replay-bar.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+.replay-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: rgba(26, 27, 30, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+}
+
+.replay-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #ffd740;
+    background: rgba(255, 215, 64, 0.12);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.replay-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.replay-nav kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 5px;
+    line-height: 1;
+}
+
+.replay-position {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-variant-numeric: tabular-nums;
+    min-width: 90px;
+    text-align: center;
+}
+
+.replay-hint {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 16px;
+}
+
 /* ---- Panel Move Logs ---- */
 .panel-log {
     margin-top: 16px;
@@ -459,6 +540,25 @@ body {
 
 .log-entry:last-child.log-win {
     border-left-color: var(--accent-gold);
+}
+
+.log-entry.log-active {
+    background: rgba(2, 119, 189, 0.1);
+    border-left-color: var(--accent-goat) !important;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.log-entry.log-active.log-tiger,
+.log-entry.log-active.log-capture {
+    background: rgba(211, 47, 47, 0.08);
+    border-left-color: var(--accent-tiger) !important;
+}
+
+.log-entry.log-active.log-system {
+    background: rgba(73, 80, 87, 0.08);
+    border-left-color: var(--text-secondary) !important;
 }
 
 /* ---- Buy Me a Momo Widget ---- */
@@ -665,10 +765,22 @@ body {
     }
 
     .turn-banner,
-    .board-actions {
+    .board-actions,
+    .replay-bar {
         position: static;
         transform: none;
         margin: 10px 0;
+    }
+
+    .replay-bar {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .replay-bar.show {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
     }
 
     .board-container {

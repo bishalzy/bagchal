@@ -2,8 +2,16 @@ import { state } from './state.js';
 import { CANVAS_SIZE, PADDING, BOARD_SIZE, GRID_SIZE, CELL_SIZE, C, POS, ALL_POS, ROWS, COLS } from './constants.js';
 import { IMG_TIGER, IMG_GOAT } from './assets.js';
 import { updateUI } from './ui.js';
+import { getViewState, isReplaying } from './replay.js';
+
+/** Reapplies the scale transform so logical coords (0–CANVAS_SIZE) fill the canvas buffer. */
+function prepareCtx(ctx) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(ctx.canvas.width / CANVAS_SIZE, ctx.canvas.height / CANVAS_SIZE);
+}
 
 export function drawBoard(ctx) {
+    prepareCtx(ctx);
     const grad = ctx.createRadialGradient(
         CANVAS_SIZE / 2, CANVAS_SIZE / 2, 50,
         CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE
@@ -108,13 +116,17 @@ export function drawLegalMoves(ctx) {
 }
 
 export function drawAll(ctx) {
+    const vs = getViewState();
+    const replaying = isReplaying();
     drawBoard(ctx);
-    drawLegalMoves(ctx);
-    for (const b of state.baghs) {
-        drawPiece(ctx, b, 'bagh', state.selected === b);
+    if (!replaying) {
+        drawLegalMoves(ctx);
     }
-    for (const g of state.bakhras) {
-        drawPiece(ctx, g, 'bakhra', state.selected === g);
+    for (const b of vs.baghs) {
+        drawPiece(ctx, b, 'bagh', !replaying && state.selected === b);
+    }
+    for (const g of vs.bakhras) {
+        drawPiece(ctx, g, 'bakhra', !replaying && state.selected === g);
     }
 }
 

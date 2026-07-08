@@ -2,6 +2,7 @@ import { state } from './state.js';
 import { ADJ, POS, COLS, ROWS, MAX_BAKHRA, CAPTURE_TO_WIN } from './constants.js';
 import { playSound } from './audio.js';
 import { addLog } from './ui.js';
+import { saveSnapshot } from './replay.js';
 
 export function isOccupied(pos) {
     return state.baghs.has(pos) || state.bakhras.has(pos);
@@ -81,6 +82,7 @@ export function placeGoat(pos) {
     playSound('bakhra');
     switchTurn();
     checkWinConditions();
+    saveSnapshot(countTrappedTigers());
     return true;
 }
 
@@ -131,5 +133,6 @@ export function movePiece(to) {
 
     switchTurn();
     checkWinConditions();
+    saveSnapshot(countTrappedTigers());
     return true;
 }

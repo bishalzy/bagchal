@@ -1,7 +1,8 @@
 import { state } from './state.js';
-import { CLICK_RADIUS, DRAG_RADIUS, MAX_BAKHRA, POS, ALL_POS } from './constants.js';
+import { CLICK_RADIUS, DRAG_RADIUS, MAX_BAKHRA, CANVAS_SIZE, POS, ALL_POS } from './constants.js';
 import { isOccupied, placeGoat, selectPiece, movePiece, getLegalMovesFor } from './logic.js';
 import { render, renderDragging } from './render.js';
+import { isReplaying, stepBack, stepForward, goToLive } from './replay.js';
 
 export const drag = {
     active: false,
@@ -37,11 +38,10 @@ function getCanvasCoords(canvas, e) {
         clientY = e.changedTouches[0].clientY;
     }
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    // Map CSS pixels directly to logical CANVAS_SIZE coordinates
     return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY,
+        x: (clientX - rect.left) / rect.width * CANVAS_SIZE,
+        y: (clientY - rect.top) / rect.height * CANVAS_SIZE,
     };
 }
 
@@ -54,6 +54,11 @@ function isOwnPiece(pos) {
 export function setupInput(canvas, ctx) {
     function handleStart(e) {
         if (state.gameOver) return;
+        if (isReplaying()) {
+            goToLive();
+            render(ctx);
+            return;
+        }
         const { x, y } = getCanvasCoords(canvas, e);
         const pos = posFromPixel(x, y);
 
@@ -121,6 +126,7 @@ export function setupInput(canvas, ctx) {
 
     function handleEnd(e) {
         if (state.gameOver) return;
+        if (isReplaying()) return;
         const { x, y } = getCanvasCoords(canvas, e);
 
         if (drag.active) {
@@ -186,4 +192,15 @@ export function setupInput(canvas, ctx) {
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
     canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
     canvas.addEventListener('touchend', (e) => { e.preventDefault(); handleEnd(e); }, { passive: false });
+
+    // Replay navigation via arrow keys
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (stepBack()) render(ctx);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (stepForward()) render(ctx);
+        }
+    });
 }
