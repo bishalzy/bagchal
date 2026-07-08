@@ -12,14 +12,12 @@ canvas.height = CANVAS_SIZE;
 
 function resetGame() {
     resetState();
-    document.getElementById('moveLogGoat').innerHTML = '';
-    document.getElementById('moveLogTiger').innerHTML = '';
+    document.getElementById('moveLog').innerHTML = '';
     addLog('Game started. Goat places first.', 'system');
     document.getElementById('gameOverOverlay').classList.remove('show');
     render(ctx);
 }
 
-document.getElementById('btnRestart').addEventListener('click', resetGame);
 document.getElementById('btnPlayAgain').addEventListener('click', resetGame);
 
 setupInput(canvas, ctx);

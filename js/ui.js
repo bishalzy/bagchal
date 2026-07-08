@@ -42,22 +42,14 @@ export function updateUI() {
 }
 
 export function addLog(msg, type) {
-    const logGoat = document.getElementById('moveLogGoat');
-    const logTiger = document.getElementById('moveLogTiger');
+    const logContainer = document.getElementById('moveLog');
 
     const span = document.createElement('span');
     span.className = `log-entry log-${type}`;
     span.textContent = msg;
 
-    if (type === 'goat' || type === 'system') {
-        logGoat.appendChild(span.cloneNode(true));
-        logGoat.scrollTop = logGoat.scrollHeight;
-    }
-
-    if (type === 'tiger' || type === 'capture' || type === 'system') {
-        logTiger.appendChild(span.cloneNode(true));
-        logTiger.scrollTop = logTiger.scrollHeight;
-    }
+    logContainer.appendChild(span);
+    logContainer.scrollTop = logContainer.scrollHeight;
 
     state.moveHistory.push(msg);
 }
