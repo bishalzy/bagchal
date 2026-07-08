@@ -293,12 +293,21 @@ let drag = {
 };
 
 function getCanvasCoords(e) {
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+    }
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY,
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY,
     };
 }
 
@@ -308,19 +317,17 @@ function isOwnPiece(pos) {
     return null;
 }
 
-canvas.addEventListener('mousedown', (e) => {
+function handleStart(e) {
     if (state.gameOver) return;
     const { x, y } = getCanvasCoords(e);
     const pos = posFromPixel(x, y);
 
-    // Placement phase: don't start drag, handle on mouseup as click
     if (state.turn === 'bakhra' && state.bakhrasPlaced < MAX_BAKHRA) {
         drag.startX = x; drag.startY = y;
         drag.moved = false;
         return;
     }
 
-    // Movement phase: check if clicking own piece to start drag
     if (pos) {
         const type = isOwnPiece(pos);
         if (type) {
@@ -335,7 +342,6 @@ canvas.addEventListener('mousedown', (e) => {
                 drag.startY = y;
                 drag.moved = false;
 
-                // Select the piece and show legal moves
                 state.selected = pos;
                 state.legalMoves = moves;
                 render();
@@ -343,26 +349,27 @@ canvas.addEventListener('mousedown', (e) => {
             }
         }
     }
-});
+}
 
-canvas.addEventListener('mousemove', (e) => {
+function handleMove(e) {
     const { x, y } = getCanvasCoords(e);
 
     if (drag.active) {
         drag.mouseX = x;
         drag.mouseY = y;
-        // Check if moved enough to count as drag vs click
         if (Math.hypot(x - drag.startX, y - drag.startY) > 5) {
             drag.moved = true;
         }
-        // Redraw board without the dragged piece, then draw it at mouse
         renderDragging();
         canvas.style.cursor = 'grabbing';
         return;
     }
 
-    // Cursor hints when not dragging
-    if (state.gameOver) { canvas.style.cursor = 'default'; return; }
+    if (state.gameOver || (e.type && e.type.startsWith('touch'))) {
+        canvas.style.cursor = 'default';
+        return;
+    }
+
     const hovered = posFromPixel(x, y);
     if (!hovered) { canvas.style.cursor = 'default'; return; }
 
@@ -375,19 +382,16 @@ canvas.addEventListener('mousemove', (e) => {
     } else {
         canvas.style.cursor = isOwnPiece(hovered) ? 'grab' : 'default';
     }
-});
+}
 
-canvas.addEventListener('mouseup', (e) => {
+function handleEnd(e) {
     if (state.gameOver) return;
     const { x, y } = getCanvasCoords(e);
     
-    // --- Drag release ---
     if (drag.active) {
         const wasDragged = drag.moved;
-        // Use forgiving DRAG_RADIUS if the piece was actually dragged, otherwise strict CLICK_RADIUS
         const dropPos = posFromPixel(x, y, wasDragged ? DRAG_RADIUS : CLICK_RADIUS);
 
-        // Reset drag state
         drag.active = false;
         const dragKey = drag.pieceKey;
         drag.pieceKey = null;
@@ -395,7 +399,6 @@ canvas.addEventListener('mouseup', (e) => {
         canvas.style.cursor = 'default';
 
         if (wasDragged && dropPos) {
-            // Try to move to drop position
             if (state.legalMoves.some(m => m.to === dropPos)) {
                 movePiece(dropPos);
                 render();
@@ -403,22 +406,17 @@ canvas.addEventListener('mouseup', (e) => {
             }
         }
 
-        // Invalid drop or click — keep selection, snap back
         render();
         return;
     }
 
-    // --- Click handling (non-drag) ---
     const pos = posFromPixel(x, y, CLICK_RADIUS);
     if (!pos) return;
     let acted = false;
 
-    // Placement phase
     if (state.turn === 'bakhra' && state.bakhrasPlaced < MAX_BAKHRA) {
         acted = placeGoat(pos);
-    }
-    // Movement phase click (select or move)
-    else {
+    } else {
         if (state.selected) {
             if (state.legalMoves.some(m => m.to === pos)) {
                 acted = movePiece(pos);
@@ -435,9 +433,11 @@ canvas.addEventListener('mouseup', (e) => {
     }
 
     if (acted) render();
-});
+}
 
-// Cancel drag if mouse leaves canvas
+canvas.addEventListener('mousedown', handleStart);
+canvas.addEventListener('mousemove', handleMove);
+canvas.addEventListener('mouseup', handleEnd);
 canvas.addEventListener('mouseleave', () => {
     if (drag.active) {
         drag.active = false;
@@ -447,6 +447,11 @@ canvas.addEventListener('mouseleave', () => {
         render();
     }
 });
+
+// Touch Events for Mobile support
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
+canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
+canvas.addEventListener('touchend', (e) => { e.preventDefault(); handleEnd(e); }, { passive: false });
 
 function drawBoard() {
     // Background
