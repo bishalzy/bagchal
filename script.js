@@ -1,637 +1,699 @@
+// =============================================
+//  BAGHCHAL — Full Game Engine
+//  Chess-style coordinate system (a1–e5)
+// =============================================
 
-const board = document.querySelector('.board');          // Find the container div
-const canvas = document.getElementById('gameCanvas');    // Find our drawing canvas
-const ctx = canvas.getContext('2d');                    // Get the "drawing pen" for canvas
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
+// ---- Board Constants ----
+const BOARD_SIZE = 640;
+const PADDING = 52;
+const CANVAS_SIZE = BOARD_SIZE + PADDING * 2;
+const GRID_SIZE = 4;
+const CELL_SIZE = BOARD_SIZE / GRID_SIZE;
+const CLICK_RADIUS = 26;  // Strict radius for precise clicks (e.g., initial placement)
+const DRAG_RADIUS = 100;  // Forgiving radius for fast drag-and-drop snapping
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
 
-const BOARD_SIZE = 500;         // The actual game board is 500x500 pixels
-const PADDING = BOARD_SIZE * 0.1;  // 10% padding around the board (50 pixels)
-const CANVAS_SIZE = BOARD_SIZE + (PADDING * 2);  // Canvas size: 500 + 100 = 600 pixels
-const GRID_SIZE = 4;            // 4 divisions create 5 lines (like a tic-tac-toe grid but bigger)
-const CELL_SIZE = BOARD_SIZE / GRID_SIZE;  // Each cell is 125x125 pixels (500÷4=125)
-const CLICK_TOLERANCE = 20;     // Allow clicks within 20 pixels of intersection points
-
-
-
-const intersections = [];       // Array = list of all clickable points on the board
-// const markedPoints = new Set(); //fetch from backend for position Set = collection that prevents duplicate entries this is just for trial 
-const markedPointsBagh = new Set();// position for bagh
-const markedPointsBakhra = new Set();// position for bakhra
-// let indexs = ['a1','b1','c1','d1','e1','a2','b2','c2','d2','e2','a3','b3','c3','d3','e3','a4','b4','c4','d4','e4','a5','b5','c5','d5','e5'];
-let indexValue = ['a5','b5','c5','d5','e5','a4','b4','c4','d4','e4','a3','b3','c3','d3','e3','a2','b2','c2','d2','e2','a1','b1','c1','d1','e1'];
-let index = {};
-let bakhraInsertationComplete = false;
-let player = 'bakhra';
-let selectedPiece = null; // Track which piece is selected for moving
-
-
-markedPointsBagh.add('e5');
-markedPointsBagh.add('e1');
-markedPointsBagh.add('a1');
-markedPointsBagh.add('a5');
-markedPointsBakhra.add('b4');
-
-let bakhraCount = markedPointsBakhra.size;
-
-const MAX_BAGH = 4;
-const MAX_BAKHRA = 20;
-
-
-const fetchGameState = async (url) => {
-    // Simulate fetching data from backend
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.position;
-}
-const updateGameState = async (url, position, player) => {
-    // Simulate sending data to backend
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ position, player })
-    });
-    const data = await response.json();
-    return data.success;
-}
-
-const drawPieces = (baghPosition, bakhraPosition) => {
-    // Draw Bagh pieces
-
-    for (const pos of baghPosition) {
-        drawBagh(index[pos].x , index[pos].y);
-    }
-        
-
-    // Draw Bakhra pieces
-    
-    for (const pos of bakhraPosition) {
-        drawBakhra(index[pos].x , index[pos].y);
-    }
+// ---- Colors ----
+const C = {
+    boardBg:     '#f9fafb',
+    boardBgEdge: '#f3f4f6',
+    line:        '#221105',
+    lineThin:    '#3e200c',
+    labelText:   '#495057',
+    bagh:        '#d32f2f',
+    baghDark:    '#8b1a1a',
+    baghGlow:    'rgba(211,47,47,0.35)',
+    bakhra:      '#42a5f5',
+    bakhraDark:  '#0d47a1',
+    bakhraGlow:  'rgba(66,165,245,0.35)',
+    selected:    '#ffd740',
+    selectedGlow:'rgba(255,215,64,0.45)',
+    legalDot:    'rgba(102,187,106,0.7)',
+    captureDot:  'rgba(244,67,54,0.7)',
+    dotBorder:   'rgba(0,0,0,0.2)',
 };
 
+// ---- Piece Images ----
+const IMG_TIGER = new Image();
+IMG_TIGER.src = 'Tiger.png';
+const IMG_GOAT = new Image();
+IMG_GOAT.src = 'goat.png';
+let imagesLoaded = 0;
+function onImageLoad() {
+    imagesLoaded++;
+    if (imagesLoaded >= 2) render();
+}
+IMG_TIGER.onload = onImageLoad;
+IMG_GOAT.onload = onImageLoad;
 
-//generate legal moves for the specific piece
-//===================================================
-const generateLegalMoves = (pieceType, position) => {
+// ---- Coordinate System (chess-style) ----
+const COLS = ['a','b','c','d','e'];
+const ROWS = ['1','2','3','4','5'];
 
-    const legalMoves = [];
+// Position map: "a1" -> {px, py, col, row}
+// col 0-4 = a-e, row 0-4 = 1-5
+// On canvas: row 5 is at the TOP (y=PADDING), row 1 is at the BOTTOM (y=BOARD_SIZE+PADDING)
+const POS = {};
+for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+        const key = COLS[c] + ROWS[r];
+        POS[key] = {
+            px: c * CELL_SIZE + PADDING,
+            py: (4 - r) * CELL_SIZE + PADDING,
+            col: c,
+            row: r,
+        };
+    }
+}
+const ALL_POS = Object.keys(POS); // 25 positions
 
-    // Get the current position of the piece
-    const currentPos = index[position];
+// ---- Adjacency Graph ----
+// Built from the lines actually drawn on the board
+const ADJ = {};
+ALL_POS.forEach(k => ADJ[k] = []);
 
-    // Define the movement patterns for each piece type
-    const movementPatterns = {
-        'bagh': [
-            { x: -1, y: 0 },  // Move left
-            { x: 1, y: 0 },   // Move right
-            { x: 0, y: -1 },  // Move up
-            { x: 0, y: 1 },   // Move down
-        ],
-        'bakhra': [
-            { x: -1, y: 0 },  // Move left
-            { x: 1, y: 0 },   // Move right
-            { x: 0, y: -1 },  // Move up
-            { x: 0, y: 1 },   // Move down
-            { x: -1, y: -1 }, // Move diagonally up-left
-            { x: 1, y: -1 },  // Move diagonally up-right
-            { x: -1, y: 1 },  // Move diagonally down-left
-            { x: 1, y: 1 },   // Move diagonally down-right
-        ]
+function addEdge(a, b) {
+    if (!ADJ[a].includes(b)) ADJ[a].push(b);
+    if (!ADJ[b].includes(a)) ADJ[b].push(a);
+}
+
+// Horizontal edges (same row, adjacent columns)
+for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 4; c++) {
+        addEdge(COLS[c]+ROWS[r], COLS[c+1]+ROWS[r]);
+    }
+}
+// Vertical edges (same column, adjacent rows)
+for (let c = 0; c < 5; c++) {
+    for (let r = 0; r < 4; r++) {
+        addEdge(COLS[c]+ROWS[r], COLS[c]+ROWS[r+1]);
+    }
+}
+// Main diagonal: a5-b4-c3-d2-e1
+['a5','b4','c3','d2','e1'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+// Anti-diagonal: e5-d4-c3-b2-a1
+['e5','d4','c3','b2','a1'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+// Diamond: c5-d4-e3-d2-c1-b2-a3-b4-c5
+['c5','d4','e3','d2','c1','b2','a3','b4','c5'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+
+// ---- Game State ----
+let state = createInitialState();
+
+function createInitialState() {
+    return {
+        baghs: new Set(['a5','e5','a1','e1']),  // 4 tigers at corners
+        bakhras: new Set(),                      // goats start empty
+        turn: 'bakhra',                          // goat places first
+        bakhrasPlaced: 0,                        // out of 20
+        bakhrasCaptured: 0,                      // tiger wins at 5
+        selected: null,                          // selected piece coordinate
+        legalMoves: [],                          // [{to, capture?}]
+        gameOver: false,
+        winner: null,
+        moveHistory: [],
     };
+}
 
-    // Get the movement pattern for the current piece type
-    const pattern = movementPatterns[pieceType];
+const MAX_BAKHRA = 20;
+const CAPTURE_TO_WIN = 5;
 
-    // Generate all possible moves based on the movement pattern
-    for (const move of pattern) {
-        const newX = currentPos.x + move.x;
-        const newY = currentPos.y + move.y;
+// ---- Game Logic ----
 
-        // Check if the new position is within bounds
-        if (newX >= 0 && newX < GRID_SIZE && newY >= 0 && newY < GRID_SIZE) {
-            legalMoves.push({ x: newX, y: newY });
+function isOccupied(pos) {
+    return state.baghs.has(pos) || state.bakhras.has(pos);
+}
+
+// Get simple (step) moves for a piece at `pos`
+function getStepMoves(pos) {
+    return ADJ[pos].filter(n => !isOccupied(n)).map(n => ({ to: n, capture: null }));
+}
+
+// Get jump (capture) moves for a tiger at `pos`
+function getJumpMoves(pos) {
+    const moves = [];
+    const from = POS[pos];
+    for (const mid of ADJ[pos]) {
+        if (!state.bakhras.has(mid)) continue; // must jump over a goat
+        const midP = POS[mid];
+        // Direction vector from pos to mid
+        const dc = midP.col - from.col;
+        const dr = midP.row - from.row;
+        // Landing position
+        const landCol = midP.col + dc;
+        const landRow = midP.row + dr;
+        if (landCol < 0 || landCol > 4 || landRow < 0 || landRow > 4) continue;
+        const landKey = COLS[landCol] + ROWS[landRow];
+        // Landing must be empty AND connected to mid (same line continues)
+        if (!isOccupied(landKey) && ADJ[mid].includes(landKey)) {
+            moves.push({ to: landKey, capture: mid });
         }
     }
-
-    return legalMoves;
-};
-
-function calculateIntersections() {
-    const points = [];  // Empty array to store all intersection points
-    
-    for (let row = 0; row <= GRID_SIZE; row++) {        // 5 rows: 0,1,2,3,4
-        for (let col = 0; col <= GRID_SIZE; col++) {    // 5 columns: 0,1,2,3,4
-         
-            points.push({
-                x: col * CELL_SIZE + PADDING,    // X position: column number × cell width + padding offset
-                y: row * CELL_SIZE + PADDING,    // Y position: row number × cell height + padding offset
-         // Label this as a grid intersection
-            });
-            
-        }
-    }
-    
-    return points;  // Send back the complete list of intersection points
+    return moves;
 }
 
-
-function drawGrid() {
-    
-    ctx.strokeStyle = '#000';  // Line color: black (#000 is hex code for black)
-    ctx.lineWidth = 2;         // Line thickness: 2 pixels wide
-    
-    
-    for (let i = 0; i <= GRID_SIZE; i++) {
-  
-        ctx.beginPath();                                    // Start a new line
-        ctx.moveTo(PADDING, i * CELL_SIZE + PADDING);      // Move to left edge at this row (with padding)
-        ctx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING); // Draw to right edge (with padding)
-        ctx.stroke();                                       // Make the line visible
+function getLegalMovesFor(pos) {
+    if (state.baghs.has(pos)) {
+        return [...getStepMoves(pos), ...getJumpMoves(pos)];
     }
-    
-
-    
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        
-        ctx.beginPath();                                    // Start a new line
-        ctx.moveTo(i * CELL_SIZE + PADDING, PADDING);      // Move to top edge at this column (with padding)
-        ctx.lineTo(i * CELL_SIZE + PADDING, BOARD_SIZE + PADDING); // Draw to bottom edge (with padding)
-        ctx.stroke();                                       // Make the line visible
+    if (state.bakhras.has(pos)) {
+        return getStepMoves(pos); // goats can only step, never jump
     }
-    
-    ctx.beginPath();
-    ctx.moveTo(PADDING, PADDING);                                   // Start at top-left corner (25,25)
-    ctx.lineTo(BOARD_SIZE + PADDING, BOARD_SIZE + PADDING);         // Draw to bottom-right (525,525)
-    ctx.stroke();
-    
-    // ANTI-DIAGONAL: top-right to bottom-left (/)
-    ctx.beginPath();
-    ctx.moveTo(BOARD_SIZE + PADDING, PADDING);                      // Start at top-right corner (525,25)
-    ctx.lineTo(PADDING, BOARD_SIZE + PADDING);                      // Draw to bottom-left (25,525)
-    ctx.stroke();
-    
-    
-
-    const topMid    = { x: BOARD_SIZE / 2 + PADDING, y: PADDING };                    // Top edge middle (275,25)
-    const rightMid  = { x: BOARD_SIZE + PADDING, y: BOARD_SIZE / 2 + PADDING };      // Right edge middle (525,275)  
-    const bottomMid = { x: BOARD_SIZE / 2 + PADDING, y: BOARD_SIZE + PADDING };      // Bottom edge middle (275,525)
-    const leftMid   = { x: PADDING, y: BOARD_SIZE / 2 + PADDING };                   // Left edge middle (25,275)
-    
-    // Draw the four sides of the diamond
-    
-    // Top side of diamond: top-middle → right-middle
-    ctx.beginPath();
-    ctx.moveTo(topMid.x, topMid.y);      // Start at top middle
-    ctx.lineTo(rightMid.x, rightMid.y);  // Draw to right middle
-    ctx.stroke();
-    
-    // Right side of diamond: right-middle → bottom-middle
-    ctx.beginPath();
-    ctx.moveTo(rightMid.x, rightMid.y);    // Start at right middle
-    ctx.lineTo(bottomMid.x, bottomMid.y);  // Draw to bottom middle
-    ctx.stroke();
-    
-    // Bottom side of diamond: bottom-middle → left-middle
-    ctx.beginPath();
-    ctx.moveTo(bottomMid.x, bottomMid.y);  // Start at bottom middle
-    ctx.lineTo(leftMid.x, leftMid.y);      // Draw to left middle
-    ctx.stroke();
-    
-    // Left side of diamond: left-middle → top-middle (completes the diamond)
-    ctx.beginPath();
-    ctx.moveTo(leftMid.x, leftMid.y);      // Start at left middle
-    ctx.lineTo(topMid.x, topMid.y);        // Draw to top middle
-    ctx.stroke();
-    
-    
-    //  INDEXING TEXT (LABELS)
-    // ===================================
-    // Add letters (a-e) horizontally and numbers (1-5) vertically for reference
-    // This helps players identify specific intersection points
-    
-    // SET TEXT STYLE
-    ctx.fillStyle = '#000';          // Black text color
-    ctx.font = '16px Arial';         // Font size and family
-    ctx.textAlign = 'center';        // Center text horizontally
-    ctx.textBaseline = 'middle';     // Center text vertically
-    
-    
-    
-    // DRAW VERTICAL LABELS (1, 2, 3, 4, 5)
-    // ====================================
-    const numbers = ['5', '4', '3', '2', '1'];
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        const x = PADDING / 2;                 // X position: halfway in left padding area
-        const y = i * CELL_SIZE + PADDING;     // Y position of each grid line
-        ctx.fillText(numbers[i], x, y);        // Draw the number
-    }
-    
-    // DRAW HORIZONTAL LABELS (a, b, c, d, e)
-    // =============================================
-    // Add the letters at the bottom for better reference
-    const letters = ['a', 'b', 'c', 'd', 'e'];
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        const x = i * CELL_SIZE + PADDING;     // X position of each grid line
-        const y = BOARD_SIZE + PADDING + (PADDING / 2);  // Y position: halfway in bottom padding area
-        ctx.fillText(letters[i], x, y);        // Draw the letter
-    }
-    
+    return [];
 }
 
-
-function drawBagh(x, y) {
-    
-    // SAVE CURRENT DRAWING SETTINGS
-    // =============================
-    const originalFillStyle = ctx.fillStyle;
-    const originalStrokeStyle = ctx.strokeStyle;
-    
-    // SET STYLE FOR BAGH (TIGER) PIECE
-    // ================================
-    const radius = 18;              // Circle radius in pixels (36px diameter)
-    ctx.fillStyle = '#000000';      // Solid black color for the tiger
-    
-    // DRAW THE BAGH CIRCLE
-    // ===================
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);  // Draw a complete circle
-    ctx.fill();                              // Fill the circle with black color
-    
-
-    // RESTORE ORIGINAL DRAWING SETTINGS
-    // =================================
-    ctx.fillStyle = originalFillStyle;
-    ctx.strokeStyle = originalStrokeStyle;
-}
-
-function drawBakhra(x, y) {
-    
-    // SAVE CURRENT DRAWING SETTINGS
-    // =============================
-    const originalFillStyle = ctx.fillStyle;
-    const originalStrokeStyle = ctx.strokeStyle;
-    const originalLineWidth = ctx.lineWidth;
-    
-    // SET STYLE FOR BAKHRA (GOAT) PIECE
-    // =================================
-    const radius = 10;              // Same radius as bagh for consistency
-    ctx.fillStyle = '#FFD700';      // Golden yellow color (#FFD700 = gold)
-    ctx.strokeStyle = '#000000';    // Black border color
-    ctx.lineWidth = 2;              // Border thickness
-    
-    // DRAW THE BAKHRA CIRCLE
-    // =====================
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);  // Draw a complete circle
-    ctx.fill();                              // Fill with golden color
-    ctx.stroke();                            // Add black border
-    
-    
-    // RESTORE ORIGINAL DRAWING SETTINGS
-    // =================================
-    ctx.fillStyle = originalFillStyle;
-    ctx.strokeStyle = originalStrokeStyle;
-    ctx.lineWidth = originalLineWidth;
-}
-
-
-function findNearestIntersection(clickX, clickY) {
-    
-    // VARIABLES TO TRACK THE SEARCH
-    // ============================
-    let nearest = null;           // Will store the closest intersection we find
-    let minDistance = Infinity;   // Track the shortest distance found so far
-    
-    for (let i = 0; i < intersections.length; i++) {
-        const point = intersections[i];  // Get the current intersection point
-        
-
-        const distance = Math.sqrt(
-            Math.pow(clickX - point.x, 2) + Math.pow(clickY - point.y, 2)
-        );
-        
-
-        if (distance < minDistance && distance <= CLICK_TOLERANCE) {
-            minDistance = distance;                    // Update the minimum distance
-            nearest = { ...point, index: i };         // Remember this intersection
-        }
-        
-
+function countTrappedTigers() {
+    let count = 0;
+    for (const t of state.baghs) {
+        if (getLegalMovesFor(t).length === 0) count++;
     }
-    
-    // RETURN THE RESULT
-    // ================
-    return nearest;  // Either an intersection object, or null if none found
-    
-
+    return count;
 }
 
-function removePiece(x, y) {
-
-    
-    const nearestPoint = findNearestIntersection(x, y);
-    
-    if (nearestPoint !== null) {
-        
-        let removedBakhra = false;
-
-        if (markedPointsBakhra.has(nearestPoint.index)) {
-            markedPointsBakhra.delete(nearestPoint.index);  // Remove the Bakhra piece
-            removedBakhra = true;
-        }
-        
-
-        if (removedBakhra) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas
-            drawGrid();                                          // Redraw board lines
-            drawPieces(markedPointsBagh, markedPointsBakhra);   // Redraw all remaining pieces
-            
-            // Get coordinate name for logging
-            const coordinateName = Object.keys(index)[nearestPoint.index];
-            console.log(`Successfully removed piece from ${coordinateName}`);
-        } else {
-            // STEP 5: LOG IF NO PIECE WAS FOUND
-            // =================================
-            const coordinateName = Object.keys(index)[nearestPoint.index];
-            console.log(`No piece found at ${coordinateName} to remove`);
-        }
-    } else {
-
-        console.log('Click too far from any intersection - no piece removed');
+function checkWinConditions() {
+    // Tiger wins: captured 5 goats
+    if (state.bakhrasCaptured >= CAPTURE_TO_WIN) {
+        state.gameOver = true;
+        state.winner = 'bagh';
+        return;
+    }
+    // Goat wins: all 4 tigers trapped (no legal moves)
+    let allTrapped = true;
+    for (const t of state.baghs) {
+        if (getLegalMovesFor(t).length > 0) { allTrapped = false; break; }
+    }
+    if (allTrapped && state.baghs.size > 0) {
+        state.gameOver = true;
+        state.winner = 'bakhra';
     }
 }
 
-function removePieceByCoordinate(coordinate) {
-    // STEP 1: CHECK IF COORDINATE EXISTS
-    // =================================
-    if (index[coordinate]) {
-        // STEP 2: GET PIXEL COORDINATES AND REMOVE
-        // =======================================
-        const point = index[coordinate];
-        removePiece(point.x, point.y);
-        console.log(`Attempted to remove piece from ${coordinate} at (${point.x}, ${point.y})`);
-    } else {
-        // STEP 3: HANDLE INVALID COORDINATES
-        // =================================
-        console.log(`Invalid coordinate: ${coordinate}. Valid coordinates are a1-e5.`);
-        console.log('Available coordinates:', Object.keys(index).sort());
-    }
+function switchTurn() {
+    state.turn = state.turn === 'bakhra' ? 'bagh' : 'bakhra';
+    state.selected = null;
+    state.legalMoves = [];
 }
 
+// ---- Actions ----
 
-function handleCanvasClick(event) {
-    
+function placeGoat(pos) {
+    if (state.turn !== 'bakhra') return false;
+    if (state.bakhrasPlaced >= MAX_BAKHRA) return false;
+    if (isOccupied(pos)) return false;
 
-    const rect = canvas.getBoundingClientRect();  // Get canvas position and size info
-    const clickX = event.clientX - rect.left;     // Convert to canvas X coordinate
-    const clickY = event.clientY - rect.top;      // Convert to canvas Y coordinate
-    
-
-    const nearestPoint = findNearestIntersection(clickX, clickY);
-    
-    if(!selectedPiece){
-        if (nearestPoint && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index) ) {
-            if( player === 'bakhra' && bakhraCount < MAX_BAKHRA) {
-                drawBakhra(nearestPoint.x, nearestPoint.y); 
-                markedPointsBakhra.add(nearestPoint.index);
-                bakhraCount++;
-    
-                console.log(Object.keys(index)[nearestPoint.index]);
-                console.log(nearestPoint.index);
-            } else if(player === 'bakhra' && bakhraCount === MAX_BAKHRA && markedPointsBakhra.has(nearestPoint.index)){
-                selectedPiece = nearestPoint; // must be inefficient in the future should store the selected piece position and value like e4 and bagh or bakhra
-            } else if(player === 'bagh' && markedPointsBagh.has(nearestPoint.index)){
-                selectedPiece = nearestPoint;
-            }
-    
-        }
-        else{
-            if(!markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index)){
-                if(markedPointsBagh.has(selectedPiece.index) && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index)){
-                    removePieceByCoordinate(selectedPiece.x,selectedPiece.y);
-                    drawBagh(nearestPoint.x,nearestPoint.y);
-                    markedPointsBagh.delete(selectedPiece.index);
-                    selectedPiece = null;
-                    redrawBoard();
-                }else if(markedPointsBakhra.has(selectedPiece.index) && !markedPointsBagh.has(nearestPoint.index) && !markedPointsBakhra.has(nearestPoint.index)){
-                    removePieceByCoordinate(selectedPiece.x,selectedPiece.y);
-                    drawBakhra(nearestPoint.x,nearestPoint.y);
-                    markedPointsBakhra.delete(selectedPiece.x,selectedPiece.y);
-                    selectedPiece = null;
-                    redrawBoard();
-                }else{
-                    console.log("cannot perform the action");
-                }
-            }
-        }
-
-    }
-
-    
-
-}
-
-
-
-let isDragging = false;        // Track if we're currently dragging
-let draggedPiece = null;       // Which piece is being dragged
-let draggedFromIndex = null;   // Where the piece was dragged from
-let mouseX = 0, mouseY = 0;    // Current mouse position
-
-
-function setupDragHandlers() {
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseUp); // End drag if mouse leaves canvas
-}
-
-function handleMouseDown(event) {
-    const rect = canvas.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
-    
-    const nearestPoint = findNearestIntersection(clickX, clickY);
-    
-    if (nearestPoint) {
-        // Check if there's a Bagh piece at this location
-        if (markedPointsBagh.has(nearestPoint.index)) {
-            isDragging = true;
-            draggedPiece = 'bagh';
-            draggedFromIndex = nearestPoint.index;
-            mouseX = clickX;
-            mouseY = clickY;
-            
-            // Remove piece from its current position temporarily
-            markedPointsBagh.delete(nearestPoint.index);
-            redrawBoard();
-            console.log('Started dragging Bagh from', Object.keys(index)[nearestPoint.index]);
-            
-        } 
-        // Check if there's a Bakhra piece at this location
-        else if (markedPointsBakhra.has(nearestPoint.index)) {
-            isDragging = true;
-            draggedPiece = 'bakhra';
-            draggedFromIndex = nearestPoint.index;
-            mouseX = clickX;
-            mouseY = clickY;
-            
-            // Remove piece from its current position temporarily
-            markedPointsBakhra.delete(nearestPoint.index);
-            redrawBoard();
-            console.log('Started dragging Bakhra from', Object.keys(index)[nearestPoint.index]);
-        }
-    }
-}
-
-
-function handleMouseMove(event) {
-    if (!isDragging) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    mouseX = event.clientX - rect.left;
-    mouseY = event.clientY - rect.top;
-    
-    // Redraw board and show piece following mouse
-    redrawBoard();
-    if (draggedPiece === 'bagh') {
-        drawBagh(mouseX, mouseY);
-    } else if (draggedPiece === 'bakhra') {
-        drawBakhra(mouseX, mouseY);
-    }
-}
-
-
-function handleMouseUp(event) {
-    if (!isDragging) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const dropX = event.clientX - rect.left;
-    const dropY = event.clientY - rect.top;
-    
-    const nearestPoint = findNearestIntersection(dropX, dropY);
-    
-    // Check if drop location is valid (intersection exists and is empty)
-    if (nearestPoint && 
-        !markedPointsBagh.has(nearestPoint.index) && 
-        !markedPointsBakhra.has(nearestPoint.index)) {
-        
-        // Place piece at new location
-        if (draggedPiece === 'bagh') {
-            markedPointsBagh.add(nearestPoint.index);
-        } else if (draggedPiece === 'bakhra') {
-            markedPointsBakhra.add(nearestPoint.index);
-        }
-        
-        console.log(`Moved ${draggedPiece} to ${Object.keys(index)[nearestPoint.index]}`);
-    } else {
-        // Invalid drop location - return piece to original position
-        if (draggedPiece === 'bagh') {
-            markedPointsBagh.add(draggedFromIndex);
-        } else if (draggedPiece === 'bakhra') {
-            markedPointsBakhra.add(draggedFromIndex);
-        }
-        
-        console.log(`Invalid drop location - returned ${draggedPiece} to original position`);
-    }
-    
-    // Reset drag state
-    isDragging = false;
-    draggedPiece = null;
-    draggedFromIndex = null;
-    
-    // Final redraw
-    redrawBoard();
-}
-
-
-function movePieceToPosition(fromCoordinate, toCoordinate, pieceType) {
-    // STEP 1: VALIDATE COORDINATES
-    if (!index[fromCoordinate] || !index[toCoordinate]) {
-        console.error(`Invalid coordinates: ${fromCoordinate} or ${toCoordinate}`);
-        return false;
-    }
-    
-    // STEP 2: FIND THE PIECE AT SOURCE LOCATION
-    const fromIndex = intersections.findIndex(point => 
-        point.x === index[fromCoordinate].x && point.y === index[fromCoordinate].y
-    );
-    
-    const toIndex = intersections.findIndex(point => 
-        point.x === index[toCoordinate].x && point.y === index[toCoordinate].y
-    );
-    
-    // STEP 3: CHECK IF PIECE EXISTS AT SOURCE
-    let pieceFound = false;
-    if (pieceType === 'bagh' && markedPointsBagh.has(fromIndex)) {
-        markedPointsBagh.delete(fromIndex);
-        pieceFound = true;
-    } else if (pieceType === 'bakhra' && markedPointsBakhra.has(fromIndex)) {
-        markedPointsBakhra.delete(fromIndex);
-        pieceFound = true;
-    }
-    
-    if (!pieceFound) {
-        console.error(`No ${pieceType} found at ${fromCoordinate}`);
-        return false;
-    }
-    
-    // STEP 4: CHECK IF DESTINATION IS EMPTY
-    if (markedPointsBagh.has(toIndex) || markedPointsBakhra.has(toIndex)) {
-        // Return piece to original position
-        if (pieceType === 'bagh') {
-            markedPointsBagh.add(fromIndex);
-        } else {
-            markedPointsBakhra.add(fromIndex);
-        }
-        console.error(`Destination ${toCoordinate} is occupied`);
-        return false;
-    }
-    
-    // STEP 5: MOVE PIECE TO DESTINATION
-    if (pieceType === 'bagh') {
-        markedPointsBagh.add(toIndex);
-    } else {
-        markedPointsBakhra.add(toIndex);
-    }
-    
-    // STEP 6: REDRAW BOARD AND LOG SUCCESS
-    redrawBoard();
-    console.log(`Successfully moved ${pieceType} from ${fromCoordinate} to ${toCoordinate}`);
+    state.bakhras.add(pos);
+    state.bakhrasPlaced++;
+    addLog(`Goat placed at ${pos.toUpperCase()}`, 'goat');
+    switchTurn();
+    checkWinConditions();
     return true;
 }
 
-
-const redrawBoard = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGrid();
-    drawPieces(markedPointsBagh, markedPointsBakhra);
+function selectPiece(pos) {
+    // Select a piece belonging to the current player
+    if (state.turn === 'bagh' && state.baghs.has(pos)) {
+        const moves = getLegalMovesFor(pos);
+        if (moves.length === 0) return false;
+        state.selected = pos;
+        state.legalMoves = moves;
+        return true;
+    }
+    if (state.turn === 'bakhra' && state.bakhrasPlaced >= MAX_BAKHRA && state.bakhras.has(pos)) {
+        const moves = getLegalMovesFor(pos);
+        if (moves.length === 0) return false;
+        state.selected = pos;
+        state.legalMoves = moves;
+        return true;
+    }
+    return false;
 }
 
-const initIndex = () => {
-    for(let i=0; i<indexValue.length; i++){
-        index[indexValue[i]] = intersections[i];
+function movePiece(to) {
+    if (!state.selected) return false;
+    const move = state.legalMoves.find(m => m.to === to);
+    if (!move) return false;
+
+    const from = state.selected;
+    const isTiger = state.baghs.has(from);
+
+    // Move the piece
+    if (isTiger) {
+        state.baghs.delete(from);
+        state.baghs.add(to);
+    } else {
+        state.bakhras.delete(from);
+        state.bakhras.add(to);
+    }
+
+    // Handle capture
+    if (move.capture) {
+        state.bakhras.delete(move.capture);
+        state.bakhrasCaptured++;
+        addLog(`Tiger ${from.toUpperCase()}→${to.toUpperCase()} captures ${move.capture.toUpperCase()}!`, 'capture');
+    } else {
+        const label = isTiger ? 'Tiger' : 'Goat';
+        addLog(`${label} ${from.toUpperCase()}→${to.toUpperCase()}`, isTiger ? 'tiger' : 'goat');
+    }
+
+    switchTurn();
+    checkWinConditions();
+    return true;
+}
+
+// ---- Click Handler ----
+
+function posFromPixel(px, py, radius = CLICK_RADIUS) {
+    let nearest = null;
+    let minDist = Infinity;
+    for (const key of ALL_POS) {
+        const p = POS[key];
+        const d = Math.hypot(px - p.px, py - p.py);
+        if (d < minDist && d <= radius) {
+            minDist = d;
+            nearest = key;
+        }
+    }
+    return nearest;
+}
+
+// ---- Drag & Click Input System ----
+
+let drag = {
+    active: false,
+    pieceKey: null,      // coordinate of piece being dragged (e.g. 'a5')
+    pieceType: null,     // 'bagh' or 'bakhra'
+    mouseX: 0,
+    mouseY: 0,
+    startX: 0,
+    startY: 0,
+    moved: false,        // true if mouse moved significantly (distinguishes click from drag)
+};
+
+function getCanvasCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+    };
+}
+
+function isOwnPiece(pos) {
+    if (state.turn === 'bagh' && state.baghs.has(pos)) return 'bagh';
+    if (state.turn === 'bakhra' && state.bakhrasPlaced >= MAX_BAKHRA && state.bakhras.has(pos)) return 'bakhra';
+    return null;
+}
+
+canvas.addEventListener('mousedown', (e) => {
+    if (state.gameOver) return;
+    const { x, y } = getCanvasCoords(e);
+    const pos = posFromPixel(x, y);
+
+    // Placement phase: don't start drag, handle on mouseup as click
+    if (state.turn === 'bakhra' && state.bakhrasPlaced < MAX_BAKHRA) {
+        drag.startX = x; drag.startY = y;
+        drag.moved = false;
+        return;
+    }
+
+    // Movement phase: check if clicking own piece to start drag
+    if (pos) {
+        const type = isOwnPiece(pos);
+        if (type) {
+            const moves = getLegalMovesFor(pos);
+            if (moves.length > 0) {
+                drag.active = true;
+                drag.pieceKey = pos;
+                drag.pieceType = type;
+                drag.mouseX = x;
+                drag.mouseY = y;
+                drag.startX = x;
+                drag.startY = y;
+                drag.moved = false;
+
+                // Select the piece and show legal moves
+                state.selected = pos;
+                state.legalMoves = moves;
+                render();
+                canvas.style.cursor = 'grabbing';
+            }
+        }
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    const { x, y } = getCanvasCoords(e);
+
+    if (drag.active) {
+        drag.mouseX = x;
+        drag.mouseY = y;
+        // Check if moved enough to count as drag vs click
+        if (Math.hypot(x - drag.startX, y - drag.startY) > 5) {
+            drag.moved = true;
+        }
+        // Redraw board without the dragged piece, then draw it at mouse
+        renderDragging();
+        canvas.style.cursor = 'grabbing';
+        return;
+    }
+
+    // Cursor hints when not dragging
+    if (state.gameOver) { canvas.style.cursor = 'default'; return; }
+    const hovered = posFromPixel(x, y);
+    if (!hovered) { canvas.style.cursor = 'default'; return; }
+
+    if (state.turn === 'bakhra' && state.bakhrasPlaced < MAX_BAKHRA) {
+        canvas.style.cursor = !isOccupied(hovered) ? 'pointer' : 'not-allowed';
+    } else if (state.selected) {
+        if (state.legalMoves.some(m => m.to === hovered)) canvas.style.cursor = 'pointer';
+        else if (isOwnPiece(hovered)) canvas.style.cursor = 'grab';
+        else canvas.style.cursor = 'default';
+    } else {
+        canvas.style.cursor = isOwnPiece(hovered) ? 'grab' : 'default';
+    }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+    if (state.gameOver) return;
+    const { x, y } = getCanvasCoords(e);
+    
+    // --- Drag release ---
+    if (drag.active) {
+        const wasDragged = drag.moved;
+        // Use forgiving DRAG_RADIUS if the piece was actually dragged, otherwise strict CLICK_RADIUS
+        const dropPos = posFromPixel(x, y, wasDragged ? DRAG_RADIUS : CLICK_RADIUS);
+
+        // Reset drag state
+        drag.active = false;
+        const dragKey = drag.pieceKey;
+        drag.pieceKey = null;
+        drag.pieceType = null;
+        canvas.style.cursor = 'default';
+
+        if (wasDragged && dropPos) {
+            // Try to move to drop position
+            if (state.legalMoves.some(m => m.to === dropPos)) {
+                movePiece(dropPos);
+                render();
+                return;
+            }
+        }
+
+        // Invalid drop or click — keep selection, snap back
+        render();
+        return;
+    }
+
+    // --- Click handling (non-drag) ---
+    const pos = posFromPixel(x, y, CLICK_RADIUS);
+    if (!pos) return;
+    let acted = false;
+
+    // Placement phase
+    if (state.turn === 'bakhra' && state.bakhrasPlaced < MAX_BAKHRA) {
+        acted = placeGoat(pos);
+    }
+    // Movement phase click (select or move)
+    else {
+        if (state.selected) {
+            if (state.legalMoves.some(m => m.to === pos)) {
+                acted = movePiece(pos);
+            } else if (isOwnPiece(pos)) {
+                acted = selectPiece(pos);
+            } else {
+                state.selected = null;
+                state.legalMoves = [];
+                acted = true;
+            }
+        } else {
+            acted = selectPiece(pos);
+        }
+    }
+
+    if (acted) render();
+});
+
+// Cancel drag if mouse leaves canvas
+canvas.addEventListener('mouseleave', () => {
+    if (drag.active) {
+        drag.active = false;
+        drag.pieceKey = null;
+        drag.pieceType = null;
+        canvas.style.cursor = 'default';
+        render();
+    }
+});
+
+function drawBoard() {
+    // Background
+    const grad = ctx.createRadialGradient(
+        CANVAS_SIZE/2, CANVAS_SIZE/2, 50,
+        CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE
+    );
+    grad.addColorStop(0, C.boardBg);
+    grad.addColorStop(1, C.boardBgEdge);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    ctx.strokeStyle = C.line;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+
+    // Grid lines
+    for (let i = 0; i <= GRID_SIZE; i++) {
+        // Horizontal
+        ctx.beginPath();
+        ctx.moveTo(PADDING, i * CELL_SIZE + PADDING);
+        ctx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING);
+        ctx.stroke();
+        // Vertical
+        ctx.beginPath();
+        ctx.moveTo(i * CELL_SIZE + PADDING, PADDING);
+        ctx.lineTo(i * CELL_SIZE + PADDING, BOARD_SIZE + PADDING);
+        ctx.stroke();
+    }
+
+    // Diagonals
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = C.lineThin;
+    const diags = [
+        ['a5','e1'], ['e5','a1'],
+        ['c5','e3'], ['e3','c1'], ['c1','a3'], ['a3','c5'],
+    ];
+    for (const [a, b] of diags) {
+        ctx.beginPath();
+        ctx.moveTo(POS[a].px, POS[a].py);
+        ctx.lineTo(POS[b].px, POS[b].py);
+        ctx.stroke();
+    }
+
+    // Intersection dots
+    ctx.fillStyle = C.line;
+    for (const key of ALL_POS) {
+        ctx.beginPath();
+        ctx.arc(POS[key].px, POS[key].py, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Labels
+    ctx.fillStyle = C.labelText;
+    ctx.font = '600 13px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // Row numbers (left side)
+    for (let r = 0; r < 5; r++) {
+        ctx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0]+ROWS[r]].py);
+    }
+    // Column letters (bottom)
+    for (let c = 0; c < 5; c++) {
+        ctx.fillText(COLS[c], POS[COLS[c]+ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
     }
 }
-function init() {
-    
-    intersections.push(...calculateIntersections());
-    initIndex();
-    console.log(index);
-    
-    drawGrid();
 
-    drawPieces(markedPointsBagh, markedPointsBakhra);
-    
-    canvas.addEventListener('click', handleCanvasClick);
+function drawPiece(key, type, isSelected) {
+    const { px, py } = POS[key];
+    const isTiger = type === 'bagh';
+    const radius = isTiger ? 26 : 20;
+    const img = isTiger ? IMG_TIGER : IMG_GOAT;
 
-    setupDragHandlers();
+    // Glow for selected
+    if (isSelected) {
+        ctx.beginPath();
+        ctx.arc(px, py, radius + 12, 0, Math.PI * 2);
+        ctx.fillStyle = C.selectedGlow;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(px, py, radius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = C.selected;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
 
+    // Draw image directly on board (no background circle)
+    if (img.complete && img.naturalWidth > 0) {
+        const imgSize = radius * 2;
+        ctx.drawImage(img, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
+    } else {
+        // Fallback text if image not loaded
+        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isTiger ? 'T' : 'G', px, py + 1);
+    }
 }
 
+function drawLegalMoves() {
+    for (const move of state.legalMoves) {
+        const { px, py } = POS[move.to];
+        const isCapture = !!move.capture;
+        const r = isCapture ? 12 : 8;
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fillStyle = isCapture ? C.captureDot : C.legalDot;
+        ctx.fill();
+        ctx.strokeStyle = C.dotBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+}
 
+function drawAll() {
+    drawBoard();
+    drawLegalMoves();
+    for (const b of state.baghs) {
+        drawPiece(b, 'bagh', state.selected === b);
+    }
+    for (const g of state.bakhras) {
+        drawPiece(g, 'bakhra', state.selected === g);
+    }
+}
 
-init();
+// ---- UI Updates ----
 
+function updateUI() {
+    const toPlace = MAX_BAKHRA - state.bakhrasPlaced;
+    document.getElementById('goatsToPlace').textContent = toPlace;
+    document.getElementById('goatsOnBoard').textContent = state.bakhras.size;
+    document.getElementById('goatsCaptured').textContent = state.bakhrasCaptured;
+    document.getElementById('tigersOnBoard').textContent = state.baghs.size;
+    document.getElementById('tigersTrapped').textContent = countTrappedTigers();
+    document.getElementById('tigerKills').textContent = state.bakhrasCaptured;
+
+    // Turn banner
+    const turnText = document.getElementById('turnText');
+    const panelBakhra = document.getElementById('panelBakhra');
+    const panelBagh = document.getElementById('panelBagh');
+
+    if (state.gameOver) {
+        turnText.textContent = state.winner === 'bagh' ? 'TIGERS WIN!' : 'GOATS WIN!';
+    } else if (state.turn === 'bakhra') {
+        turnText.textContent = "GOAT's Turn";
+        panelBakhra.classList.add('active');
+        panelBagh.classList.remove('active');
+    } else {
+        turnText.textContent = "TIGER's Turn";
+        panelBagh.classList.add('active');
+        panelBakhra.classList.remove('active');
+    }
+
+    // Game over overlay
+    const overlay = document.getElementById('gameOverOverlay');
+    if (state.gameOver) {
+        overlay.classList.add('show');
+        document.getElementById('gameOverTitle').textContent =
+            state.winner === 'bagh' ? 'TIGERS WIN' : 'GOATS WIN';
+        document.getElementById('gameOverMsg').textContent =
+            state.winner === 'bagh'
+                ? `Tigers captured ${state.bakhrasCaptured} goats!`
+                : 'All tigers are trapped! Goats win!';
+    } else {
+        overlay.classList.remove('show');
+    }
+}
+
+function addLog(msg, type) {
+    const logGoat = document.getElementById('moveLogGoat');
+    const logTiger = document.getElementById('moveLogTiger');
+    
+    const span = document.createElement('span');
+    span.className = `log-entry log-${type}`;
+    span.textContent = msg;
+    
+    if (type === 'goat' || type === 'system') {
+        logGoat.appendChild(span.cloneNode(true));
+        logGoat.scrollTop = logGoat.scrollHeight;
+    }
+    
+    if (type === 'tiger' || type === 'capture' || type === 'system') {
+        logTiger.appendChild(span.cloneNode(true));
+        logTiger.scrollTop = logTiger.scrollHeight;
+    }
+    
+    state.moveHistory.push(msg);
+}
+
+function render() {
+    drawAll();
+    updateUI();
+}
+
+// ---- Reset ----
+
+function resetGame() {
+    state = createInitialState();
+    document.getElementById('moveLogGoat').innerHTML = '';
+    document.getElementById('moveLogTiger').innerHTML = '';
+    addLog('Game started. Goat places first.', 'system');
+    document.getElementById('gameOverOverlay').classList.remove('show');
+    render();
+}
+
+document.getElementById('btnRestart').addEventListener('click', resetGame);
+document.getElementById('btnPlayAgain').addEventListener('click', resetGame);
+
+// ---- Drag Rendering ----
+
+function renderDragging() {
+    drawBoard();
+    drawLegalMoves();
+
+    // Draw all pieces EXCEPT the one being dragged
+    for (const b of state.baghs) {
+        if (b === drag.pieceKey) continue;
+        drawPiece(b, 'bagh', false);
+    }
+    for (const g of state.bakhras) {
+        if (g === drag.pieceKey) continue;
+        drawPiece(g, 'bakhra', false);
+    }
+
+    // Draw the dragged piece at mouse position
+    const isTiger = drag.pieceType === 'bagh';
+    const img = isTiger ? IMG_TIGER : IMG_GOAT;
+    const radius = isTiger ? 26 : 20;
+
+    // Slight transparency for the floating piece
+    ctx.globalAlpha = 0.85;
+    if (img.complete && img.naturalWidth > 0) {
+        const imgSize = radius * 2;
+        ctx.drawImage(img, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
+    } else {
+        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isTiger ? 'T' : 'G', drag.mouseX, drag.mouseY);
+    }
+    ctx.globalAlpha = 1.0;
+
+    updateUI();
+}
+
+// ---- Boot ----
+// Initial render (will re-render when images load via onImageLoad)
+render();

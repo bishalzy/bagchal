@@ -3,23 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>Baghchal</title>
+    <title>Baghchal — Tigers & Goats</title>
 </head>
 <body>
-    <div class="main">
-            <div class="header">
-                <div class="simplemode">mode1(is a simeple mode)</div>
-                <div class="othermode">mode2(more complex)</div>
-                <div class="about">About</div>
+    <div class="app">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-title">
+                <span class="header-icon">𑗛</span>
+                <h1>BAGHCHAL</h1>
             </div>
-            <div class="bagchal-board">
-                <div class="board">
-                    <canvas id="gameCanvas" width="600" height="600"></canvas>
+            <button class="btn btn-restart" id="btnRestart">New Game</button>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-area">
+            <!-- Info Panel Left -->
+            <aside class="panel panel-left" id="panelBakhra">
+                <div class="panel-header">
+                    <div class="piece-icon piece-icon-bakhra"></div>
+                    <h2>GOATS</h2>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <span class="stat-label">To Place</span>
+                        <span class="stat-value" id="goatsToPlace">20</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">On Board</span>
+                        <span class="stat-value" id="goatsOnBoard">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Captured</span>
+                        <span class="stat-value stat-value-danger" id="goatsCaptured">0</span>
+                    </div>
+                </div>
+                <div class="panel-log">
+                    <div class="panel-log-header">Goat Moves</div>
+                    <div class="panel-log-scroll" id="moveLogGoat">
+                        <span class="log-entry log-system">Game started. Goat places first.</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Board -->
+            <div class="board-container">
+                <div class="turn-banner" id="turnBanner">
+                    <span id="turnText">GOAT's Turn</span>
+                </div>
+                <div class="board-wrapper">
+                    <canvas id="gameCanvas"></canvas>
+                </div>
+                <!-- Game Over Overlay -->
+                <div class="game-over-overlay" id="gameOverOverlay">
+                    <div class="game-over-card">
+                        <h2 id="gameOverTitle">Game Over</h2>
+                        <p id="gameOverMsg"></p>
+                        <button class="btn btn-restart" id="btnPlayAgain">Play Again</button>
+                    </div>
                 </div>
             </div>
-            <div class="footer">All rights reserved @ 2025</div>
+
+            <!-- Info Panel Right -->
+            <aside class="panel panel-right" id="panelBagh">
+                <div class="panel-header">
+                    <div class="piece-icon piece-icon-bagh"></div>
+                    <h2>TIGERS</h2>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <span class="stat-label">On Board</span>
+                        <span class="stat-value" id="tigersOnBoard">4</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Trapped</span>
+                        <span class="stat-value stat-value-warn" id="tigersTrapped">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Kills</span>
+                        <span class="stat-value stat-value-danger" id="tigerKills">0</span>
+                    </div>
+                </div>
+                <div class="panel-log">
+                    <div class="panel-log-header">Tiger Moves</div>
+                    <div class="panel-log-scroll" id="moveLogTiger">
+                    </div>
+                </div>
+            </aside>
+        </main>
+        <!-- Buy Me a Momo Widget -->
+        <a href="https://buymemomo.com/bishalzy" target="_blank" class="momo-container" aria-label="Buy Me a Momo">
+            <div class="momo-tooltip">Buy Me a Momo 🥟</div>
+            <div class="momo-steam-container">
+                <span class="steam steam-1"></span>
+                <span class="steam steam-2"></span>
+                <span class="steam steam-3"></span>
+                <span class="steam steam-4"></span>
+            </div>
+            <img src="momo.png" alt="Momo" class="momo-img">
+        </a>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
