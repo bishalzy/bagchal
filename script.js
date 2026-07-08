@@ -19,22 +19,22 @@ canvas.height = CANVAS_SIZE;
 
 // ---- Colors ----
 const C = {
-    boardBg:     '#f9fafb',
+    boardBg: '#f9fafb',
     boardBgEdge: '#f3f4f6',
-    line:        '#221105',
-    lineThin:    '#3e200c',
-    labelText:   '#495057',
-    bagh:        '#d32f2f',
-    baghDark:    '#8b1a1a',
-    baghGlow:    'rgba(211,47,47,0.35)',
-    bakhra:      '#42a5f5',
-    bakhraDark:  '#0d47a1',
-    bakhraGlow:  'rgba(66,165,245,0.35)',
-    selected:    '#ffd740',
-    selectedGlow:'rgba(255,215,64,0.45)',
-    legalDot:    'rgba(102,187,106,0.7)',
-    captureDot:  'rgba(244,67,54,0.7)',
-    dotBorder:   'rgba(0,0,0,0.2)',
+    line: '#221105',
+    lineThin: '#3e200c',
+    labelText: '#495057',
+    bagh: '#d32f2f',
+    baghDark: '#8b1a1a',
+    baghGlow: 'rgba(211,47,47,0.35)',
+    bakhra: '#42a5f5',
+    bakhraDark: '#0d47a1',
+    bakhraGlow: 'rgba(66,165,245,0.35)',
+    selected: '#ffd740',
+    selectedGlow: 'rgba(255,215,64,0.45)',
+    legalDot: 'rgba(102,187,106,0.7)',
+    captureDot: 'rgba(244,67,54,0.7)',
+    dotBorder: 'rgba(0,0,0,0.2)',
 };
 
 // ---- Piece Images ----
@@ -51,8 +51,8 @@ IMG_TIGER.onload = onImageLoad;
 IMG_GOAT.onload = onImageLoad;
 
 // ---- Coordinate System (chess-style) ----
-const COLS = ['a','b','c','d','e'];
-const ROWS = ['1','2','3','4','5'];
+const COLS = ['a', 'b', 'c', 'd', 'e'];
+const ROWS = ['1', '2', '3', '4', '5'];
 
 // Position map: "a1" -> {px, py, col, row}
 // col 0-4 = a-e, row 0-4 = 1-5
@@ -84,28 +84,28 @@ function addEdge(a, b) {
 // Horizontal edges (same row, adjacent columns)
 for (let r = 0; r < 5; r++) {
     for (let c = 0; c < 4; c++) {
-        addEdge(COLS[c]+ROWS[r], COLS[c+1]+ROWS[r]);
+        addEdge(COLS[c] + ROWS[r], COLS[c + 1] + ROWS[r]);
     }
 }
 // Vertical edges (same column, adjacent rows)
 for (let c = 0; c < 5; c++) {
     for (let r = 0; r < 4; r++) {
-        addEdge(COLS[c]+ROWS[r], COLS[c]+ROWS[r+1]);
+        addEdge(COLS[c] + ROWS[r], COLS[c] + ROWS[r + 1]);
     }
 }
 // Main diagonal: a5-b4-c3-d2-e1
-['a5','b4','c3','d2','e1'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+['a5', 'b4', 'c3', 'd2', 'e1'].reduce((prev, cur) => { addEdge(prev, cur); return cur; });
 // Anti-diagonal: e5-d4-c3-b2-a1
-['e5','d4','c3','b2','a1'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+['e5', 'd4', 'c3', 'b2', 'a1'].reduce((prev, cur) => { addEdge(prev, cur); return cur; });
 // Diamond: c5-d4-e3-d2-c1-b2-a3-b4-c5
-['c5','d4','e3','d2','c1','b2','a3','b4','c5'].reduce((prev,cur) => { addEdge(prev,cur); return cur; });
+['c5', 'd4', 'e3', 'd2', 'c1', 'b2', 'a3', 'b4', 'c5'].reduce((prev, cur) => { addEdge(prev, cur); return cur; });
 
 // ---- Game State ----
 let state = createInitialState();
 
 function createInitialState() {
     return {
-        baghs: new Set(['a5','e5','a1','e1']),  // 4 tigers at corners
+        baghs: new Set(['a5', 'e5', 'a1', 'e1']),  // 4 tigers at corners
         bakhras: new Set(),                      // goats start empty
         turn: 'bakhra',                          // goat places first
         bakhrasPlaced: 0,                        // out of 20
@@ -120,6 +120,53 @@ function createInitialState() {
 
 const MAX_BAKHRA = 20;
 const CAPTURE_TO_WIN = 5;
+
+// ---- Sound Effects System ----
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function playSound(type) {
+    try {
+        if (!AudioContext) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'bagh') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(100, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        } else if (type === 'bakhra') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(500, now + 0.05);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } else if (type === 'capture') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(120, now);
+            osc.frequency.exponentialRampToValueAtTime(40, now + 0.15);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+    } catch (e) {
+        console.warn('Audio play failed:', e);
+    }
+}
 
 // ---- Game Logic ----
 
@@ -207,6 +254,7 @@ function placeGoat(pos) {
     state.bakhras.add(pos);
     state.bakhrasPlaced++;
     addLog(`Goat placed at ${pos.toUpperCase()}`, 'goat');
+    playSound('bakhra');
     switchTurn();
     checkWinConditions();
     return true;
@@ -253,9 +301,11 @@ function movePiece(to) {
         state.bakhras.delete(move.capture);
         state.bakhrasCaptured++;
         addLog(`Tiger ${from.toUpperCase()}→${to.toUpperCase()} captures ${move.capture.toUpperCase()}!`, 'capture');
+        playSound('capture');
     } else {
         const label = isTiger ? 'Tiger' : 'Goat';
         addLog(`${label} ${from.toUpperCase()}→${to.toUpperCase()}`, isTiger ? 'tiger' : 'goat');
+        playSound(isTiger ? 'bagh' : 'bakhra');
     }
 
     switchTurn();
@@ -387,7 +437,7 @@ function handleMove(e) {
 function handleEnd(e) {
     if (state.gameOver) return;
     const { x, y } = getCanvasCoords(e);
-    
+
     if (drag.active) {
         const wasDragged = drag.moved;
         const dropPos = posFromPixel(x, y, wasDragged ? DRAG_RADIUS : CLICK_RADIUS);
@@ -456,8 +506,8 @@ canvas.addEventListener('touchend', (e) => { e.preventDefault(); handleEnd(e); }
 function drawBoard() {
     // Background
     const grad = ctx.createRadialGradient(
-        CANVAS_SIZE/2, CANVAS_SIZE/2, 50,
-        CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE
+        CANVAS_SIZE / 2, CANVAS_SIZE / 2, 50,
+        CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE
     );
     grad.addColorStop(0, C.boardBg);
     grad.addColorStop(1, C.boardBgEdge);
@@ -486,8 +536,8 @@ function drawBoard() {
     ctx.lineWidth = 3;
     ctx.strokeStyle = C.lineThin;
     const diags = [
-        ['a5','e1'], ['e5','a1'],
-        ['c5','e3'], ['e3','c1'], ['c1','a3'], ['a3','c5'],
+        ['a5', 'e1'], ['e5', 'a1'],
+        ['c5', 'e3'], ['e3', 'c1'], ['c1', 'a3'], ['a3', 'c5'],
     ];
     for (const [a, b] of diags) {
         ctx.beginPath();
@@ -511,11 +561,11 @@ function drawBoard() {
     ctx.textBaseline = 'middle';
     // Row numbers (left side)
     for (let r = 0; r < 5; r++) {
-        ctx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0]+ROWS[r]].py);
+        ctx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0] + ROWS[r]].py);
     }
     // Column letters (bottom)
     for (let c = 0; c < 5; c++) {
-        ctx.fillText(COLS[c], POS[COLS[c]+ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
+        ctx.fillText(COLS[c], POS[COLS[c] + ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
     }
 }
 
@@ -624,21 +674,21 @@ function updateUI() {
 function addLog(msg, type) {
     const logGoat = document.getElementById('moveLogGoat');
     const logTiger = document.getElementById('moveLogTiger');
-    
+
     const span = document.createElement('span');
     span.className = `log-entry log-${type}`;
     span.textContent = msg;
-    
+
     if (type === 'goat' || type === 'system') {
         logGoat.appendChild(span.cloneNode(true));
         logGoat.scrollTop = logGoat.scrollHeight;
     }
-    
+
     if (type === 'tiger' || type === 'capture' || type === 'system') {
         logTiger.appendChild(span.cloneNode(true));
         logTiger.scrollTop = logTiger.scrollHeight;
     }
-    
+
     state.moveHistory.push(msg);
 }
 
