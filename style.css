@@ -534,10 +534,12 @@ body {
     .header { padding: 10px 16px; }
     .game-area { padding: 8px; }
     
-    /* Scale down Momo for mobile */
+    /* Scale down Momo for mobile and reposition to top right */
     .momo-container {
-        bottom: 16px;
-        left: 16px;
+        bottom: auto;
+        top: 65px;
+        left: auto;
+        right: 16px;
     }
     .momo-img {
         width: 45px;
@@ -551,9 +553,13 @@ body {
         font-size: 11px;
         padding: 6px 10px;
         margin-bottom: 8px;
+        left: auto;
+        right: 0;
     }
     .momo-tooltip::after {
-        left: 22px; /* Center of the smaller 45px image */
+        left: auto;
+        right: 22px; /* Center of the smaller 45px image */
+        transform: translateX(50%);
         border-width: 5px;
     }
 }
