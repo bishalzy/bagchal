@@ -12,7 +12,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=2" />
     <title>Baghchal</title>
   </head>
 
@@ -39,7 +39,7 @@
           <aside class="panel panel-left" id="panelBakhra">
             <div class="panel-header">
               <div class="piece-icon piece-icon-bakhra"></div>
-              <h2>GOATS</h2>
+              <h2 id="goatPlayerName">GOATS</h2>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -59,15 +59,13 @@
             </div>
           </aside>
 
-          <button class="btn btn-replay-launch" id="replayLaunch" type="button">
-            Replay
-          </button>
+
 
           <!-- Info Panel Left (Tiger) -->
           <aside class="panel panel-left" id="panelBagh">
             <div class="panel-header">
               <div class="piece-icon piece-icon-bagh"></div>
-              <h2>TIGERS</h2>
+              <h2 id="tigerPlayerName">TIGERS</h2>
             </div>
             <div class="stat-grid">
               <div class="stat">
@@ -99,52 +97,72 @@
             <canvas id="gameCanvas"></canvas>
           </div>
 
-          <!-- Action Buttons -->
           <div class="board-actions">
-            <button class="btn btn-action">Create Room</button>
-            <button class="btn btn-action btn-action-primary">
-              Play Online
-            </button>
-            <button class="btn btn-action">Join Room</button>
+            <button class="btn btn-action" id="btnCreateRoom">Create Room</button>
+            <div id="roomCodeDisplay" style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px;"></div>
+            <button class="btn btn-action" id="btnJoinRoom">Join Room</button>
           </div>
           <!-- Game Over Overlay -->
           <div class="game-over-overlay" id="gameOverOverlay">
             <div class="game-over-card">
               <h2 id="gameOverTitle">Game Over</h2>
               <p id="gameOverMsg"></p>
-              <button class="btn btn-restart" id="btnPlayAgain">
-                Play Again
-              </button>
+              <div class="game-over-buttons">
+                <button class="btn btn-restart" id="btnPlayAgain">Play Again</button>
+                <button class="btn btn-cancel" id="btnCancelGame">Cancel</button>
+              </div>
             </div>
           </div>
-          <!-- Replay Bar -->
-          <div class="replay-bar" id="replayBar">
-            <div class="replay-content">
-              <span class="replay-badge">REPLAY</span>
-              <div class="replay-nav">
-                <button
-                  class="replay-step-btn"
-                  id="replayPrevBtn"
-                  type="button"
-                  aria-label="Previous move"
-                >
-                  ←
-                </button>
-                <span class="replay-position" id="replayPosition"
-                  >Move 0 / 0</span
-                >
-                <button
-                  class="replay-step-btn"
-                  id="replayNextBtn"
-                  type="button"
-                  aria-label="Next move"
-                >
-                  →
-                </button>
+
+          <!-- Create Room Modal -->
+          <div class="game-over-overlay" id="createRoomModal">
+            <div class="game-over-card" style="width: 300px;">
+              <h2>Create Room</h2>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+                <input type="text" id="createNameInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Your Name">
               </div>
-              <span class="replay-hint" id="replayHint"
-                >Space or board click to resume</span
-              >
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Choose Side</label>
+                <select id="createSideSelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                  <option value="bakhra">Goat</option>
+                  <option value="bagh">Tiger</option>
+                </select>
+              </div>
+              <div class="game-over-buttons">
+                <button class="btn" id="btnConfirmCreate">Create</button>
+                <button class="btn btn-cancel" id="btnCancelCreate">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Join Room Modal -->
+          <div class="game-over-overlay" id="joinRoomModal">
+            <div class="game-over-card" style="width: 300px;">
+              <h2>Join Room</h2>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+                <input type="text" id="joinNameInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Your Name">
+              </div>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Room Code</label>
+                <input type="text" id="joinCodeInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase;" placeholder="e.g. AB12CD">
+              </div>
+              <div class="game-over-buttons">
+                <button class="btn" id="btnConfirmJoin">Join</button>
+                <button class="btn btn-cancel" id="btnCancelJoin">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Modal -->
+          <div class="game-over-overlay" id="errorModal" style="z-index: 1000;">
+            <div class="game-over-card" style="width: 320px; padding: 24px 32px;">
+              <h2 style="color: var(--danger); font-size: 22px; margin-bottom: 12px;">Error</h2>
+              <p id="errorModalMsg" style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
+              <div class="game-over-buttons" style="margin-top: 0;">
+                <button class="btn btn-cancel" id="btnDismissError">Dismiss</button>
+              </div>
             </div>
           </div>
         </div>
@@ -179,8 +197,12 @@
         </div>
         <img src="momo.png" alt="Momo" class="momo-img" />
       </a>
+
+      <!-- Exit Room Button -->
+      <button class="btn btn-action" id="btnExitRoom" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Exit Room</button>
     </div>
 
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

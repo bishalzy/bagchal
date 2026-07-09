@@ -12,6 +12,8 @@ import {
   stepForward,
 } from "./replay.js";
 import { countTrappedTigers } from "./logic.js";
+import { initNetwork, createRoom, joinRoom, playAgain, cancelGame } from "./network.js";
+import { state } from "./state.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -40,6 +42,7 @@ function resizeCanvas() {
 new ResizeObserver(resizeCanvas).observe(canvas);
 
 function resetGame() {
+  if (state.isMultiplayer) return; // Do not reset locally if multiplayer
   resetState();
   resetReplay();
   resetMoveNumber();
@@ -50,31 +53,97 @@ function resetGame() {
   resizeCanvas();
 }
 
-document.getElementById("btnPlayAgain").addEventListener("click", resetGame);
+document.getElementById("btnPlayAgain").addEventListener("click", () => {
+  if (state.isMultiplayer) {
+    playAgain();
+    document.getElementById("btnPlayAgain").disabled = true;
+    document.getElementById("btnPlayAgain").textContent = "Waiting...";
+  } else {
+    resetGame();
+  }
+});
 
-const replayLaunch = document.getElementById("replayLaunch");
-if (replayLaunch) {
-  replayLaunch.addEventListener("click", () => {
-    if (startReplay()) render(ctx);
+const btnCancelGame = document.getElementById("btnCancelGame");
+if (btnCancelGame) {
+  btnCancelGame.addEventListener("click", () => {
+    cancelGame();
   });
 }
 
-const replayPrevBtn = document.getElementById("replayPrevBtn");
-if (replayPrevBtn) {
-  replayPrevBtn.addEventListener("click", () => {
-    if (stepBack()) render(ctx);
+const btnExitRoom = document.getElementById("btnExitRoom");
+if (btnExitRoom) {
+  btnExitRoom.addEventListener("click", () => {
+    if (confirm("Are you sure you want to exit? This will destroy the room for both players.")) {
+        cancelGame();
+    }
   });
 }
 
-const replayNextBtn = document.getElementById("replayNextBtn");
-if (replayNextBtn) {
-  replayNextBtn.addEventListener("click", () => {
-    if (stepForward()) render(ctx);
+// Local Storage for Name
+function getStoredName() {
+  return localStorage.getItem('baghchal_display_name') || '';
+}
+
+function setStoredName(name) {
+  if (name) localStorage.setItem('baghchal_display_name', name);
+}
+
+// Modal Elements
+const createRoomModal = document.getElementById("createRoomModal");
+const joinRoomModal = document.getElementById("joinRoomModal");
+
+// Create Room Flow
+const btnCreateRoom = document.getElementById("btnCreateRoom");
+if (btnCreateRoom) {
+  btnCreateRoom.addEventListener("click", () => {
+    createRoomModal.classList.add("show");
+    const nameInput = document.getElementById("createNameInput");
+    if (nameInput) nameInput.value = getStoredName();
   });
 }
+
+document.getElementById("btnCancelCreate").addEventListener("click", () => {
+  createRoomModal.classList.remove("show");
+});
+
+document.getElementById("btnConfirmCreate").addEventListener("click", () => {
+  const name = document.getElementById("createNameInput").value.trim();
+  if (!name) return alert("Please enter a display name");
+  const side = document.getElementById("createSideSelect").value;
+  setStoredName(name);
+  createRoomModal.classList.remove("show");
+  createRoom(name, side);
+});
+
+// Join Room Flow
+const btnJoinRoom = document.getElementById("btnJoinRoom");
+if (btnJoinRoom) {
+  btnJoinRoom.addEventListener("click", () => {
+    joinRoomModal.classList.add("show");
+    const nameInput = document.getElementById("joinNameInput");
+    if (nameInput) nameInput.value = getStoredName();
+  });
+}
+
+document.getElementById("btnCancelJoin").addEventListener("click", () => {
+  joinRoomModal.classList.remove("show");
+});
+
+document.getElementById("btnConfirmJoin").addEventListener("click", () => {
+  const name = document.getElementById("joinNameInput").value.trim();
+  const roomId = document.getElementById("joinCodeInput").value.trim().toUpperCase();
+  if (!name) return alert("Please enter a display name");
+  if (!roomId) return alert("Please enter a room code");
+  setStoredName(name);
+  joinRoomModal.classList.remove("show");
+  joinRoom(roomId, name);
+});
 
 setupInput(canvas, ctx);
 setupAssets(() => resizeCanvas());
+
+// Init networking
+initNetwork(ctx);
 
 // Save initial board state as first snapshot
 saveSnapshot(0);

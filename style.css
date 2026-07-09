@@ -407,13 +407,32 @@ body {
 .game-over-card .btn {
     padding: 10px 28px;
     font-size: 14px;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
 }
 
 .game-over-card .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 159, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.game-over-card .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.game-over-card .btn-cancel:hover {
+    background: var(--bg-card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.game-over-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
 }
 
 @keyframes fadeIn {

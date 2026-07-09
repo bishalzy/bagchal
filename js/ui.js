@@ -23,6 +23,46 @@ export function updateUI() {
   const turnText = document.getElementById("turnText");
   const panelBakhra = document.getElementById("panelBakhra");
   const panelBagh = document.getElementById("panelBagh");
+  
+  const goatNameEl = document.getElementById("goatPlayerName");
+  const tigerNameEl = document.getElementById("tigerPlayerName");
+  
+  if (state.isMultiplayer && state.players) {
+    const goatPlayer = state.players.find(p => p.side === 'bakhra');
+    const tigerPlayer = state.players.find(p => p.side === 'bagh');
+    if (goatPlayer && goatNameEl) goatNameEl.textContent = goatPlayer.name.toUpperCase();
+    if (tigerPlayer && tigerNameEl) tigerNameEl.textContent = tigerPlayer.name.toUpperCase();
+    
+    if (state.localRole === 'bakhra') {
+       panelBakhra.style.order = "2";
+       panelBagh.style.order = "1";
+    } else if (state.localRole === 'bagh') {
+       panelBakhra.style.order = "1";
+       panelBagh.style.order = "2";
+    }
+    
+    const exitBtn = document.getElementById("btnExitRoom");
+    if (exitBtn) exitBtn.style.display = "block";
+    
+    const createBtn = document.getElementById("btnCreateRoom");
+    if (createBtn) createBtn.style.display = "none";
+    const joinBtn = document.getElementById("btnJoinRoom");
+    if (joinBtn) joinBtn.style.display = "none";
+  } else {
+    if (goatNameEl) goatNameEl.textContent = "GOATS";
+    if (tigerNameEl) tigerNameEl.textContent = "TIGERS";
+    
+    panelBakhra.style.order = "";
+    panelBagh.style.order = "";
+    
+    const exitBtn = document.getElementById("btnExitRoom");
+    if (exitBtn) exitBtn.style.display = "none";
+    
+    const createBtn = document.getElementById("btnCreateRoom");
+    if (createBtn) createBtn.style.display = "inline-flex";
+    const joinBtn = document.getElementById("btnJoinRoom");
+    if (joinBtn) joinBtn.style.display = "inline-flex";
+  }
 
   if (vs.gameOver) {
     turnText.textContent = vs.winner === "bagh" ? "TIGERS WIN!" : "GOATS WIN!";
@@ -38,6 +78,7 @@ export function updateUI() {
 
   // Game Over overlay — only show when viewing the final (live) position
   const overlay = document.getElementById("gameOverOverlay");
+  const cancelBtn = document.getElementById("btnCancelGame");
   if (vs.gameOver && !replaying) {
     overlay.classList.add("show");
     document.getElementById("gameOverTitle").textContent =
@@ -46,33 +87,13 @@ export function updateUI() {
       vs.winner === "bagh"
         ? `Tigers captured ${vs.bakhrasCaptured} goats!`
         : "All tigers are trapped! Goats win!";
+    
+    // In multiplayer, show "Cancel" to destroy room.
+    if (cancelBtn) {
+       cancelBtn.style.display = state.isMultiplayer ? "inline-flex" : "none";
+    }
   } else {
     overlay.classList.remove("show");
-  }
-
-  // Replay bar
-  const replayBar = document.getElementById("replayBar");
-  if (replayBar) {
-    if (replaying) {
-      replayBar.classList.add("show");
-      document.getElementById("replayPosition").textContent =
-        `Move ${info.current} / ${info.total - 1}`;
-      const replayPrevBtn = document.getElementById("replayPrevBtn");
-      const replayNextBtn = document.getElementById("replayNextBtn");
-      if (replayPrevBtn) replayPrevBtn.disabled = info.current <= 0;
-      if (replayNextBtn)
-        replayNextBtn.disabled = info.current >= info.total - 1;
-      const replayHint = document.getElementById("replayHint");
-      if (replayHint) replayHint.textContent = "Space or board click to resume";
-    } else {
-      replayBar.classList.remove("show");
-    }
-  }
-
-  const replayLaunch = document.getElementById("replayLaunch");
-  if (replayLaunch) {
-    replayLaunch.classList.toggle("show", info.total > 1);
-    replayLaunch.disabled = info.total <= 1;
   }
 
   // Highlight the active move in the log during replay
@@ -108,6 +129,30 @@ function highlightLogEntry() {
         behavior: "smooth",
       });
     }
+  }
+}
+
+export function showErrorModal(msg, onClose = null) {
+  const modal = document.getElementById("errorModal");
+  const msgEl = document.getElementById("errorModalMsg");
+  if (modal && msgEl) {
+    msgEl.textContent = msg;
+    modal.classList.add("show");
+    
+    const btnDismiss = document.getElementById("btnDismissError");
+    if (btnDismiss) {
+      // Clear old listeners by cloning the button
+      const newBtn = btnDismiss.cloneNode(true);
+      btnDismiss.parentNode.replaceChild(newBtn, btnDismiss);
+      
+      newBtn.addEventListener("click", () => {
+        modal.classList.remove("show");
+        if (onClose) onClose();
+      });
+    }
+  } else {
+    alert(msg);
+    if (onClose) onClose();
   }
 }
 

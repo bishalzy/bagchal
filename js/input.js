@@ -14,6 +14,7 @@ import {
   movePiece,
   getLegalMovesFor,
 } from "./logic.js";
+import { makeNetworkMove } from "./network.js";
 import { render, renderDragging } from "./render.js";
 import {
   isReplaying,
@@ -68,6 +69,8 @@ function getCanvasCoords(canvas, e) {
 }
 
 function isOwnPiece(pos) {
+  if (state.isMultiplayer && state.turn !== state.localRole) return null;
+
   if (state.turn === "bagh" && state.baghs.has(pos)) return "bagh";
   if (
     state.turn === "bakhra" &&
@@ -90,6 +93,7 @@ export function setupInput(canvas, ctx) {
     const pos = posFromPixel(x, y);
 
     if (state.turn === "bakhra" && state.bakhrasPlaced < MAX_BAKHRA) {
+      if (state.isMultiplayer && state.localRole !== "bakhra") return;
       drag.startX = x;
       drag.startY = y;
       drag.moved = false;
@@ -177,7 +181,11 @@ export function setupInput(canvas, ctx) {
 
       if (wasDragged && dropPos) {
         if (state.legalMoves.some((m) => m.to === dropPos)) {
-          movePiece(dropPos);
+          if (state.isMultiplayer) {
+            makeNetworkMove(dragKey, dropPos);
+          } else {
+            movePiece(dropPos);
+          }
           render(ctx);
           return;
         }
@@ -192,11 +200,23 @@ export function setupInput(canvas, ctx) {
     let acted = false;
 
     if (state.turn === "bakhra" && state.bakhrasPlaced < MAX_BAKHRA) {
-      acted = placeGoat(pos);
+      if (!state.isMultiplayer || state.localRole === "bakhra") {
+        if (state.isMultiplayer) {
+           makeNetworkMove(undefined, pos);
+           acted = true;
+        } else {
+           acted = placeGoat(pos);
+        }
+      }
     } else {
       if (state.selected) {
         if (state.legalMoves.some((m) => m.to === pos)) {
-          acted = movePiece(pos);
+          if (state.isMultiplayer) {
+            makeNetworkMove(state.selected, pos);
+            acted = true;
+          } else {
+            acted = movePiece(pos);
+          }
         } else if (isOwnPiece(pos)) {
           acted = selectPiece(pos);
         } else {
@@ -205,7 +225,9 @@ export function setupInput(canvas, ctx) {
           acted = true;
         }
       } else {
-        acted = selectPiece(pos);
+        if (isOwnPiece(pos)) {
+          acted = selectPiece(pos);
+        }
       }
     }
 
