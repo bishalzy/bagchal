@@ -21,6 +21,7 @@ import {
   stepBack,
   stepForward,
   goToLive,
+  startReplay,
 } from "./replay.js";
 
 export const drag = {
@@ -258,14 +259,18 @@ export function setupInput(canvas, ctx) {
       return;
     }
 
-    if (!isReplaying()) return;
-
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      if (stepBack()) render(ctx);
+      if (!isReplaying()) {
+        if (startReplay()) render(ctx);
+      } else {
+        if (stepBack()) render(ctx);
+      }
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
-      if (!isReplayAtEnd() && stepForward()) render(ctx);
+      if (isReplaying() && !isReplayAtEnd()) {
+        if (stepForward()) render(ctx);
+      }
     }
   });
 }
