@@ -7,7 +7,29 @@
       name="description"
       content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats."
     />
+    <!-- Favicon & Theme -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="theme-color" content="#d9d9d9" />
+
+    <!-- Open Graph / Facebook / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Baghchal" />
+    <meta property="og:url" content="https://baghchal.xyz/" />
+    <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
+    <meta property="og:description" content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
+    <meta property="og:image" content="https://baghchal.xyz/Tiger.webp" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://baghchal.xyz/" />
+    <meta property="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
+    <meta property="twitter:description" content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
+    <meta property="twitter:image" content="https://baghchal.xyz/Tiger.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.baghchal.xyz" crossorigin />
+    <link rel="preload" as="image" href="Tiger.webp" />
+    <link rel="preload" as="image" href="goat.webp" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -195,14 +217,14 @@
           <span class="steam steam-3"></span>
           <span class="steam steam-4"></span>
         </div>
-        <img src="momo.png" alt="Momo" class="momo-img" />
+        <img src="momo.webp" alt="Momo" class="momo-img" />
       </a>
 
       <!-- Exit Room Button -->
       <button class="btn btn-action" id="btnExitRoom" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Exit Room</button>
     </div>
 
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" defer></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

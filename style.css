@@ -264,13 +264,13 @@ body {
 
 .piece-icon-bakhra {
     background-color: transparent;
-    background-image: url("goat.png");
+    background-image: url("goat.webp");
     border: 2px solid var(--accent-goat);
 }
 
 .piece-icon-bagh {
     background-color: transparent;
-    background-image: url("Tiger.png");
+    background-image: url("Tiger.webp");
     border: 2px solid var(--accent-tiger);
 }
 
