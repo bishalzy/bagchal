@@ -16,21 +16,26 @@
     <title>Baghchal</title>
   </head>
 
-  <body>
-    <div class="app">
-      <!-- Floating Header Elements -->
-      <header class="header" id="header">
-        <div class="header-title">
-          <h1>BAGHCHAL</h1>
-        </div>
-        <a
-          href="https://en.wikipedia.org/wiki/Bagh-chal"
-          target="_blank"
-          class="btn btn-restart"
-          style="text-decoration: none"
-          >What is bagchal?</a
-        >
-      </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Baghchal</title>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Floating Header Elements -->
+    <header class="header" id="header">
+      <div class="header-title">
+        <h1>BAGHCHAL</h1>
+      </div>
+      <a href="https://en.wikipedia.org/wiki/Bagh-chal" target="_blank" class="btn btn-restart"
+        style="text-decoration: none">What is bagchal?</a>
+    </header>
 
       <!-- Main Game Area -->
       <main class="game-area">
@@ -41,23 +46,16 @@
               <div class="piece-icon piece-icon-bakhra"></div>
               <h2 id="goatPlayerName">GOATS</h2>
             </div>
-            <div class="stat-grid">
-              <div class="stat">
-                <span class="stat-label">To Place</span>
-                <span class="stat-value" id="goatsToPlace">20</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">On Board</span>
-                <span class="stat-value" id="goatsOnBoard">0</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">Captured</span>
-                <span class="stat-value stat-value-danger" id="goatsCaptured"
-                  >0</span
-                >
-              </div>
+            <div class="stat">
+              <span class="stat-label">On Board</span>
+              <span class="stat-value" id="goatsOnBoard">0</span>
             </div>
-          </aside>
+            <div class="stat">
+              <span class="stat-label">Captured</span>
+              <span class="stat-value stat-value-danger" id="goatsCaptured">0</span>
+            </div>
+          </div>
+        </aside>
 
 
 
@@ -67,35 +65,26 @@
               <div class="piece-icon piece-icon-bagh"></div>
               <h2 id="tigerPlayerName">TIGERS</h2>
             </div>
-            <div class="stat-grid">
-              <div class="stat">
-                <span class="stat-label">On Board</span>
-                <span class="stat-value" id="tigersOnBoard">4</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">Trapped</span>
-                <span class="stat-value stat-value-warn" id="tigersTrapped"
-                  >0</span
-                >
-              </div>
-              <div class="stat">
-                <span class="stat-label">Kills</span>
-                <span class="stat-value stat-value-danger" id="tigerKills"
-                  >0</span
-                >
-              </div>
+            <div class="stat">
+              <span class="stat-label">Trapped</span>
+              <span class="stat-value stat-value-warn" id="tigersTrapped">0</span>
             </div>
-          </aside>
-        </div>
+            <div class="stat">
+              <span class="stat-label">Kills</span>
+              <span class="stat-value stat-value-danger" id="tigerKills">0</span>
+            </div>
+          </div>
+        </aside>
+      </div>
 
-        <!-- Board -->
-        <div class="board-container">
-          <div class="turn-banner" id="turnBanner">
-            <span id="turnText">GOAT's Turn</span>
-          </div>
-          <div class="board-wrapper">
-            <canvas id="gameCanvas"></canvas>
-          </div>
+      <!-- Board -->
+      <div class="board-container">
+        <div class="turn-banner" id="turnBanner">
+          <span id="turnText">GOAT's Turn</span>
+        </div>
+        <div class="board-wrapper">
+          <canvas id="gameCanvas"></canvas>
+        </div>
 
           <div class="board-actions">
             <button class="btn btn-action" id="btnCreateRoom">Create Room</button>
@@ -166,17 +155,15 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="logs-col desktop-only">
-          <!-- Info Panel Right (Logs) -->
-          <aside class="panel panel-right logs-panel" id="logsPanel">
-            <div class="panel-log">
-              <div class="panel-log-header">Move History</div>
-              <div class="panel-log-scroll" id="moveLog">
-                <span class="log-entry log-system"
-                  >Game started. Goat places first.</span
-                >
-              </div>
+      <div class="logs-col desktop-only">
+        <!-- Info Panel Right (Logs) -->
+        <aside class="panel panel-right logs-panel" id="logsPanel">
+          <div class="panel-log">
+            <div class="panel-log-header">Move History</div>
+            <div class="panel-log-scroll" id="moveLog">
+              <span class="log-entry log-system">Game started. Goat places first.</span>
             </div>
           </aside>
         </div>
