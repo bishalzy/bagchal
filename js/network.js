@@ -3,17 +3,18 @@ import { updateUI, addLog, showErrorModal } from './ui.js';
 import { render } from './render.js';
 import { countTrappedTigers } from './logic.js';
 import { saveSnapshot, resetReplay } from './replay.js';
+import { io } from 'socket.io-client';
 
 let socket = null;
 let playerId = null;
 
 export function initNetwork(canvasCtx) {
-    if (typeof io === 'undefined') {
-        console.error('Socket.IO is not loaded');
-        return;
-    }
 
-    socket = io('https://api.baghchal.xyz');
+    // Connect to local backend if developing locally, otherwise connect to production
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const BACKEND_URL = isLocal ? 'http://localhost:3000' : 'https://api.baghchal.xyz';
+
+    socket = io(BACKEND_URL);
 
     socket.on('connected', (data) => {
         playerId = data.playerId;
