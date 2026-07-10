@@ -1,230 +1,222 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats."
-    />
-    <!-- Favicon & Theme -->
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="theme-color" content="#d9d9d9" />
 
-    <!-- Open Graph / Facebook / Discord -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Baghchal" />
-    <meta property="og:url" content="https://baghchal.xyz/" />
-    <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
-    <meta property="og:description" content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-    <meta property="og:image" content="https://baghchal.xyz/Tiger.webp" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats." />
+  <!-- Favicon & Theme -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="theme-color" content="#d9d9d9" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://baghchal.xyz/" />
-    <meta property="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
-    <meta property="twitter:description" content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-    <meta property="twitter:image" content="https://baghchal.xyz/Tiger.webp" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://api.baghchal.xyz" crossorigin />
-    <link rel="preload" as="image" href="Tiger.webp" />
-    <link rel="preload" as="image" href="goat.webp" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css?v=2" />
-    <title>Baghchal</title>
-  </head>
+  <!-- Open Graph / Facebook / Discord -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Baghchal" />
+  <meta property="og:url" content="https://baghchal.xyz/" />
+  <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
+  <meta property="og:description"
+    content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
+  <meta property="og:image" content="https://baghchal.xyz/Tiger.webp" />
 
-  <body>
-    <div class="app">
-      <!-- Floating Header Elements -->
-      <header class="header" id="header">
-        <div class="header-title">
-          <h1>BAGHCHAL</h1>
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://baghchal.xyz/" />
+  <meta property="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
+  <meta property="twitter:description"
+    content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
+  <meta property="twitter:image" content="https://baghchal.xyz/Tiger.webp" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.baghchal.xyz" crossorigin />
+  <link rel="preload" as="image" href="Tiger.webp" />
+  <link rel="preload" as="image" href="goat.webp" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=2" />
+  <title>Baghchal</title>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Floating Header Elements -->
+    <header class="header" id="header">
+      <div class="header-title">
+        <h1>BAGHCHAL</h1>
+      </div>
+      <a href="https://en.wikipedia.org/wiki/Bagh-chal" target="_blank" class="btn btn-restart"
+        style="text-decoration: none">What is bagchal?</a>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-area">
+      <div class="scores-col">
+        <!-- Info Panel Left -->
+        <aside class="panel panel-left" id="panelBakhra">
+          <div class="panel-header">
+            <div class="piece-icon piece-icon-bakhra"></div>
+            <h2 id="goatPlayerName">GOATS</h2>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="stat-label">To Place</span>
+              <span class="stat-value" id="goatsToPlace">20</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">On Board</span>
+              <span class="stat-value" id="goatsOnBoard">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Captured</span>
+              <span class="stat-value stat-value-danger" id="goatsCaptured">0</span>
+            </div>
+          </div>
+        </aside>
+
+
+
+        <!-- Info Panel Left (Tiger) -->
+        <aside class="panel panel-left" id="panelBagh">
+          <div class="panel-header">
+            <div class="piece-icon piece-icon-bagh"></div>
+            <h2 id="tigerPlayerName">TIGERS</h2>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="stat-label">On Board</span>
+              <span class="stat-value" id="tigersOnBoard">4</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Trapped</span>
+              <span class="stat-value stat-value-warn" id="tigersTrapped">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Kills</span>
+              <span class="stat-value stat-value-danger" id="tigerKills">0</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Board -->
+      <div class="board-container">
+        <div class="turn-banner" id="turnBanner">
+          <span id="turnText">GOAT's Turn</span>
         </div>
-        <a
-          href="https://en.wikipedia.org/wiki/Bagh-chal"
-          target="_blank"
-          class="btn btn-restart"
-          style="text-decoration: none"
-          >What is bagchal?</a
-        >
-      </header>
-
-      <!-- Main Game Area -->
-      <main class="game-area">
-        <div class="scores-col">
-          <!-- Info Panel Left -->
-          <aside class="panel panel-left" id="panelBakhra">
-            <div class="panel-header">
-              <div class="piece-icon piece-icon-bakhra"></div>
-              <h2 id="goatPlayerName">GOATS</h2>
-            </div>
-            <div class="stat-grid">
-              <div class="stat">
-                <span class="stat-label">To Place</span>
-                <span class="stat-value" id="goatsToPlace">20</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">On Board</span>
-                <span class="stat-value" id="goatsOnBoard">0</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">Captured</span>
-                <span class="stat-value stat-value-danger" id="goatsCaptured"
-                  >0</span
-                >
-              </div>
-            </div>
-          </aside>
-
-
-
-          <!-- Info Panel Left (Tiger) -->
-          <aside class="panel panel-left" id="panelBagh">
-            <div class="panel-header">
-              <div class="piece-icon piece-icon-bagh"></div>
-              <h2 id="tigerPlayerName">TIGERS</h2>
-            </div>
-            <div class="stat-grid">
-              <div class="stat">
-                <span class="stat-label">On Board</span>
-                <span class="stat-value" id="tigersOnBoard">4</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">Trapped</span>
-                <span class="stat-value stat-value-warn" id="tigersTrapped"
-                  >0</span
-                >
-              </div>
-              <div class="stat">
-                <span class="stat-label">Kills</span>
-                <span class="stat-value stat-value-danger" id="tigerKills"
-                  >0</span
-                >
-              </div>
-            </div>
-          </aside>
+        <div class="board-wrapper">
+          <canvas id="gameCanvas"></canvas>
         </div>
 
-        <!-- Board -->
-        <div class="board-container">
-          <div class="turn-banner" id="turnBanner">
-            <span id="turnText">GOAT's Turn</span>
+        <div class="board-actions">
+          <button class="btn btn-action" id="btnCreateRoom">Create Room</button>
+          <div id="roomCodeDisplay"
+            style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px;">
           </div>
-          <div class="board-wrapper">
-            <canvas id="gameCanvas"></canvas>
-          </div>
-
-          <div class="board-actions">
-            <button class="btn btn-action" id="btnCreateRoom">Create Room</button>
-            <div id="roomCodeDisplay" style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px;"></div>
-            <button class="btn btn-action" id="btnJoinRoom">Join Room</button>
-          </div>
-          <!-- Game Over Overlay -->
-          <div class="game-over-overlay" id="gameOverOverlay">
-            <div class="game-over-card">
-              <h2 id="gameOverTitle">Game Over</h2>
-              <p id="gameOverMsg"></p>
-              <div class="game-over-buttons">
-                <button class="btn btn-restart" id="btnPlayAgain">Play Again</button>
-                <button class="btn btn-cancel" id="btnCancelGame">Cancel</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Create Room Modal -->
-          <div class="game-over-overlay" id="createRoomModal">
-            <div class="game-over-card" style="width: 300px;">
-              <h2>Create Room</h2>
-              <div style="margin-bottom: 1rem; text-align: left;">
-                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
-                <input type="text" id="createNameInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Your Name">
-              </div>
-              <div style="margin-bottom: 1rem; text-align: left;">
-                <label style="display: block; margin-bottom: 0.5rem;">Choose Side</label>
-                <select id="createSideSelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
-                  <option value="bakhra">Goat</option>
-                  <option value="bagh">Tiger</option>
-                </select>
-              </div>
-              <div class="game-over-buttons">
-                <button class="btn" id="btnConfirmCreate">Create</button>
-                <button class="btn btn-cancel" id="btnCancelCreate">Close</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Join Room Modal -->
-          <div class="game-over-overlay" id="joinRoomModal">
-            <div class="game-over-card" style="width: 300px;">
-              <h2>Join Room</h2>
-              <div style="margin-bottom: 1rem; text-align: left;">
-                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
-                <input type="text" id="joinNameInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Your Name">
-              </div>
-              <div style="margin-bottom: 1rem; text-align: left;">
-                <label style="display: block; margin-bottom: 0.5rem;">Room Code</label>
-                <input type="text" id="joinCodeInput" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase;" placeholder="e.g. AB12CD">
-              </div>
-              <div class="game-over-buttons">
-                <button class="btn" id="btnConfirmJoin">Join</button>
-                <button class="btn btn-cancel" id="btnCancelJoin">Close</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Error Modal -->
-          <div class="game-over-overlay" id="errorModal" style="z-index: 1000;">
-            <div class="game-over-card" style="width: 320px; padding: 24px 32px;">
-              <h2 style="color: var(--danger); font-size: 22px; margin-bottom: 12px;">Error</h2>
-              <p id="errorModalMsg" style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
-              <div class="game-over-buttons" style="margin-top: 0;">
-                <button class="btn btn-cancel" id="btnDismissError">Dismiss</button>
-              </div>
+          <button class="btn btn-action" id="btnJoinRoom">Join Room</button>
+        </div>
+        <!-- Game Over Overlay- -->
+        <div class="game-over-overlay" id="gameOverOverlay">
+          <div class="game-over-card">
+            <h2 id="gameOverTitle">Game Over</h2>
+            <p id="gameOverMsg"></p>
+            <div class="game-over-buttons">
+              <button class="btn btn-restart" id="btnPlayAgain">Play Again</button>
+              <button class="btn btn-cancel" id="btnCancelGame">Cancel</button>
             </div>
           </div>
         </div>
 
-        <div class="logs-col desktop-only">
-          <!-- Info Panel Right (Logs) -->
-          <aside class="panel panel-right logs-panel" id="logsPanel">
-            <div class="panel-log">
-              <div class="panel-log-header">Move History</div>
-              <div class="panel-log-scroll" id="moveLog">
-                <span class="log-entry log-system"
-                  >Game started. Goat places first.</span
-                >
-              </div>
+        <!-- Create Room Modal -->
+        <div class="game-over-overlay" id="createRoomModal">
+          <div class="game-over-card" style="width: 300px;">
+            <h2>Create Room</h2>
+            <div style="margin-bottom: 1rem; text-align: left;">
+              <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+              <input type="text" id="createNameInput"
+                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+                placeholder="Your Name">
             </div>
-          </aside>
+            <div style="margin-bottom: 1rem; text-align: left;">
+              <label style="display: block; margin-bottom: 0.5rem;">Choose Side</label>
+              <select id="createSideSelect"
+                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="bakhra">Goat</option>
+                <option value="bagh">Tiger</option>
+              </select>
+            </div>
+            <div class="game-over-buttons">
+              <button class="btn" id="btnConfirmCreate">Create</button>
+              <button class="btn btn-cancel" id="btnCancelCreate">Close</button>
+            </div>
+          </div>
         </div>
-      </main>
-      <!-- Buy Me a Momo Widget -->
-      <a
-        href="https://buymemomo.com/bishalzy"
-        target="_blank"
-        class="momo-container"
-        aria-label="Buy Me a Momo"
-      >
-        <div class="momo-tooltip">Buy Me Some Momo :)</div>
-        <div class="momo-steam-container">
-          <span class="steam steam-1"></span>
-          <span class="steam steam-2"></span>
-          <span class="steam steam-3"></span>
-          <span class="steam steam-4"></span>
+
+        <!-- Join Room Modal -->
+        <div class="game-over-overlay" id="joinRoomModal">
+          <div class="game-over-card" style="width: 300px;">
+            <h2>Join Room</h2>
+            <div style="margin-bottom: 1rem; text-align: left;">
+              <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+              <input type="text" id="joinNameInput"
+                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+                placeholder="Your Name">
+            </div>
+            <div style="margin-bottom: 1rem; text-align: left;">
+              <label style="display: block; margin-bottom: 0.5rem;">Room Code</label>
+              <input type="text" id="joinCodeInput"
+                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase;"
+                placeholder="e.g. AB12CD">
+            </div>
+            <div class="game-over-buttons">
+              <button class="btn" id="btnConfirmJoin">Join</button>
+              <button class="btn btn-cancel" id="btnCancelJoin">Close</button>
+            </div>
+          </div>
         </div>
-        <img src="momo.webp" alt="Momo" class="momo-img" />
-      </a>
 
-      <!-- Exit Room Button -->
-      <button class="btn btn-action" id="btnExitRoom" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Exit Room</button>
-    </div>
+        <!-- Error Modal -->
+        <div class="game-over-overlay" id="errorModal" style="z-index: 1000;">
+          <div class="game-over-card" style="width: 320px; padding: 24px 32px;">
+            <h2 style="color: var(--danger); font-size: 22px; margin-bottom: 12px;">Error</h2>
+            <p id="errorModalMsg"
+              style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
+            <div class="game-over-buttons" style="margin-top: 0;">
+              <button class="btn btn-cancel" id="btnDismissError">Dismiss</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" defer></script>
-    <script type="module" src="js/main.js"></script>
-  </body>
+      <div class="logs-col desktop-only">
+        <!-- Info Panel Right (Logs) -->
+        <aside class="panel panel-right logs-panel" id="logsPanel">
+          <div class="panel-log">
+            <div class="panel-log-header">Move History</div>
+            <div class="panel-log-scroll" id="moveLog">
+              <span class="log-entry log-system">Game started. Goat places first.</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+    <!-- Buy Me a Momo Widget -->
+    <a href="https://buymemomo.com/bishalzy" target="_blank" class="momo-container" aria-label="Buy Me a Momo">
+      <div class="momo-tooltip">Buy Me Some Momo :)</div>
+      <div class="momo-steam-container">
+        <span class="steam steam-1"></span>
+        <span class="steam steam-2"></span>
+        <span class="steam steam-3"></span>
+        <span class="steam steam-4"></span>
+      </div>
+      <img src="momo.webp" alt="Momo" class="momo-img" />
+    </a>
+
+    <!-- Exit Room Button -->
+    <button class="btn btn-action" id="btnExitRoom"
+      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Exit
+      Room</button>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" defer></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+
 </html>
