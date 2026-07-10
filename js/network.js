@@ -13,7 +13,7 @@ export function initNetwork(canvasCtx) {
         return;
     }
 
-    socket = io('http://localhost:3000');
+    socket = io('https://baghchal.xyz');
 
     socket.on('connected', (data) => {
         playerId = data.playerId;
@@ -36,11 +36,11 @@ export function initNetwork(canvasCtx) {
         state.players = data.players;
         const myPlayer = data.players.find(p => p.id === playerId);
         if (myPlayer) state.localRole = myPlayer.side;
-        
+
         document.getElementById('roomCodeDisplay').style.display = 'flex';
         document.getElementById('roomCodeDisplay').textContent = `Room: ${data.roomId}`;
         addLog(`Joined room ${data.roomId}.`, 'system');
-        
+
         syncStateFromServer(data.state);
         updateUI();
         render(canvasCtx);
@@ -63,14 +63,14 @@ export function initNetwork(canvasCtx) {
         import('./audio.js').then(({ playSound }) => {
             const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
             const turnWhoMoved = state.turn;
-            
+
             syncStateFromServer(data.state);
-            
+
             const move = data.move;
             if (move) {
                 const isTiger = turnWhoMoved === 'bagh';
                 const label = isTiger ? 'Tiger' : 'Goat';
-                
+
                 if (!move.from) {
                     addLog(`Goat placed at ${move.to.toUpperCase()}`, 'goat');
                     playSound('bakhra');
@@ -84,7 +84,7 @@ export function initNetwork(canvasCtx) {
                     }
                 }
             }
-            
+
             saveSnapshot(countTrappedTigers());
             updateUI();
             render(canvasCtx);
@@ -118,13 +118,13 @@ export function initNetwork(canvasCtx) {
         addLog('Rematch started. Roles swapped.', 'system');
         saveSnapshot(countTrappedTigers());
         document.getElementById("gameOverOverlay").classList.remove("show");
-        
+
         const btnPlayAgain = document.getElementById("btnPlayAgain");
         if (btnPlayAgain) {
             btnPlayAgain.disabled = false;
             btnPlayAgain.textContent = "Play Again";
         }
-        
+
         updateUI();
         render(canvasCtx);
     });
