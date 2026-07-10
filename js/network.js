@@ -13,7 +13,7 @@ export function initNetwork(canvasCtx) {
         return;
     }
 
-    socket = io('https://baghchal.xyz');
+    socket = io('https://api.baghchal.xyz');
 
     socket.on('connected', (data) => {
         playerId = data.playerId;
