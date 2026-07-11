@@ -194,7 +194,7 @@ export function initNetwork(canvasCtx) {
         if (myPlayer) state.localRole = myPlayer.side;
 
         syncStateFromServer(data.state);
-        document.getElementById("moveLog").innerHTML = "";
+        renderMoveHistory(state.moveHistory);
         showSystemBanner('Rematch started. Roles swapped.');
         saveSnapshot(countTrappedTigers());
         document.getElementById("gameOverOverlay").classList.remove("show");
