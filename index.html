@@ -14,7 +14,9 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Baghchal - Traditional Nepali Strategy Board Game. Play Tigers vs Goats." />
+  <meta name="description"
+    content="Play Baghchal online for free. Experience the traditional Nepali strategy board game of Tigers vs Goats (Bagh-Chal) with local and real-time multiplayer modes." />
+  <link rel="canonical" href="https://baghchal.xyz/" />
   <!-- Favicon & Theme -->
   <link rel="icon" type="image/png" href="/favicon.png" />
   <meta name="theme-color" content="#d9d9d9" />
@@ -26,7 +28,7 @@
   <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
   <meta property="og:description"
     content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-  <meta property="og:image" content="https://baghchal.xyz/Tiger.webp" />
+  <meta property="og:image" content="https://baghchal.xyz/favicon.png" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
@@ -34,7 +36,7 @@
   <meta property="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
   <meta property="twitter:description"
     content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-  <meta property="twitter:image" content="https://baghchal.xyz/Tiger.webp" />
+  <meta property="twitter:image" content="https://baghchal.xyz/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://api.baghchal.xyz" crossorigin />
@@ -42,7 +44,26 @@
   <link rel="preload" as="image" href="goat.webp" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=2" />
-  <title>Baghchal</title>
+  <title>Baghchal Online | Play the Traditional Nepali Board Game</title>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BoardGame",
+    "name": "Baghchal Online",
+    "description": "A digital multiplayer adaptation of the traditional Nepali strategy board game, Tigers vs Goats.",
+    "genre": ["Board Game", "Strategy Game"],
+    "playMode": ["SinglePlayer", "MultiPlayer"],
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web Browser",
+    "url": "https://baghchal.xyz/",
+    "image": "https://baghchal.xyz/Tiger.webp",
+    "author": {
+      "@type": "Person",
+      "name": "Bishal"
+    }
+  }
+  </script>
 </head>
 
 <body>
@@ -52,12 +73,12 @@
       <div class="header-title">
         <h1>BAGHCHAL</h1>
       </div>
-      <a href="https://en.wikipedia.org/wiki/Bagh-chal" target="_blank" class="btn btn-restart"
-        style="text-decoration: none">What is bagchal?</a>
+      <button class="btn btn-restart" id="btnAbout">What is bagchal?</button>
     </header>
 
     <!-- Main Game Area -->
     <main class="game-area">
+
       <div class="scores-col">
         <!-- Info Panel Left -->
         <aside class="panel panel-left" id="panelBakhra">
@@ -118,7 +139,7 @@
           <div id="roomCodeDisplay"
             style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
             <span id="roomCodeText"></span>
-            <button id="btnCopyRoomCode" title="Copy Room Code"
+            <button id="btnCopyRoomCode" title="Copy Room Code" aria-label="Copy Room Code to Clipboard"
               style="background: none; border: none; cursor: pointer; color: #00796b; display: flex; align-items: center; padding: 4px; border-radius: 4px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -229,6 +250,44 @@
         </aside>
       </div>
     </main>
+
+    <!-- About Baghchal board game -->
+    <div class="game-over-overlay" id="aboutModal" style="z-index: 1000;">
+      <div class="game-over-card"
+        style="max-width: 600px; width: 90%; text-align: left; max-height: 80vh; overflow-y: auto;">
+        <h2 style="text-align: center; margin-bottom: 24px;">About Baghchal (Tigers vs Goats)</h2>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);"><strong>Baghchal</strong>
+          (Nepali: बाघचाल) is a traditional, strategic, two-player board game from Nepal. The game is highly asymmetric,
+          meaning the two players have completely different pieces and objectives. One player controls four
+          <strong>Tigers (Bagh)</strong>, and the other player controls twenty <strong>Goats (Bakhra)</strong>.
+        </p>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Objective and
+          Rules</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">The tigers' goal is to hunt the
+          goats. A tiger can capture a goat by jumping over it to an empty adjacent intersection (similar to checkers).
+          The tigers win if they successfully capture 5 goats.</p>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">The goats' goal is to surround
+          and trap the tigers. Goats cannot jump or capture tigers; instead, they win if they block all four tigers so
+          that none of them have a legal move.</p>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">How to Play
+          Online</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">On
+          <strong>Baghchal.xyz</strong>, you can enjoy this classic strategy game in two ways:
+        </p>
+        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
+          <li style="margin-bottom: 8px;"><strong>Local Play:</strong> Play offline on the same device with a friend.
+          </li>
+          <li style="margin-bottom: 8px;"><strong>Multiplayer:</strong> Create a private room, share the room code, and
+            challenge friends to a real-time online match.</li>
+        </ul>
+        <div class="game-over-buttons" style="margin-top: 0;">
+          <button class="btn btn-cancel" id="btnCloseAbout">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Buy Me a Momo Widget -->
     <a href="https://buymemomo.com/bishalzy" target="_blank" class="momo-container" aria-label="Buy Me a Momo">
       <div class="momo-tooltip">Buy Me Some Momo :)</div>

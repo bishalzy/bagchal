@@ -1,0 +1,29 @@
+# Baghchal Online
+
+> Play the traditional Nepali strategy board game "Bagh-Chal" (Tigers vs Goats) online.
+
+## About the Game
+Baghchal is a two-player strategy board game originating from Nepal. The game is asymmetric:
+- **Tigers (Bagh):** One player controls 4 tigers.
+- **Goats (Bakhra):** The other player controls 20 goats.
+
+## Rules
+- **Goats' Goal:** Trap all 4 tigers so they have no legal moves.
+- **Tigers' Goal:** Capture at least 5 goats.
+- **Gameplay:** 
+  1. The game starts with 4 tigers on the four corners of the board.
+  2. The goat player places one goat on empty intersections.
+  3. Tigers and goats take alternating turns. Tigers can move to adjacent empty spots or jump over a single goat to an empty spot beyond it to capture the goat.
+  4. Goats cannot move until all 20 goats have been placed on the board.
+
+## Features
+- **Local Play:** Play offline on the same device.
+- **Multiplayer:** Create a room and share the room code with a friend to play real-time online multiplayer.
+
+## Technology Stack
+- **Frontend:** Vanilla JavaScript, HTML5 Canvas, CSS, Vite.
+- **Backend:** Node.js, TypeScript, Express, Socket.IO, Redis.
+- **Hosting:** GitHub Pages (Frontend), Dockerized VPS (Backend).
+
+## Author
+Created by Bishal.

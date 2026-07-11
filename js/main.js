@@ -91,9 +91,10 @@ function setStoredName(name) {
 // Modal Elements
 const createRoomModal = document.getElementById("createRoomModal");
 const joinRoomModal = document.getElementById("joinRoomModal");
+const aboutModal = document.getElementById("aboutModal");
 
 // Close modals when clicking outside
-[createRoomModal, joinRoomModal].forEach(modal => {
+[createRoomModal, joinRoomModal, aboutModal].forEach(modal => {
   if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.classList.remove("show");
@@ -123,6 +124,21 @@ document.getElementById("btnConfirmCreate").addEventListener("click", () => {
   createRoomModal.classList.remove("show");
   createRoom(name, side);
 });
+
+// About Modal Flow
+const btnAbout = document.getElementById("btnAbout");
+if (btnAbout) {
+  btnAbout.addEventListener("click", () => {
+    if (aboutModal) aboutModal.classList.add("show");
+  });
+}
+
+const btnCloseAbout = document.getElementById("btnCloseAbout");
+if (btnCloseAbout) {
+  btnCloseAbout.addEventListener("click", () => {
+    if (aboutModal) aboutModal.classList.remove("show");
+  });
+}
 
 // Join Room Flow
 const btnJoinRoom = document.getElementById("btnJoinRoom");

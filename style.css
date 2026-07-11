@@ -744,6 +744,8 @@ body {
     }
 }
 
+/* SEO Content Styles Removed (Now in Modal) */
+
 /* ---- Responsive ---- */
 @media (max-width: 1100px) {
     .game-area {
