@@ -127,9 +127,7 @@
 
       <!-- Board -->
       <div class="board-container">
-        <div class="turn-banner" id="turnBanner">
-          <span id="turnText">GOAT's Turn</span>
-        </div>
+
         <div class="board-wrapper">
           <canvas id="gameCanvas"></canvas>
         </div>
@@ -238,13 +236,13 @@
         <!-- Info Panel Right (Logs) -->
         <aside class="panel panel-right logs-panel" id="logsPanel">
           <div class="panel-log">
-            <div class="panel-log-header">Move History</div>
+            <div class="panel-log-header">Move Log</div>
             <!-- System Banner -->
             <div id="systemBanner" class="system-banner"
               style="display: none; padding: 10px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 14px; font-weight: 500; background: var(--bg-secondary); color: var(--text-primary);">
             </div>
             <div class="panel-log-scroll" id="moveLog">
-              <span class="log-entry log-system">Game started. Goat places first.</span>
+              <!-- <span class="log-entry log-system">Game started. Goat places first.</span> -->
             </div>
           </div>
         </aside>
@@ -302,8 +300,15 @@
 
     <!-- Exit Room Button -->
     <button class="btn btn-action" id="btnExitRoom"
-      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.5rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Exit
-      Room</button>
+      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.2rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); align-items: center; gap: 8px;">
+      <svg class="exit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+      <span class="exit-text">Exit Room</span>
+    </button>
   </div>
 
   <script type="module" src="js/main.js"></script>

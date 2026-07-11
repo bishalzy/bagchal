@@ -20,7 +20,7 @@ export function updateUI() {
     : countTrappedTigers();
   document.getElementById("tigerKills").textContent = vs.bakhrasCaptured;
 
-  const turnText = document.getElementById("turnText");
+
   const panelBakhra = document.getElementById("panelBakhra");
   const panelBagh = document.getElementById("panelBagh");
 
@@ -42,7 +42,7 @@ export function updateUI() {
     }
 
     const exitBtn = document.getElementById("btnExitRoom");
-    if (exitBtn) exitBtn.style.display = "block";
+    if (exitBtn) exitBtn.style.display = "flex";
 
     const createBtn = document.getElementById("btnCreateRoom");
     if (createBtn) createBtn.style.display = "none";
@@ -68,13 +68,11 @@ export function updateUI() {
   }
 
   if (vs.gameOver) {
-    turnText.textContent = vs.winner === "bagh" ? "TIGERS WIN!" : "GOATS WIN!";
+    // game over logic is handled below
   } else if (vs.turn === "bakhra") {
-    turnText.textContent = "GOAT's Turn";
     panelBakhra.classList.add("active");
     panelBagh.classList.remove("active");
   } else {
-    turnText.textContent = "TIGER's Turn";
     panelBagh.classList.add("active");
     panelBakhra.classList.remove("active");
   }

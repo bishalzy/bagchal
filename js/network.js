@@ -221,10 +221,12 @@ export function initNetwork(canvasCtx) {
         render(canvasCtx);
     });
 
-    socket.on('room-destroyed', () => {
+    socket.on('room-destroyed', (data) => {
         sessionStorage.removeItem('baghchalSession');
         hideSystemBanner();
-        showInfoModal('Room destroyed. You are now in local play mode.');
+        if (!data || data.by !== socket.id) {
+            showInfoModal('Room destroyed. You are now in local play mode.');
+        }
         state.isMultiplayer = false;
         state.roomId = null;
         updateUI();

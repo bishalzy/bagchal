@@ -316,21 +316,7 @@ body {
     position: relative;
 }
 
-.turn-banner {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    white-space: nowrap;
-}
+
 
 .board-actions {
     position: absolute;
@@ -756,7 +742,6 @@ body {
         transform: none;
     }
 
-    .turn-banner,
     .board-actions,
     .replay-bar {
         position: static;
@@ -884,40 +869,25 @@ body {
     }
 
     .game-area {
-        padding: 8px;
+        padding: 60px 8px 80px 8px;
     }
 
-    /* Scale down Momo for mobile and reposition to top right */
+    /* Hide Momo for mobile */
     .momo-container {
-        bottom: auto;
-        top: 65px;
-        left: auto;
-        right: 16px;
+        display: none !important;
     }
 
-    .momo-img {
-        width: 45px;
-        height: 45px;
+    #btnExitRoom .exit-text {
+        display: none;
     }
 
-    .momo-steam-container {
-        bottom: 35px;
-        left: 22px;
-    }
-
-    .momo-tooltip {
-        font-size: 11px;
-        padding: 6px 10px;
-        margin-bottom: 8px;
-        left: auto;
-        right: 0;
-    }
-
-    .momo-tooltip::after {
-        left: auto;
-        right: 22px;
-        /* Center of the smaller 45px image */
-        transform: translateX(50%);
-        border-width: 5px;
+    #btnExitRoom {
+        padding: 12px !important;
+        border-radius: 50% !important;
+        width: 48px;
+        height: 48px;
+        justify-content: center;
+        bottom: 16px !important;
+        right: 16px !important;
     }
 }
