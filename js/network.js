@@ -3,6 +3,7 @@ import { updateUI, addLog, showErrorModal, showInfoModal, showSystemBanner, hide
 import { render } from './render.js';
 import { countTrappedTigers } from './logic.js';
 import { saveSnapshot, resetReplay } from './replay.js';
+import { playSound } from './audio.js';
 import { io } from 'socket.io-client';
 
 let socket = null;
@@ -126,49 +127,47 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('state-update', (data) => {
-        import('./audio.js').then(({ playSound }) => {
-            const move = data.move;
-            const isEcho = state.lastMove && move &&
-                (state.lastMove.from || null) === (move.from || null) &&
-                state.lastMove.to === move.to &&
-                state.turn === data.state.turn;
+        const move = data.move;
+        const isEcho = state.lastMove && move &&
+            (state.lastMove.from || null) === (move.from || null) &&
+            state.lastMove.to === move.to &&
+            state.turn === data.state.turn;
 
-            if (isEcho) {
-                // Silently sync state to ensure we are perfectly aligned
-                syncStateFromServer(data.state);
-                updateUI();
-                render(canvasCtx);
-                return;
-            }
-
-            const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
-            const turnWhoMoved = state.turn;
-
+        if (isEcho) {
+            // Silently sync state to ensure we are perfectly aligned
             syncStateFromServer(data.state);
-
-            if (move) {
-                state.lastMove = move;
-                const isTiger = turnWhoMoved === 'bagh';
-                const label = isTiger ? 'Tiger' : 'Goat';
-
-                if (!move.from) {
-                    addLog(`Goat placed at ${move.to.toUpperCase()}`, 'goat');
-                    playSound('bakhra');
-                } else {
-                    if (wasCaptured) {
-                        addLog(`Tiger ${move.from.toUpperCase()}→${move.to.toUpperCase()} captures a Goat!`, 'capture');
-                        playSound('capture');
-                    } else {
-                        addLog(`${label} ${move.from.toUpperCase()}→${move.to.toUpperCase()}`, isTiger ? 'tiger' : 'goat');
-                        playSound(isTiger ? 'bagh' : 'bakhra');
-                    }
-                }
-            }
-
-            saveSnapshot(countTrappedTigers());
             updateUI();
             render(canvasCtx);
-        });
+            return;
+        }
+
+        const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
+        const turnWhoMoved = state.turn;
+
+        syncStateFromServer(data.state);
+
+        if (move) {
+            state.lastMove = move;
+            const isTiger = turnWhoMoved === 'bagh';
+            const label = isTiger ? 'Tiger' : 'Goat';
+
+            if (!move.from) {
+                addLog(`Goat placed at ${move.to.toUpperCase()}`, 'goat');
+                playSound('bakhra');
+            } else {
+                if (wasCaptured) {
+                    addLog(`Tiger ${move.from.toUpperCase()}→${move.to.toUpperCase()} captures a Goat!`, 'capture');
+                    playSound('capture');
+                } else {
+                    addLog(`${label} ${move.from.toUpperCase()}→${move.to.toUpperCase()}`, isTiger ? 'tiger' : 'goat');
+                    playSound(isTiger ? 'bagh' : 'bakhra');
+                }
+            }
+        }
+
+        saveSnapshot(countTrappedTigers());
+        updateUI();
+        render(canvasCtx);
     });
 
     socket.on('game-over', (data) => {
