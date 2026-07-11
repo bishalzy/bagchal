@@ -127,12 +127,25 @@ export function initNetwork(canvasCtx) {
 
     socket.on('state-update', (data) => {
         import('./audio.js').then(({ playSound }) => {
+            const move = data.move;
+            const isEcho = state.lastMove && move &&
+                (state.lastMove.from || null) === (move.from || null) &&
+                state.lastMove.to === move.to &&
+                state.turn === data.state.turn;
+
+            if (isEcho) {
+                // Silently sync state to ensure we are perfectly aligned
+                syncStateFromServer(data.state);
+                updateUI();
+                render(canvasCtx);
+                return;
+            }
+
             const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
             const turnWhoMoved = state.turn;
 
             syncStateFromServer(data.state);
 
-            const move = data.move;
             if (move) {
                 state.lastMove = move;
                 const isTiger = turnWhoMoved === 'bagh';
@@ -221,6 +234,13 @@ export function initNetwork(canvasCtx) {
     socket.on('invalid-move', (data) => {
         console.warn('Invalid move:', data.message);
         showErrorModal(`Invalid move: ${data.message}`);
+
+        // Rollback state if server provided the valid state
+        if (data.state) {
+            syncStateFromServer(data.state);
+            updateUI();
+            render(canvasCtx);
+        }
     });
 
     socket.on('error', (data) => {
