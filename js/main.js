@@ -74,7 +74,7 @@ const btnExitRoom = document.getElementById("btnExitRoom");
 if (btnExitRoom) {
   btnExitRoom.addEventListener("click", () => {
     if (confirm("Are you sure you want to exit? This will destroy the room for both players.")) {
-        cancelGame();
+      cancelGame();
     }
   });
 }
@@ -91,6 +91,15 @@ function setStoredName(name) {
 // Modal Elements
 const createRoomModal = document.getElementById("createRoomModal");
 const joinRoomModal = document.getElementById("joinRoomModal");
+
+// Close modals when clicking outside
+[createRoomModal, joinRoomModal].forEach(modal => {
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("show");
+    });
+  }
+});
 
 // Create Room Flow
 const btnCreateRoom = document.getElementById("btnCreateRoom");

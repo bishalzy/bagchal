@@ -10,7 +10,8 @@ export function createInitialState() {
         gameOver: false,
         winner: null,
         moveHistory: [],
-        
+        lastMove: null,
+
         // Multiplayer additions
         isMultiplayer: false,
         localRole: null, // 'bakhra', 'bagh', or null (offline local play)
@@ -28,7 +29,7 @@ export function resetState() {
     const players = state.players;
 
     state = createInitialState();
-    
+
     // Preserve network properties on reset
     state.isMultiplayer = isMultiplayer;
     state.localRole = localRole;
@@ -44,7 +45,10 @@ export function syncStateFromServer(serverState) {
     state.bakhrasCaptured = serverState.bakhrasCaptured;
     state.gameOver = serverState.gameOver;
     state.winner = serverState.winner;
-    
+    if (serverState.moveHistory) {
+        state.moveHistory = [...serverState.moveHistory];
+    }
+
     // Clear selection state when updating from server
     state.selected = null;
     state.legalMoves = [];

@@ -22,6 +22,7 @@ export function saveSnapshot(trappedTigers = 0) {
     bakhrasCaptured: state.bakhrasCaptured,
     gameOver: state.gameOver,
     winner: state.winner,
+    lastMove: state.lastMove ? { ...state.lastMove } : null,
     trappedTigers,
   });
   viewIndex = history.length - 1;

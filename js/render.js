@@ -30,7 +30,7 @@ export function drawBoard(ctx) {
         ctx.moveTo(PADDING, i * CELL_SIZE + PADDING);
         ctx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING);
         ctx.stroke();
-        
+
         ctx.beginPath();
         ctx.moveTo(i * CELL_SIZE + PADDING, PADDING);
         ctx.lineTo(i * CELL_SIZE + PADDING, BOARD_SIZE + PADDING);
@@ -61,7 +61,7 @@ export function drawBoard(ctx) {
     ctx.font = '600 13px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     for (let r = 0; r < 5; r++) {
         ctx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0] + ROWS[r]].py);
     }
@@ -100,17 +100,17 @@ export function drawPiece(ctx, key, type, isSelected) {
     }
 }
 
-export function drawLegalMoves(ctx) {
+export function drawLegalMoves(ctx, isDragging = false) {
     for (const move of state.legalMoves) {
         const { px, py } = POS[move.to];
         const isCapture = !!move.capture;
-        const r = isCapture ? 12 : 8;
+        const r = isCapture ? (isDragging ? 18 : 12) : (isDragging ? 14 : 8);
         ctx.beginPath();
         ctx.arc(px, py, r, 0, Math.PI * 2);
         ctx.fillStyle = isCapture ? C.captureDot : C.legalDot;
         ctx.fill();
         ctx.strokeStyle = C.dotBorder;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = isDragging ? 2 : 1;
         ctx.stroke();
     }
 }
@@ -119,8 +119,26 @@ export function drawAll(ctx) {
     const vs = getViewState();
     const replaying = isReplaying();
     drawBoard(ctx);
+
+    // Draw last move highlight
+    if (vs.lastMove) {
+        ctx.fillStyle = 'rgba(255, 215, 64, 0.4)'; // Gold-ish highlight
+        if (vs.lastMove.from) {
+            const { px, py } = POS[vs.lastMove.from];
+            ctx.beginPath();
+            ctx.arc(px, py, 18, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        if (vs.lastMove.to) {
+            const { px, py } = POS[vs.lastMove.to];
+            ctx.beginPath();
+            ctx.arc(px, py, 18, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
     if (!replaying) {
-        drawLegalMoves(ctx);
+        drawLegalMoves(ctx, false);
     }
     for (const b of vs.baghs) {
         drawPiece(ctx, b, 'bagh', !replaying && state.selected === b);
@@ -137,7 +155,7 @@ export function render(ctx) {
 
 export function renderDragging(ctx, drag) {
     drawBoard(ctx);
-    drawLegalMoves(ctx);
+    drawLegalMoves(ctx, true);
 
     for (const b of state.baghs) {
         if (b === drag.pieceKey) continue;

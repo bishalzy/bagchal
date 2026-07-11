@@ -78,6 +78,7 @@ export function placeGoat(pos) {
 
     state.bakhras.add(pos);
     state.bakhrasPlaced++;
+    state.lastMove = { from: null, to: pos };
     addLog(`Goat placed at ${pos.toUpperCase()}`, 'goat');
     playSound('bakhra');
     switchTurn();
@@ -131,6 +132,7 @@ export function movePiece(to) {
         playSound(isTiger ? 'bagh' : 'bakhra');
     }
 
+    state.lastMove = { from, to };
     switchTurn();
     checkWinConditions();
     saveSnapshot(countTrappedTigers());

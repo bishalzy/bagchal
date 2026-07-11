@@ -1,5 +1,5 @@
 import { state, syncStateFromServer, resetState } from './state.js';
-import { updateUI, addLog, showErrorModal } from './ui.js';
+import { updateUI, addLog, showErrorModal, showInfoModal, showSystemBanner, hideSystemBanner, renderMoveHistory } from './ui.js';
 import { render } from './render.js';
 import { countTrappedTigers } from './logic.js';
 import { saveSnapshot, resetReplay } from './replay.js';
@@ -17,32 +17,90 @@ export function initNetwork(canvasCtx) {
     socket = io(BACKEND_URL);
 
     socket.on('connected', (data) => {
-        playerId = data.playerId;
+        const session = JSON.parse(sessionStorage.getItem('baghchalSession') || 'null');
+        if (session && session.roomId && session.playerId) {
+            playerId = session.playerId;
+            socket.emit('rejoin-room', { roomId: session.roomId, playerId: session.playerId }, (res) => {
+                if (res && res.error) {
+                    sessionStorage.removeItem('baghchalSession');
+                    playerId = data.playerId;
+                }
+            });
+        } else {
+            playerId = data.playerId;
+        }
         console.log('Connected to server with ID:', playerId);
     });
 
     socket.on('room-created', (data) => {
         state.isMultiplayer = true;
         state.roomId = data.roomId;
+        sessionStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
         // Role is set locally when creating based on preference
         document.getElementById('roomCodeDisplay').style.display = 'flex';
-        document.getElementById('roomCodeDisplay').textContent = `Room: ${data.roomId}`;
-        addLog(`Created room ${data.roomId}. Waiting for opponent...`, 'system');
+        const codeText = document.getElementById('roomCodeText');
+        if (codeText) {
+            codeText.textContent = `Room: ${data.roomId}`;
+            const btnCopy = document.getElementById('btnCopyRoomCode');
+            if (btnCopy) {
+                const newBtn = btnCopy.cloneNode(true);
+                btnCopy.parentNode.replaceChild(newBtn, btnCopy);
+                newBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(data.roomId).then(() => {
+                        const originalText = codeText.textContent;
+                        codeText.textContent = "Copied!";
+                        setTimeout(() => codeText.textContent = originalText, 2000);
+                    });
+                });
+            }
+        } else {
+            document.getElementById('roomCodeDisplay').textContent = `Room: ${data.roomId}`;
+        }
+
+        const waitingOverlay = document.getElementById('waitingOverlay');
+        if (waitingOverlay) waitingOverlay.classList.add('show');
+
+        showSystemBanner(`Created room ${data.roomId}. Waiting for opponent...`);
         updateUI();
     });
 
     socket.on('room-joined', (data) => {
         state.isMultiplayer = true;
         state.roomId = data.roomId;
+        sessionStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
         state.players = data.players;
         const myPlayer = data.players.find(p => p.id === playerId);
         if (myPlayer) state.localRole = myPlayer.side;
 
         document.getElementById('roomCodeDisplay').style.display = 'flex';
-        document.getElementById('roomCodeDisplay').textContent = `Room: ${data.roomId}`;
-        addLog(`Joined room ${data.roomId}.`, 'system');
+        const codeText = document.getElementById('roomCodeText');
+        if (codeText) {
+            codeText.textContent = `Room: ${data.roomId}`;
+            const btnCopy = document.getElementById('btnCopyRoomCode');
+            if (btnCopy) {
+                const newBtn = btnCopy.cloneNode(true);
+                btnCopy.parentNode.replaceChild(newBtn, btnCopy);
+                newBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(data.roomId).then(() => {
+                        const originalText = codeText.textContent;
+                        codeText.textContent = "Copied!";
+                        setTimeout(() => codeText.textContent = originalText, 2000);
+                    });
+                });
+            }
+        } else {
+            document.getElementById('roomCodeDisplay').textContent = `Room: ${data.roomId}`;
+        }
+
+        const waitingOverlay = document.getElementById('waitingOverlay');
+        if (waitingOverlay) waitingOverlay.classList.remove('show');
+
+        hideSystemBanner();
+
+        showSystemBanner(`Joined room ${data.roomId}.`);
 
         syncStateFromServer(data.state);
+        renderMoveHistory(state.moveHistory);
         updateUI();
         render(canvasCtx);
     });
@@ -54,7 +112,14 @@ export function initNetwork(canvasCtx) {
         if (myPlayer) state.localRole = myPlayer.side;
 
         syncStateFromServer(data.state);
-        addLog('Opponent joined. Game started!', 'system');
+        renderMoveHistory(state.moveHistory);
+
+        const waitingOverlay = document.getElementById('waitingOverlay');
+        if (waitingOverlay) waitingOverlay.classList.remove('show');
+
+        hideSystemBanner();
+
+        showSystemBanner('Opponent joined. Game started!');
         saveSnapshot(countTrappedTigers());
         updateUI();
         render(canvasCtx);
@@ -69,6 +134,7 @@ export function initNetwork(canvasCtx) {
 
             const move = data.move;
             if (move) {
+                state.lastMove = move;
                 const isTiger = turnWhoMoved === 'bagh';
                 const label = isTiger ? 'Tiger' : 'Goat';
 
@@ -99,11 +165,24 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('player-left', () => {
-        addLog('Opponent disconnected.', 'system');
-        showErrorModal('Opponent disconnected.', () => {
-            location.reload();
-        });
-        state.gameOver = true;
+        showSystemBanner('Opponent disconnected.', true);
+        showInfoModal('Opponent disconnected. The game has been converted to a local session.');
+        state.isMultiplayer = false;
+        state.roomId = null;
+        sessionStorage.removeItem('baghchalSession');
+        updateUI();
+    });
+
+    socket.on('player-disconnected', (data) => {
+        showSystemBanner(`Opponent disconnected.<br>Game will close soon if they don't reconnect.`, true);
+    });
+
+    socket.on('room-destroyed-info', (data) => {
+        sessionStorage.removeItem('baghchalSession');
+        hideSystemBanner();
+        showInfoModal(data.message + " You are now in local play mode.");
+        state.isMultiplayer = false;
+        state.roomId = null;
         updateUI();
     });
 
@@ -116,7 +195,7 @@ export function initNetwork(canvasCtx) {
 
         syncStateFromServer(data.state);
         document.getElementById("moveLog").innerHTML = "";
-        addLog('Rematch started. Roles swapped.', 'system');
+        showSystemBanner('Rematch started. Roles swapped.');
         saveSnapshot(countTrappedTigers());
         document.getElementById("gameOverOverlay").classList.remove("show");
 
@@ -131,9 +210,12 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-destroyed', () => {
-        showErrorModal('Room destroyed.', () => {
-            location.reload();
-        });
+        sessionStorage.removeItem('baghchalSession');
+        hideSystemBanner();
+        showInfoModal('Room destroyed. You are now in local play mode.');
+        state.isMultiplayer = false;
+        state.roomId = null;
+        updateUI();
     });
 
     socket.on('invalid-move', (data) => {
@@ -175,5 +257,6 @@ export function playAgain() {
 
 export function cancelGame() {
     if (!socket || !state.isMultiplayer) return;
+    sessionStorage.removeItem('baghchalSession');
     socket.emit('cancel-game');
 }

@@ -202,10 +202,10 @@ export function setupInput(canvas, ctx) {
     if (state.turn === "bakhra" && state.bakhrasPlaced < MAX_BAKHRA) {
       if (!state.isMultiplayer || state.localRole === "bakhra") {
         if (state.isMultiplayer) {
-           makeNetworkMove(undefined, pos);
-           acted = true;
+          makeNetworkMove(undefined, pos);
+          acted = true;
         } else {
-           acted = placeGoat(pos);
+          acted = placeGoat(pos);
         }
       }
     } else {
