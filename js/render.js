@@ -4,6 +4,25 @@ import { IMG_TIGER, IMG_GOAT } from './assets.js';
 import { updateUI } from './ui.js';
 import { getViewState, isReplaying } from './replay.js';
 
+const coloredImages = {};
+function getColoredImage(img, color, size) {
+    if (!img.complete || img.naturalWidth === 0) return null;
+    const key = img.src + color + size;
+    if (coloredImages[key]) return coloredImages[key];
+
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, size, size);
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, size, size);
+    
+    coloredImages[key] = canvas;
+    return canvas;
+}
+
 /** Reapplies the scale transform so logical coords (0–CANVAS_SIZE) fill the canvas buffer. */
 function prepareCtx(ctx) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -73,24 +92,23 @@ export function drawBoard(ctx) {
 export function drawPiece(ctx, key, type, isSelected) {
     const { px, py } = POS[key];
     const isTiger = type === 'bagh';
-    const radius = isTiger ? 26 : 20;
-    const img = isTiger ? IMG_TIGER : IMG_GOAT;
+    let radius = isTiger ? 26 : 20;
 
     if (isSelected) {
-        ctx.beginPath();
-        ctx.arc(px, py, radius + 12, 0, Math.PI * 2);
-        ctx.fillStyle = C.selectedGlow;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(px, py, radius + 5, 0, Math.PI * 2);
-        ctx.strokeStyle = C.selected;
-        ctx.lineWidth = 3;
-        ctx.stroke();
+        radius *= 1.2;
     }
 
+    const img = isTiger ? IMG_TIGER : IMG_GOAT;
+
     if (img.complete && img.naturalWidth > 0) {
-        const imgSize = radius * 2;
-        ctx.drawImage(img, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
+        const imgSize = Math.round(radius * 2);
+        const color = isTiger ? '#e53935' : '#0d47a1';
+        const coloredImg = getColoredImage(img, color, imgSize);
+        if (coloredImg) {
+            ctx.drawImage(coloredImg, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
+        } else {
+            ctx.drawImage(img, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
+        }
     } else {
         ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
@@ -100,14 +118,23 @@ export function drawPiece(ctx, key, type, isSelected) {
     }
 }
 
-export function drawLegalMoves(ctx, isDragging = false) {
+export function drawLegalMoves(ctx, isDragging = false, drag = null) {
+    let isGoat = false;
+    if (isDragging && drag) {
+        isGoat = drag.pieceType === 'bakhra';
+    } else if (state.selected) {
+        isGoat = state.bakhras.has(state.selected);
+    }
+
+    const defaultDotColor = isGoat ? 'rgba(135, 206, 235, 0.7)' : C.legalDot; // Light blue for goat
+
     for (const move of state.legalMoves) {
         const { px, py } = POS[move.to];
         const isCapture = !!move.capture;
         const r = isCapture ? (isDragging ? 18 : 12) : (isDragging ? 14 : 8);
         ctx.beginPath();
         ctx.arc(px, py, r, 0, Math.PI * 2);
-        ctx.fillStyle = isCapture ? C.captureDot : C.legalDot;
+        ctx.fillStyle = isCapture ? C.captureDot : defaultDotColor;
         ctx.fill();
         ctx.strokeStyle = C.dotBorder;
         ctx.lineWidth = isDragging ? 2 : 1;
@@ -122,14 +149,27 @@ export function drawAll(ctx) {
 
     // Draw last move highlight
     if (vs.lastMove) {
-        ctx.fillStyle = 'rgba(255, 215, 64, 0.4)'; // Gold-ish highlight
-        if (vs.lastMove.from) {
-            const { px, py } = POS[vs.lastMove.from];
+        let moveColor = 'rgba(255, 215, 64, 0.4)'; // Default gold
+
+        if (vs.lastMove.from && vs.lastMove.to) {
+            const isTiger = vs.baghs.has(vs.lastMove.to);
+            const isGoat = vs.bakhras.has(vs.lastMove.to);
+            if (isTiger) moveColor = 'rgba(229, 57, 53, 0.4)'; // Red
+            else if (isGoat) moveColor = 'rgba(13, 71, 161, 0.4)'; // Dark blue
+
+            // Draw line connecting move
+            const start = POS[vs.lastMove.from];
+            const end = POS[vs.lastMove.to];
             ctx.beginPath();
-            ctx.arc(px, py, 18, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        if (vs.lastMove.to) {
+            ctx.moveTo(start.px, start.py);
+            ctx.lineTo(end.px, end.py);
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = moveColor;
+            ctx.stroke();
+        } else if (vs.lastMove.to) {
+            // Goat drop
+            ctx.fillStyle = moveColor;
             const { px, py } = POS[vs.lastMove.to];
             ctx.beginPath();
             ctx.arc(px, py, 18, 0, Math.PI * 2);
@@ -155,7 +195,7 @@ export function render(ctx) {
 
 export function renderDragging(ctx, drag) {
     drawBoard(ctx);
-    drawLegalMoves(ctx, true);
+    drawLegalMoves(ctx, true, drag);
 
     for (const b of state.baghs) {
         if (b === drag.pieceKey) continue;
@@ -173,7 +213,13 @@ export function renderDragging(ctx, drag) {
     ctx.globalAlpha = 0.85;
     if (img.complete && img.naturalWidth > 0) {
         const imgSize = radius * 2;
-        ctx.drawImage(img, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
+        const color = isTiger ? '#e53935' : '#0d47a1';
+        const coloredImg = getColoredImage(img, color, imgSize);
+        if (coloredImg) {
+            ctx.drawImage(coloredImg, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
+        } else {
+            ctx.drawImage(img, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
+        }
     } else {
         ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;

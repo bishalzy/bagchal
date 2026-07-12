@@ -263,14 +263,28 @@ body {
 }
 
 .piece-icon-bakhra {
-    background-color: transparent;
-    background-image: url("goat.webp");
+    background-color: #0d47a1; /* Dark blue */
+    -webkit-mask-image: url("goat.webp");
+    mask-image: url("goat.webp");
+    -webkit-mask-size: 80%;
+    mask-size: 80%;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
     border: 2px solid var(--accent-goat);
 }
 
 .piece-icon-bagh {
-    background-color: transparent;
-    background-image: url("Tiger.webp");
+    background-color: #e53935; /* A bit red */
+    -webkit-mask-image: url("Tiger.webp");
+    mask-image: url("Tiger.webp");
+    -webkit-mask-size: 80%;
+    mask-size: 80%;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
     border: 2px solid var(--accent-tiger);
 }
 
