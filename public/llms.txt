@@ -25,5 +25,8 @@ Baghchal is a two-player strategy board game originating from Nepal. The game is
 - **Backend:** Node.js, TypeScript, Express, Socket.IO, Redis.
 - **Hosting:** GitHub Pages (Frontend), Dockerized VPS (Backend).
 
+## Links
+- [Play Baghchal Online](https://baghchal.xyz/)
+
 ## Author
 Created by Bishal.
