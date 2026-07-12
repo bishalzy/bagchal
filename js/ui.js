@@ -34,11 +34,11 @@ export function updateUI() {
     if (tigerPlayer && tigerNameEl) tigerNameEl.textContent = tigerPlayer.name.toUpperCase();
 
     if (state.localRole === 'bakhra') {
-      panelBakhra.style.order = "2";
+      panelBakhra.style.order = "4";
       panelBagh.style.order = "1";
     } else if (state.localRole === 'bagh') {
       panelBakhra.style.order = "1";
-      panelBagh.style.order = "2";
+      panelBagh.style.order = "4";
     }
 
     const exitBtn = document.getElementById("btnExitRoom");
@@ -48,6 +48,11 @@ export function updateUI() {
     if (createBtn) createBtn.style.display = "none";
     const joinBtn = document.getElementById("btnJoinRoom");
     if (joinBtn) joinBtn.style.display = "none";
+
+    const roomCodeDisplay = document.getElementById("roomCodeDisplay");
+    if (state.players.length === 2 && roomCodeDisplay) {
+        roomCodeDisplay.style.display = "none";
+    }
   } else {
     if (goatNameEl) goatNameEl.textContent = "GOATS";
     if (tigerNameEl) tigerNameEl.textContent = "TIGERS";

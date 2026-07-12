@@ -856,6 +856,30 @@ body {
 }
 
 @media (max-width: 500px) {
+    .game-area {
+        padding: 50px 8px 24px 8px; /* Tighten up top/bottom padding */
+        gap: 12px; /* Reduce empty space between panels and board */
+        margin: 0;
+    }
+
+    .board-container {
+        width: 100%;
+        max-width: 100%;
+        gap: 8px;
+    }
+
+    .board-wrapper {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        min-height: auto;
+    }
+
+    .panel {
+        padding: 12px 16px;
+        margin: 0;
+    }
+
     .panel-header h2 {
         display: none;
     }
@@ -880,10 +904,6 @@ body {
 
     .header {
         padding: 10px 16px;
-    }
-
-    .game-area {
-        padding: 60px 8px 80px 8px;
     }
 
     /* Hide Momo for mobile */
