@@ -27,13 +27,16 @@
   <meta name="description"
     content="Play Baghchal online for free. Experience the traditional Nepali strategy board game of Tigers vs Goats (Bagh-Chal) with local and real-time multiplayer modes." />
   <link rel="canonical" href="https://baghchal.xyz/" />
+  <meta name="keywords" content="Baghchal, Tigers vs Goats, Baghchal Online, Play Baghchal online, Baghchal with friend, Baghchal Multiplayer, Nepali Board game, Traditional Nepali Board Game, Board game from nepal, strategy game" />
   <!-- Favicon & Theme -->
   <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
   <meta name="theme-color" content="#d9d9d9" />
 
   <!-- Open Graph / Facebook / Discord -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Baghchal" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="https://baghchal.xyz/" />
   <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
   <meta property="og:description"
@@ -59,7 +62,7 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "BoardGame",
+    "@type": ["BoardGame", "VideoGame"],
     "name": "Baghchal Online",
     "description": "A digital multiplayer adaptation of the traditional Nepali strategy board game, Tigers vs Goats.",
     "genre": ["Board Game", "Strategy Game"],
@@ -87,7 +90,7 @@
       <div class="header-title">
         <h1>BAGHCHAL</h1>
       </div>
-      <button class="btn btn-restart" id="btnAbout">What is bagchal?</button>
+      <button class="btn btn-restart" id="btnAbout" aria-label="About Baghchal">What is bagchal?</button>
     </header>
 
     <!-- Main Game Area -->
@@ -143,11 +146,11 @@
       <div class="board-container">
 
         <div class="board-wrapper">
-          <canvas id="gameCanvas"></canvas>
+          <canvas id="gameCanvas" role="img" aria-label="Baghchal Game Board"></canvas>
         </div>
 
         <div class="board-actions">
-          <button class="btn btn-action" id="btnCreateRoom">Create Room</button>
+          <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
           <div id="roomCodeDisplay"
             style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
             <span id="roomCodeText"></span>
@@ -160,7 +163,7 @@
               </svg>
             </button>
           </div>
-          <button class="btn btn-action" id="btnJoinRoom">Join Room</button>
+          <button class="btn btn-action" id="btnJoinRoom" aria-label="Join a multiplayer room">Join Room</button>
         </div>
         <!-- Waiting Overlay -->
         <div class="game-over-overlay" id="waitingOverlay" style="z-index: 5;">
@@ -179,8 +182,8 @@
             <h2 id="gameOverTitle">Game Over</h2>
             <p id="gameOverMsg"></p>
             <div class="game-over-buttons">
-              <button class="btn btn-restart" id="btnPlayAgain">Play Again</button>
-              <button class="btn btn-cancel" id="btnCancelGame">Cancel</button>
+              <button class="btn btn-restart" id="btnPlayAgain" aria-label="Play Again">Play Again</button>
+              <button class="btn btn-cancel" id="btnCancelGame" aria-label="Cancel Game">Cancel</button>
             </div>
           </div>
         </div>
@@ -204,8 +207,8 @@
               </select>
             </div>
             <div class="game-over-buttons">
-              <button class="btn" id="btnConfirmCreate">Create</button>
-              <button class="btn btn-cancel" id="btnCancelCreate">Close</button>
+              <button class="btn" id="btnConfirmCreate" aria-label="Confirm Create Room">Create</button>
+              <button class="btn btn-cancel" id="btnCancelCreate" aria-label="Cancel Create Room">Close</button>
             </div>
           </div>
         </div>
@@ -227,8 +230,8 @@
                 placeholder="e.g. AB12CD">
             </div>
             <div class="game-over-buttons">
-              <button class="btn" id="btnConfirmJoin">Join</button>
-              <button class="btn btn-cancel" id="btnCancelJoin">Close</button>
+              <button class="btn" id="btnConfirmJoin" aria-label="Confirm Join Room">Join</button>
+              <button class="btn btn-cancel" id="btnCancelJoin" aria-label="Cancel Join Room">Close</button>
             </div>
           </div>
         </div>
@@ -240,7 +243,7 @@
             <p id="errorModalMsg"
               style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
             <div class="game-over-buttons" style="margin-top: 0;">
-              <button class="btn btn-cancel" id="btnDismissError">Dismiss</button>
+              <button class="btn btn-cancel" id="btnDismissError" aria-label="Dismiss Error">Dismiss</button>
             </div>
           </div>
         </div>
@@ -266,36 +269,56 @@
     <!-- About Baghchal board game -->
     <div class="game-over-overlay" id="aboutModal" style="z-index: 1000;">
       <div class="game-over-card"
-        style="max-width: 600px; width: 90%; text-align: left; max-height: 80vh; overflow-y: auto;">
+        style="max-width: 800px; width: 90%; text-align: left; max-height: 85vh; overflow-y: auto;">
         <h2 style="text-align: center; margin-bottom: 24px;">About Baghchal (Tigers vs Goats)</h2>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);"><strong>Baghchal</strong>
-          (Nepali: बाघचाल) is a traditional, strategic, two-player board game from Nepal. The game is highly asymmetric,
-          meaning the two players have completely different pieces and objectives. One player controls four
-          <strong>Tigers (Bagh)</strong>, and the other player controls twenty <strong>Goats (Bakhra)</strong>.
+        
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">What is Baghchal?</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
+          <strong>Baghchal</strong> (also called Bagh Chal) is a famous, traditional board game from Nepal. The name translates to "Move of the Tigers." It is a two-player strategy game where one person plays as four tigers, and the other plays as twenty goats. It represents the classic struggle between predator and prey. If you enjoy strategy games like chess, you will love Baghchal!
         </p>
 
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Objective and
-          Rules</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">The tigers' goal is to hunt the
-          goats. A tiger can capture a goat by jumping over it to an empty adjacent intersection (similar to checkers).
-          The tigers win if they successfully capture 5 goats.</p>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">The goats' goal is to surround
-          and trap the tigers. Goats cannot jump or capture tigers; instead, they win if they block all four tigers so
-          that none of them have a legal move.</p>
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">History and Culture</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
+          This ancient game has been played in the Himalayan regions for hundreds of years. People used to draw the board on the ground in villages. Today, playing Baghchal online has gained global popularity, and there are even tournaments in Europe for strategy game lovers!
+        </p>
 
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">How to Play
-          Online</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">On
-          <strong>Baghchal.xyz</strong>, you can enjoy this classic strategy game in two ways:
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">How to Play Baghchal (Rules)</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
+          The rules are easy to learn, but hard to master. The board is a 5x5 grid with lines connecting the points. Here is the basic setup:
         </p>
         <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
-          <li style="margin-bottom: 8px;"><strong>Local Play:</strong> Play offline on the same device with a friend.
-          </li>
-          <li style="margin-bottom: 8px;"><strong>Multiplayer:</strong> Create a private room, share the room code, and
-            challenge friends to a real-time online match.</li>
+          <li style="margin-bottom: 8px;"><strong>The Goal:</strong> Tigers want to capture 5 goats. Goats want to trap all 4 tigers so they cannot move.</li>
+          <li style="margin-bottom: 8px;"><strong>Setup:</strong> The 4 tigers start in the four corners of the board.</li>
+          <li style="margin-bottom: 8px;"><strong>Phase 1 (Placement):</strong> The goat player places their 20 goats on the board one by one. During this phase, tigers can move one step but cannot jump.</li>
+          <li style="margin-bottom: 8px;"><strong>Phase 2 (Movement):</strong> After all 20 goats are on the board, goats can finally move one step at a time along the lines.</li>
+          <li style="margin-bottom: 8px;"><strong>Capturing:</strong> Tigers can capture a goat by jumping over it into an empty space (just like in checkers). Goats cannot jump or capture.</li>
         </ul>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Goat Strategy: How to Win</h3>
+        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
+          <li style="margin-bottom: 8px;"><strong>Control the Center:</strong> Place your first few goats in the middle of the board to block the tigers early.</li>
+          <li style="margin-bottom: 8px;"><strong>Work as a Team:</strong> Keep your goats close together. If a goat is left alone, a tiger will easily eat it.</li>
+          <li style="margin-bottom: 8px;"><strong>Be Patient:</strong> Slowly trap the tigers. Don't rush! Your starting placement is the most important part of the game.</li>
+        </ul>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Tiger Strategy: How to Win</h3>
+        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
+          <li style="margin-bottom: 8px;"><strong>Hunt the Weak:</strong> Look for goats that are alone near the edges or corners and capture them quickly.</li>
+          <li style="margin-bottom: 8px;"><strong>Keep Moving:</strong> Don't let your tigers get stuck in the corners. Keep them in the open so they have room to jump.</li>
+          <li style="margin-bottom: 8px;"><strong>Break Formations:</strong> If you see the goats building a strong wall, jump over them early before they finish it.</li>
+        </ul>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Why Play Strategy Games?</h3>
+        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
+          Playing strategy games like Baghchal online is great for both kids and adults. It helps you practice critical thinking, planning, and patience. Unlike chess, a game of Baghchal only takes 15 to 30 minutes, making it a quick and fun way to learn about Nepali culture!
+        </p>
+        
+        <p style="margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
+          <strong>💡 Tip for Beginners:</strong> If you are new, start by playing as the goats. It is usually easier to learn the game from the defensive side!
+        </p>
+
         <div class="game-over-buttons" style="margin-top: 0;">
-          <button class="btn btn-cancel" id="btnCloseAbout">Close</button>
+          <button class="btn btn-cancel" id="btnCloseAbout" aria-label="Close About Modal">Close</button>
         </div>
       </div>
     </div>
