@@ -29,58 +29,72 @@ function prepareCtx(ctx) {
     ctx.scale(ctx.canvas.width / CANVAS_SIZE, ctx.canvas.height / CANVAS_SIZE);
 }
 
+let cachedBoardCanvas = null;
+let cachedBoardSize = 0;
+
 export function drawBoard(ctx) {
     prepareCtx(ctx);
-    ctx.fillStyle = C.boardBg;
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    ctx.strokeStyle = C.line;
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
+    if (!cachedBoardCanvas || cachedBoardSize !== CANVAS_SIZE) {
+        cachedBoardCanvas = document.createElement('canvas');
+        cachedBoardCanvas.width = CANVAS_SIZE;
+        cachedBoardCanvas.height = CANVAS_SIZE;
+        const oCtx = cachedBoardCanvas.getContext('2d');
 
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        ctx.beginPath();
-        ctx.moveTo(PADDING, i * CELL_SIZE + PADDING);
-        ctx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING);
-        ctx.stroke();
+        oCtx.fillStyle = C.boardBg;
+        oCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-        ctx.beginPath();
-        ctx.moveTo(i * CELL_SIZE + PADDING, PADDING);
-        ctx.lineTo(i * CELL_SIZE + PADDING, BOARD_SIZE + PADDING);
-        ctx.stroke();
+        oCtx.strokeStyle = C.line;
+        oCtx.lineWidth = 4;
+        oCtx.lineCap = 'round';
+
+        for (let i = 0; i <= GRID_SIZE; i++) {
+            oCtx.beginPath();
+            oCtx.moveTo(PADDING, i * CELL_SIZE + PADDING);
+            oCtx.lineTo(BOARD_SIZE + PADDING, i * CELL_SIZE + PADDING);
+            oCtx.stroke();
+
+            oCtx.beginPath();
+            oCtx.moveTo(i * CELL_SIZE + PADDING, PADDING);
+            oCtx.lineTo(i * CELL_SIZE + PADDING, BOARD_SIZE + PADDING);
+            oCtx.stroke();
+        }
+
+        oCtx.lineWidth = 4;
+        oCtx.strokeStyle = C.line;
+        const diags = [
+            ['a5', 'e1'], ['e5', 'a1'],
+            ['c5', 'e3'], ['e3', 'c1'], ['c1', 'a3'], ['a3', 'c5'],
+        ];
+        for (const [a, b] of diags) {
+            oCtx.beginPath();
+            oCtx.moveTo(POS[a].px, POS[a].py);
+            oCtx.lineTo(POS[b].px, POS[b].py);
+            oCtx.stroke();
+        }
+
+        oCtx.fillStyle = C.line;
+        for (const key of ALL_POS) {
+            oCtx.beginPath();
+            oCtx.arc(POS[key].px, POS[key].py, 3, 0, Math.PI * 2);
+            oCtx.fill();
+        }
+
+        oCtx.fillStyle = C.labelText;
+        oCtx.font = '600 13px Inter, sans-serif';
+        oCtx.textAlign = 'center';
+        oCtx.textBaseline = 'middle';
+
+        for (let r = 0; r < 5; r++) {
+            oCtx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0] + ROWS[r]].py);
+        }
+        for (let c = 0; c < 5; c++) {
+            oCtx.fillText(COLS[c], POS[COLS[c] + ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
+        }
+        cachedBoardSize = CANVAS_SIZE;
     }
 
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = C.line;
-    const diags = [
-        ['a5', 'e1'], ['e5', 'a1'],
-        ['c5', 'e3'], ['e3', 'c1'], ['c1', 'a3'], ['a3', 'c5'],
-    ];
-    for (const [a, b] of diags) {
-        ctx.beginPath();
-        ctx.moveTo(POS[a].px, POS[a].py);
-        ctx.lineTo(POS[b].px, POS[b].py);
-        ctx.stroke();
-    }
-
-    ctx.fillStyle = C.line;
-    for (const key of ALL_POS) {
-        ctx.beginPath();
-        ctx.arc(POS[key].px, POS[key].py, 3, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    ctx.fillStyle = C.labelText;
-    ctx.font = '600 13px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    for (let r = 0; r < 5; r++) {
-        ctx.fillText(ROWS[r], PADDING / 2 - 2, POS[COLS[0] + ROWS[r]].py);
-    }
-    for (let c = 0; c < 5; c++) {
-        ctx.fillText(COLS[c], POS[COLS[c] + ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
-    }
+    ctx.drawImage(cachedBoardCanvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
 }
 
 export function drawPiece(ctx, key, type, isSelected) {
@@ -215,6 +229,4 @@ export function renderDragging(ctx, drag) {
         ctx.fillText(isTiger ? 'T' : 'G', drag.mouseX, drag.mouseY);
     }
     ctx.globalAlpha = 1.0;
-
-    updateUI();
 }

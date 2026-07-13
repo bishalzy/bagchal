@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /favicon.png
+Allow: /manifest.json
 
 
 Sitemap: https://baghchal.xyz/sitemap.xml

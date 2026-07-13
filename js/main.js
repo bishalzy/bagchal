@@ -39,7 +39,14 @@ function resizeCanvas() {
 }
 
 // Re-render on resize (window resize, zoom, orientation change)
-new ResizeObserver(resizeCanvas).observe(canvas);
+let resizeTimeout;
+function debouncedResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    resizeCanvas();
+  }, 100);
+}
+new ResizeObserver(debouncedResize).observe(canvas);
 
 function resetGame() {
   if (state.isMultiplayer) return; // Do not reset locally if multiplayer

@@ -22,8 +22,18 @@ import {
   stepBack,
   stepForward,
   goToLive,
-  startReplay,
 } from "./replay.js";
+
+let rAF_id = null;
+let ctxRef = null;
+
+function renderLoop() {
+  if (drag.active && ctxRef) {
+    renderDragging(ctxRef, drag);
+    ctxRef.canvas.style.cursor = "grabbing";
+    rAF_id = requestAnimationFrame(renderLoop);
+  }
+}
 
 export const drag = {
   active: false,
@@ -82,6 +92,7 @@ function isOwnPiece(pos) {
 }
 
 export function setupInput(canvas, ctx) {
+  ctxRef = ctx;
   function handleStart(e) {
     if (isReplaying()) {
       goToLive();
@@ -118,6 +129,8 @@ export function setupInput(canvas, ctx) {
           state.legalMoves = moves;
           render(ctx);
           canvas.style.cursor = "grabbing";
+          if (rAF_id) cancelAnimationFrame(rAF_id);
+          rAF_id = requestAnimationFrame(renderLoop);
         }
       }
     }
@@ -132,8 +145,6 @@ export function setupInput(canvas, ctx) {
       if (Math.hypot(x - drag.startX, y - drag.startY) > 5) {
         drag.moved = true;
       }
-      renderDragging(ctx, drag);
-      canvas.style.cursor = "grabbing";
       return;
     }
 
@@ -174,6 +185,7 @@ export function setupInput(canvas, ctx) {
       );
 
       drag.active = false;
+      if (rAF_id) { cancelAnimationFrame(rAF_id); rAF_id = null; }
       const dragKey = drag.pieceKey;
       drag.pieceKey = null;
       drag.pieceType = null;
@@ -249,6 +261,7 @@ export function setupInput(canvas, ctx) {
   canvas.addEventListener("mouseleave", () => {
     if (drag.active) {
       drag.active = false;
+      if (rAF_id) { cancelAnimationFrame(rAF_id); rAF_id = null; }
       drag.pieceKey = null;
       drag.pieceType = null;
       canvas.style.cursor = "default";
