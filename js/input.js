@@ -22,6 +22,7 @@ import {
   stepBack,
   stepForward,
   goToLive,
+  startReplay,
 } from "./replay.js";
 
 let rAF_id = null;
