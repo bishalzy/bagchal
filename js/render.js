@@ -31,13 +31,7 @@ function prepareCtx(ctx) {
 
 export function drawBoard(ctx) {
     prepareCtx(ctx);
-    const grad = ctx.createRadialGradient(
-        CANVAS_SIZE / 2, CANVAS_SIZE / 2, 50,
-        CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE
-    );
-    grad.addColorStop(0, C.boardBg);
-    grad.addColorStop(1, C.boardBgEdge);
-    ctx.fillStyle = grad;
+    ctx.fillStyle = C.boardBg;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     ctx.strokeStyle = C.line;
@@ -56,8 +50,8 @@ export function drawBoard(ctx) {
         ctx.stroke();
     }
 
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = C.lineThin;
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = C.line;
     const diags = [
         ['a5', 'e1'], ['e5', 'a1'],
         ['c5', 'e3'], ['e3', 'c1'], ['c1', 'a3'], ['a3', 'c5'],
@@ -167,13 +161,6 @@ export function drawAll(ctx) {
             ctx.lineCap = 'round';
             ctx.strokeStyle = moveColor;
             ctx.stroke();
-        } else if (vs.lastMove.to) {
-            // Goat drop
-            ctx.fillStyle = moveColor;
-            const { px, py } = POS[vs.lastMove.to];
-            ctx.beginPath();
-            ctx.arc(px, py, 18, 0, Math.PI * 2);
-            ctx.fill();
         }
     }
 

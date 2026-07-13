@@ -11,7 +11,7 @@ export const CLICK_RADIUS = 26;  // Strict radius for precise clicks
 export const DRAG_RADIUS = 100;  // Forgiving radius for drag-and-drop
 
 export const C = {
-    boardBg: '#1e293b',
+    boardBg: '#313b4fff',
     boardBgEdge: '#0f172a',
     line: '#94a3b8',
     lineThin: '#64748b',

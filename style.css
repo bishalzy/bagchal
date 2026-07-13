@@ -4,8 +4,8 @@
 
 :root {
     /* Colors */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
+    --bg-primary: #2a2a38;
+    --bg-secondary: #1d2129;
     --bg-card: #334155;
     --bg-board: #1e293b;
     --board-surface: #1e293b;
@@ -823,14 +823,14 @@ body {
     margin: 0;
 }
 
-.seo-content details > p,
-.seo-content details > ul,
-.seo-content details > dl {
+.seo-content details>p,
+.seo-content details>ul,
+.seo-content details>dl {
     padding: 0 20px 16px;
     font-size: 14px;
 }
 
-.seo-content details > p:first-of-type {
+.seo-content details>p:first-of-type {
     padding-top: 0;
 }
 
@@ -1001,8 +1001,10 @@ body {
 
 @media (max-width: 500px) {
     .game-area {
-        padding: 50px 8px 24px 8px; /* Tighten up top/bottom padding */
-        gap: 12px; /* Reduce empty space between panels and board */
+        padding: 50px 8px 24px 8px;
+        /* Tighten up top/bottom padding */
+        gap: 12px;
+        /* Reduce empty space between panels and board */
         margin: 0;
     }
 
