@@ -4,23 +4,23 @@
 
 :root {
     /* Colors */
-    --bg-primary: #d9d9d9;
-    --bg-secondary: #ffffff;
-    --bg-card: #f3f4f6;
-    --bg-board: #f9fafb;
-    --board-surface: #f9fafb;
-    --board-line: #221105;
-    --text-primary: #1a1b1e;
-    --text-secondary: #495057;
-    --text-muted: #868e96;
-    --accent-goat: #0277bd;
-    --accent-goat-dark: #01579b;
-    --accent-tiger: #d32f2f;
-    --accent-tiger-dark: #b71c1c;
-    --accent-gold: #f59f00;
-    --accent-green: #2b8a3e;
-    --danger: #e03131;
-    --border: #dee2e6;
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #334155;
+    --bg-board: #1e293b;
+    --board-surface: #1e293b;
+    --board-line: #94a3b8;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --accent-goat: #38bdf8;
+    --accent-goat-dark: #0284c7;
+    --accent-tiger: #ea580c;
+    --accent-tiger-dark: #c2410c;
+    --accent-gold: #fbbf24;
+    --accent-green: #4ade80;
+    --danger: #ef4444;
+    --border: #334155;
 
     /* Typography */
     --font: "Inter", system-ui, -apple-system, sans-serif;
@@ -219,13 +219,11 @@ body {
 }
 
 .panel.active::before {
-    background: #1e3a8a;
-    /* Navy Blue for Goat */
+    background: var(--accent-goat);
 }
 
 #panelBagh.active::before {
-    background: #e21d1d;
-    /* Red for Tiger */
+    background: var(--accent-tiger);
 }
 
 .panel-right::before {
@@ -263,7 +261,7 @@ body {
 }
 
 .piece-icon-bakhra {
-    background-color: #0d47a1; /* Dark blue */
+    background-color: var(--accent-goat);
     -webkit-mask-image: url("goat.webp");
     mask-image: url("goat.webp");
     -webkit-mask-size: 80%;
@@ -272,11 +270,11 @@ body {
     mask-position: center;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    border: 2px solid var(--accent-goat);
+    border: 2px solid var(--accent-goat-dark);
 }
 
 .piece-icon-bagh {
-    background-color: #e53935; /* A bit red */
+    background-color: var(--accent-tiger);
     -webkit-mask-image: url("Tiger.webp");
     mask-image: url("Tiger.webp");
     -webkit-mask-size: 80%;
@@ -285,7 +283,7 @@ body {
     mask-position: center;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    border: 2px solid var(--accent-tiger);
+    border: 2px solid var(--accent-tiger-dark);
 }
 
 .stat-grid {
@@ -309,16 +307,16 @@ body {
 .stat-value {
     font-size: 20px;
     font-weight: 800;
-    color: #000;
+    color: var(--text-primary);
     font-variant-numeric: tabular-nums;
 }
 
 .stat-value-danger {
-    color: #000;
+    color: var(--text-primary);
 }
 
 .stat-value-warn {
-    color: #000;
+    color: var(--text-primary);
 }
 
 /* ---- Board Container ---- */
@@ -371,7 +369,7 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(8px);
     border-radius: var(--radius);
     z-index: 10;
@@ -501,7 +499,7 @@ body {
 .log-entry {
     font-size: 12px;
     font-weight: 500;
-    color: #000;
+    color: var(--text-primary);
     padding: 4px 6px;
     background: transparent;
     border-radius: 4px;
@@ -533,7 +531,7 @@ body {
 }
 
 .log-entry.log-active {
-    background: rgba(2, 119, 189, 0.1);
+    background: rgba(56, 189, 248, 0.2);
     border-left-color: var(--accent-goat) !important;
     font-weight: 600;
     border-radius: 4px;
@@ -542,7 +540,7 @@ body {
 
 .log-entry.log-active.log-tiger,
 .log-entry.log-active.log-capture {
-    background: rgba(211, 47, 47, 0.08);
+    background: rgba(234, 88, 12, 0.2);
     border-left-color: var(--accent-tiger) !important;
 }
 
@@ -744,7 +742,153 @@ body {
     }
 }
 
-/* SEO Content Styles Removed (Now in Modal) */
+/* ---- Visible SEO Content Section ---- */
+.seo-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 28px 40px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.seo-content-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.seo-content-intro {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 15px;
+}
+
+.seo-content details {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.seo-content details:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.seo-content details[open] {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.seo-content summary {
+    cursor: pointer;
+    padding: 16px 20px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.seo-content summary:hover {
+    background: var(--bg-card);
+}
+
+.seo-content summary::after {
+    content: "+";
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-left: 12px;
+    transition: transform 0.2s ease;
+}
+
+.seo-content details[open] summary::after {
+    content: "−";
+}
+
+.seo-content summary::-webkit-details-marker {
+    display: none;
+}
+
+.seo-content summary h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.seo-content details > p,
+.seo-content details > ul,
+.seo-content details > dl {
+    padding: 0 20px 16px;
+    font-size: 14px;
+}
+
+.seo-content details > p:first-of-type {
+    padding-top: 0;
+}
+
+.seo-content ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.seo-content li {
+    margin-bottom: 8px;
+}
+
+/* FAQ definition list */
+.seo-faq dt {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.seo-faq dt:first-child {
+    margin-top: 0;
+}
+
+.seo-faq dd {
+    margin-left: 0;
+    margin-top: 6px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* ---- Footer ---- */
+.site-footer {
+    text-align: center;
+    padding: 24px 20px 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.site-footer p {
+    margin-bottom: 4px;
+}
+
+.site-footer a {
+    color: var(--text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+    color: var(--text-primary);
+}
 
 /* ---- Responsive ---- */
 @media (max-width: 1100px) {

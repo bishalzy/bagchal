@@ -102,7 +102,7 @@ export function drawPiece(ctx, key, type, isSelected) {
 
     if (img.complete && img.naturalWidth > 0) {
         const imgSize = Math.round(radius * 2);
-        const color = isTiger ? '#e53935' : '#0d47a1';
+        const color = isTiger ? '#ea580c' : '#38bdf8';
         const coloredImg = getColoredImage(img, color, imgSize);
         if (coloredImg) {
             ctx.drawImage(coloredImg, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
@@ -154,8 +154,8 @@ export function drawAll(ctx) {
         if (vs.lastMove.from && vs.lastMove.to) {
             const isTiger = vs.baghs.has(vs.lastMove.to);
             const isGoat = vs.bakhras.has(vs.lastMove.to);
-            if (isTiger) moveColor = 'rgba(229, 57, 53, 0.4)'; // Red
-            else if (isGoat) moveColor = 'rgba(13, 71, 161, 0.4)'; // Dark blue
+            if (isTiger) moveColor = 'rgba(234, 88, 12, 0.4)'; // Orange
+            else if (isGoat) moveColor = 'rgba(56, 189, 248, 0.4)'; // Darker Sky blue
 
             // Draw line connecting move
             const start = POS[vs.lastMove.from];
@@ -213,7 +213,7 @@ export function renderDragging(ctx, drag) {
     ctx.globalAlpha = 0.85;
     if (img.complete && img.naturalWidth > 0) {
         const imgSize = radius * 2;
-        const color = isTiger ? '#e53935' : '#0d47a1';
+        const color = isTiger ? '#ea580c' : '#38bdf8';
         const coloredImg = getColoredImage(img, color, imgSize);
         if (coloredImg) {
             ctx.drawImage(coloredImg, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);

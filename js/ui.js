@@ -210,9 +210,9 @@ export function showSystemBanner(msg, isError = false) {
     banner.style.display = "block";
 
     if (isError) {
-      banner.style.background = "#ffebee";
-      banner.style.color = "#c62828";
-      banner.style.borderBottom = "1px solid #c62828";
+      banner.style.background = "rgba(239, 68, 68, 0.1)";
+      banner.style.color = "var(--danger)";
+      banner.style.borderBottom = "1px solid var(--danger)";
     } else {
       banner.style.background = "var(--bg-secondary)";
       banner.style.color = "var(--text-primary)";

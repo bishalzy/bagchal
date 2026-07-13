@@ -11,14 +11,14 @@ export const CLICK_RADIUS = 26;  // Strict radius for precise clicks
 export const DRAG_RADIUS = 100;  // Forgiving radius for drag-and-drop
 
 export const C = {
-    boardBg: '#f9fafb',
-    boardBgEdge: '#f3f4f6',
-    line: '#343a40',
-    lineThin: '#495057',
-    labelText: '#495057',
-    legalDot: 'rgba(102,187,106,0.7)',
-    captureDot: 'rgba(244,67,54,0.7)',
-    dotBorder: 'rgba(0,0,0,0.2)',
+    boardBg: '#1e293b',
+    boardBgEdge: '#0f172a',
+    line: '#94a3b8',
+    lineThin: '#64748b',
+    labelText: '#cbd5e1',
+    legalDot: 'rgba(74, 222, 128, 0.7)',
+    captureDot: 'rgba(239, 68, 68, 0.7)',
+    dotBorder: 'rgba(255, 255, 255, 0.1)',
 };
 
 // ---- Coordinate System ----

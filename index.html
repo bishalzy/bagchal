@@ -28,11 +28,12 @@
     content="Play Baghchal online for free. Experience the traditional Nepali strategy board game of Tigers vs Goats (Bagh-Chal) with local and real-time multiplayer modes." />
   <link rel="canonical" href="https://baghchal.xyz/" />
   <meta name="keywords"
-    content="Baghchal, Tigers vs Goats, Baghchal Online, Play Baghchal online, Baghchal with friend, Baghchal Multiplayer, Nepali Board game, Traditional Nepali Board Game, Board game from nepal, strategy game" />
+    content="Baghchal, Bagh Chal, Bagchal, Tigers vs Goats, Tigers and Goats game, Baghchal Online, Play Baghchal online, Play Baghchal free, Baghchal with friend, Baghchal Multiplayer, Baghchal rules, Baghchal strategy, Nepali Board game, Traditional Nepali Board Game, Board game from Nepal, strategy game, strategy game for kids, chess like game, two player board game, बाघचाल" />
   <!-- Favicon & Theme -->
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
   <meta name="theme-color" content="#d9d9d9" />
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- Open Graph / Facebook / Discord -->
   <meta property="og:type" content="website" />
@@ -42,15 +43,18 @@
   <meta property="og:title" content="Baghchal - Traditional Nepali Strategy Game" />
   <meta property="og:description"
     content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-  <meta property="og:image" content="https://baghchal.xyz/favicon.png" />
+  <meta property="og:image" content="https://baghchal.xyz/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
 
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://baghchal.xyz/" />
-  <meta property="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
-  <meta property="twitter:description"
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://baghchal.xyz/" />
+  <meta name="twitter:title" content="Baghchal - Traditional Nepali Strategy Game" />
+  <meta name="twitter:description"
     content="Play the traditional Nepali board game Baghchal online. Tigers vs Goats multiplayer and local play." />
-  <meta property="twitter:image" content="https://baghchal.xyz/favicon.png" />
+  <meta name="twitter:image" content="https://baghchal.xyz/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://api.baghchal.xyz" crossorigin />
@@ -65,17 +69,86 @@
     "@context": "https://schema.org",
     "@type": ["BoardGame", "VideoGame"],
     "name": "Baghchal Online",
-    "description": "A digital multiplayer adaptation of the traditional Nepali strategy board game, Tigers vs Goats.",
-    "genre": ["Board Game", "Strategy Game"],
+    "alternateName": ["Bagh Chal", "Bagchal", "Tigers and Goats", "बाघचाल"],
+    "description": "Play the traditional Nepali strategy board game Baghchal online for free. Challenge friends in real-time multiplayer or practice locally.",
+    "genre": ["Board Game", "Strategy Game", "Traditional Game"],
     "playMode": ["SinglePlayer", "MultiPlayer"],
+    "numberOfPlayers": {
+      "@type": "QuantitativeValue",
+      "minValue": 1,
+      "maxValue": 2
+    },
     "applicationCategory": "GameApplication",
     "operatingSystem": "Web Browser",
+    "gamePlatform": ["Web Browser", "Desktop", "Mobile"],
+    "inLanguage": "en",
     "url": "https://baghchal.xyz/",
-    "image": "https://baghchal.xyz/favicon.png",
+    "image": "https://baghchal.xyz/og-image.png",
+    "screenshot": "https://baghchal.xyz/og-image.png",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
     "author": {
       "@type": "Person",
       "name": "Bishal"
+    },
+    "datePublished": "2025-01-01",
+    "countryOfOrigin": {
+      "@type": "Country",
+      "name": "Nepal"
     }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Baghchal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Baghchal (also known as Bagh Chal or Tigers and Goats) is a traditional two-player strategy board game from Nepal. One player controls 4 tigers while the other controls 20 goats. Tigers try to capture goats by jumping over them, while goats try to trap all tigers so they cannot move."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you play Baghchal online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Visit baghchal.xyz to play for free. You can play locally on the same device, or create a multiplayer room and share the room code with a friend to play in real-time online."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Baghchal free to play?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, Baghchal Online at baghchal.xyz is completely free to play with no sign-up or download required. Just open the website and start playing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the rules of Baghchal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Tigers win by capturing 5 goats. Goats win by trapping all 4 tigers so they cannot move. The game is played on a 5×5 grid. Tigers start at the four corners. Goats are placed one at a time on empty intersections. Tigers can capture goats by jumping over them into an empty space, similar to checkers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I play Baghchal with a friend online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Click 'Create Room' to generate a unique room code, then share it with your friend. They click 'Join Room' and enter the code to start a real-time multiplayer game."
+        }
+      }
+    ]
   }
   </script>
 </head>
@@ -91,8 +164,26 @@
       <div class="header-title">
         <h1>BAGHCHAL</h1>
       </div>
-      <button class="btn btn-restart" id="btnAbout" aria-label="About Baghchal">What is bagchal?</button>
+      <nav aria-label="Main navigation">
+        <button class="btn btn-restart" id="btnAbout" aria-label="About Baghchal">What is Baghchal?</button>
+      </nav>
     </header>
+
+    <!-- Noscript fallback for crawlers and non-JS users -->
+    <noscript>
+      <div
+        style="padding: 40px; text-align: center; max-width: 700px; margin: 80px auto; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.5);">
+        <h2>Baghchal Online — Traditional Nepali Board Game</h2>
+        <p style="margin: 16px 0; line-height: 1.6; color: var(--text-secondary);">Play the classic Tigers vs Goats
+          (Bagh Chal) strategy game for free. Challenge friends in real-time multiplayer or practice locally on the same
+          device.</p>
+        <p style="margin: 16px 0; line-height: 1.6; color: var(--text-secondary);">Baghchal is a two-player strategy
+          board game from Nepal where 4 tigers try to capture 20 goats, while goats try to trap all tigers so they
+          cannot move. The game is played on a 5×5 grid with lines connecting the intersection points.</p>
+        <p style="margin-top: 24px; font-weight: 600; color: var(--text-primary);">Please enable JavaScript to play the
+          game.</p>
+      </div>
+    </noscript>
 
     <!-- Main Game Area -->
     <main class="game-area">
@@ -153,10 +244,10 @@
         <div class="board-actions">
           <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
           <div id="roomCodeDisplay"
-            style="display: none; align-items: center; justify-content: center; background: #e0f2f1; color: #00796b; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
+            style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--accent-goat); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
             <span id="roomCodeText"></span>
             <button id="btnCopyRoomCode" title="Copy Room Code" aria-label="Copy Room Code to Clipboard"
-              style="background: none; border: none; cursor: pointer; color: #00796b; display: flex; align-items: center; padding: 4px; border-radius: 4px;">
+              style="background: none; border: none; cursor: pointer; color: var(--accent-goat); display: flex; align-items: center; padding: 4px; border-radius: 4px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -378,6 +469,108 @@
       </svg>
       <span class="exit-text">Exit Room</span>
     </button>
+
+    <!-- Visible SEO Content Section (crawlable by search engines) -->
+    <section class="seo-content" id="about-baghchal">
+      <h2 class="seo-content-title">About Baghchal — Tigers vs Goats</h2>
+      <p class="seo-content-intro">
+        <strong>Baghchal Online</strong> brings the classic experience of the <strong>traditional Nepali board
+          game</strong> to the digital world. Also known as Bagh Chal ("Move of the Tigers"), Bagchal, or simply
+        Tigers and Goats, this famous <strong>Nepali board game</strong> is a two-player strategy game where one person
+        plays as four tigers and the other plays as twenty goats.
+      </p>
+
+      <details open>
+        <summary>
+          <h3>How to Play Baghchal (Rules)</h3>
+        </summary>
+        <p>The Baghchal board is a 5×5 grid with lines connecting the intersection points. Here are the core rules:</p>
+        <ul>
+          <li><strong>The Goal:</strong> Tigers want to capture 5 goats. Goats want to trap all 4 tigers so they cannot
+            move.</li>
+          <li><strong>Setup:</strong> The 4 tigers start in the four corners of the board.</li>
+          <li><strong>Phase 1 (Placement):</strong> The goat player places their 20 goats on the board one by one on
+            empty intersections. During this phase, tigers can move one step along the lines.</li>
+          <li><strong>Phase 2 (Movement):</strong> After all 20 goats are placed, goats can finally move one step at a
+            time along the lines.</li>
+          <li><strong>Capturing:</strong> Tigers can capture a goat by jumping over it into an empty space beyond it
+            (just like in checkers). Goats cannot jump or capture.</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>
+          <h3>Goat Strategy: How to Win</h3>
+        </summary>
+        <ul>
+          <li><strong>Control the Center:</strong> Place your first few goats in the middle of the board to block the
+            tigers early. The center has the most connections.</li>
+          <li><strong>Work as a Team:</strong> Keep your goats close together in connected groups. An isolated goat is
+            easy prey for a tiger.</li>
+          <li><strong>Be Patient:</strong> Slowly trap the tigers by reducing their available moves. Don't rush — your
+            starting placement is the most important part of the game.</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>
+          <h3>Tiger Strategy: How to Win</h3>
+        </summary>
+        <ul>
+          <li><strong>Hunt the Weak:</strong> Look for goats that are alone near the edges or corners and capture them
+            quickly before formations solidify.</li>
+          <li><strong>Keep Moving:</strong> Don't let your tigers get stuck in the corners. Keep them in open positions
+            so they have room to jump.</li>
+          <li><strong>Break Formations:</strong> If you see the goats building a strong wall, jump over them early
+            before they finish surrounding you.</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>
+          <h3>History and Culture</h3>
+        </summary>
+        <p>This ancient <strong>board game from Nepal</strong> has been played in the Himalayan regions for hundreds of
+          years. Villagers would draw the board on the ground and play in community gathering places called
+          <em>chautaris</em>. Today, Baghchal has gained global recognition with tournaments held in Europe and
+          interest from game theory and AI researchers worldwide.
+        </p>
+        <p>Playing strategy games like Baghchal online is great for both kids and adults. It helps practice critical
+          thinking, planning, and patience. Unlike chess, a game of Baghchal typically takes only 15 to 30 minutes,
+          making it a quick and fun way to learn about Nepali culture!</p>
+      </details>
+
+      <details>
+        <summary>
+          <h3>Frequently Asked Questions</h3>
+        </summary>
+        <dl class="seo-faq">
+          <dt>Is Baghchal free to play?</dt>
+          <dd>Yes! Baghchal Online at baghchal.xyz is completely free — no sign-up or download required.</dd>
+
+          <dt>Can I play Baghchal with a friend online?</dt>
+          <dd>Yes! Click "Create Room" to get a room code, share it with your friend, and they can join for a
+            real-time multiplayer game.</dd>
+
+          <dt>What devices does Baghchal work on?</dt>
+          <dd>Baghchal Online works on any modern web browser — desktop, tablet, or mobile phone.</dd>
+
+          <dt>How is Baghchal different from chess?</dt>
+          <dd>Baghchal is an asymmetric game (one side has tigers, the other has goats) with simpler rules but deep
+            strategy. Games are shorter (15-30 min) and the two sides play very differently.</dd>
+
+          <dt>Is Baghchal a solved game?</dt>
+          <dd>While computer analysis exists, Baghchal isn't completely solved. Research suggests perfect goat play
+            can achieve at least a draw, but the game remains challenging for human players.</dd>
+        </dl>
+      </details>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>Baghchal Multiplayer Online — The traditional Nepali strategy board game of Tigers vs Goats.</p>
+      <p>Play <a href="https://baghchal.xyz/">Baghchal online</a> for free. No download required.</p>
+    </footer>
   </div>
 
   <script type="module" src="js/main.js"></script>
