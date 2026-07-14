@@ -49,6 +49,18 @@ export function syncStateFromServer(serverState) {
         state.moveHistory = [...serverState.moveHistory];
     }
 
+    // Derive lastMove from moveHistory for board highlight after rejoin
+    if (state.moveHistory && state.moveHistory.length > 0) {
+        const lastMsg = state.moveHistory[state.moveHistory.length - 1];
+        const arrowMatch = lastMsg.match(/(\w\d)\s*(?:->|→)\s*(\w\d)/);
+        const placeMatch = lastMsg.match(/placed at (\w\d)/i);
+        if (arrowMatch) {
+            state.lastMove = { from: arrowMatch[1].toLowerCase(), to: arrowMatch[2].toLowerCase() };
+        } else if (placeMatch) {
+            state.lastMove = { from: null, to: placeMatch[1].toLowerCase() };
+        }
+    }
+
     // Clear selection state when updating from server
     state.selected = null;
     state.legalMoves = [];

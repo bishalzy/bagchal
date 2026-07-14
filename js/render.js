@@ -118,7 +118,7 @@ export function drawPiece(ctx, key, type, isSelected) {
             ctx.drawImage(img, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
         }
     } else {
-        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.fillStyle = isTiger ? '#ea580c' : '#38bdf8';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -222,7 +222,7 @@ export function renderDragging(ctx, drag) {
             ctx.drawImage(img, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
         }
     } else {
-        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.fillStyle = isTiger ? '#ea580c' : '#38bdf8';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

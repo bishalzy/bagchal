@@ -203,10 +203,11 @@ export function showInfoModal(msg, onClose = null) {
 
 let systemBannerTimeout = null;
 
-export function showSystemBanner(msg, isError = false) {
+export function showSystemBanner(msg, isError = false, useHTML = false) {
   const banner = document.getElementById("systemBanner");
   if (banner) {
-    banner.innerHTML = msg;
+    if (useHTML) banner.innerHTML = msg;
+    else banner.textContent = msg;
     banner.style.display = "block";
 
     if (isError) {
@@ -262,6 +263,13 @@ export function addLog(msg, type) {
   }
 }
 
+function inferLogType(msg) {
+  if (msg.startsWith('Goat')) return 'goat';
+  if (msg.startsWith('Tiger') && msg.includes('Captured')) return 'capture';
+  if (msg.startsWith('Tiger')) return 'tiger';
+  return 'goat';
+}
+
 export function renderMoveHistory(history) {
   const logContainer = document.getElementById("moveLog");
   if (!logContainer) return;
@@ -272,8 +280,9 @@ export function renderMoveHistory(history) {
   if (history && history.length > 0) {
     history.forEach((msg, index) => {
       moveNumber++;
+      const type = inferLogType(msg);
       const span = document.createElement("span");
-      span.className = `log-entry log-move`;
+      span.className = `log-entry log-${type}`;
       span.textContent = `${moveNumber}. ${msg}`;
       span.dataset.moveIndex = String(moveNumber);
       logContainer.appendChild(span);

@@ -13,6 +13,8 @@ export function setupAssets(onLoadCallback) {
         imagesLoaded++;
         if (imagesLoaded >= 2) onLoadCallback();
     }
-    IMG_TIGER.onload = onImageLoad;
-    IMG_GOAT.onload = onImageLoad;
+    if (IMG_TIGER.complete && IMG_TIGER.naturalWidth > 0) onImageLoad();
+    else IMG_TIGER.onload = onImageLoad;
+    if (IMG_GOAT.complete && IMG_GOAT.naturalWidth > 0) onImageLoad();
+    else IMG_GOAT.onload = onImageLoad;
 }

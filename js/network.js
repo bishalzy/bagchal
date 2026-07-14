@@ -128,28 +128,14 @@ export function initNetwork(canvasCtx) {
 
     socket.on('state-update', (data) => {
         const move = data.move;
-        const isEcho = state.lastMove && move &&
-            (state.lastMove.from || null) === (move.from || null) &&
-            state.lastMove.to === move.to &&
-            state.turn === data.state.turn;
-
-        if (isEcho) {
-            // Silently sync state to ensure we are perfectly aligned
-            syncStateFromServer(data.state);
-            updateUI();
-            render(canvasCtx);
-            return;
-        }
-
+        // Derive who moved from server state (server already switched the turn)
+        const turnWhoMoved = data.state.turn === 'bakhra' ? 'bagh' : 'bakhra';
         const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
-        const turnWhoMoved = state.turn;
 
-        syncStateFromServer(data.state);
-
+        // Log and play sound BEFORE sync — sync will overwrite moveHistory
+        // with the server's authoritative version, preventing duplicates
         if (move) {
-            state.lastMove = move;
             const isTiger = turnWhoMoved === 'bagh';
-            const label = isTiger ? 'Tiger' : 'Goat';
 
             if (!move.from) {
                 addLog(`Goat placed at ${move.to.toUpperCase()}`, 'goat');
@@ -159,11 +145,16 @@ export function initNetwork(canvasCtx) {
                     addLog(`Tiger ${move.from.toUpperCase()}→${move.to.toUpperCase()} captures a Goat!`, 'capture');
                     playSound('capture');
                 } else {
+                    const label = isTiger ? 'Tiger' : 'Goat';
                     addLog(`${label} ${move.from.toUpperCase()}→${move.to.toUpperCase()}`, isTiger ? 'tiger' : 'goat');
                     playSound(isTiger ? 'bagh' : 'bakhra');
                 }
             }
         }
+
+        // Sync state from server (authoritative)
+        syncStateFromServer(data.state);
+        if (move) state.lastMove = move;
 
         saveSnapshot(countTrappedTigers());
         updateUI();
@@ -186,7 +177,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('player-disconnected', (data) => {
-        showSystemBanner(`Opponent disconnected.<br>Game will close soon if they don't reconnect.`, true);
+        showSystemBanner(`Opponent disconnected.<br>Game will close soon if they don't reconnect.`, true, true);
     });
 
     socket.on('room-destroyed-info', (data) => {

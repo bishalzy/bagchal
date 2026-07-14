@@ -17,7 +17,7 @@ export function playSound(type) {
         if (type === 'bagh') {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(100, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            osc.frequency.exponentialRampToValueAtTime(60, now + 0.1);
             gain.gain.setValueAtTime(0.4, now);
             gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
             osc.start(now);
