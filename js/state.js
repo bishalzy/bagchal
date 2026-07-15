@@ -17,6 +17,13 @@ export function createInitialState() {
         localRole: null, // 'bakhra', 'bagh', or null (offline local play)
         roomId: null,
         players: [], // Array of players from server
+
+        // Bot mode additions
+        // isBotMode: true when the player is playing against the AI.
+        // botRole: which side the bot plays ('bagh' or 'bakhra').
+        // The human player always plays the opposite side.
+        isBotMode: false,
+        botRole: null,
     };
 }
 
@@ -28,13 +35,23 @@ export function resetState() {
     const roomId = state.roomId;
     const players = state.players;
 
-    state = createInitialState();
+    // Preserve bot mode across resets so "Play Again" keeps the bot active
+    const isBotMode = state.isBotMode;
+    const botRole = state.botRole;
 
-    // Preserve network properties on reset
+    const initial = createInitialState();
+    for (let key in state) delete state[key];
+    Object.assign(state, initial);
+
+    // Restore network properties
     state.isMultiplayer = isMultiplayer;
     state.localRole = localRole;
     state.roomId = roomId;
     state.players = players;
+
+    // Restore bot mode properties
+    state.isBotMode = isBotMode;
+    state.botRole = botRole;
 }
 
 export function syncStateFromServer(serverState) {

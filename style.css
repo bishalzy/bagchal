@@ -9,7 +9,7 @@
     --bg-card: #334155;
     --bg-board: #1e293b;
     --board-surface: #1e293b;
-    --board-line: #94a3b8;
+    --board-line: #ffffff;
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
@@ -549,6 +549,136 @@ body {
     border-left-color: var(--text-secondary) !important;
 }
 
+/* ---- Bot Button ---- */
+/* "vs Bot" action button: distinct from multiplayer buttons with a
+   purple gradient to signal a different game mode */
+.btn-bot {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* ---- Bot Modal Card ---- */
+/* Overrides the generic game-over-card sizing for the side-picker layout */
+.bot-modal-card {
+    width: min(400px, 92vw);
+    padding: 36px 32px 28px;
+    text-align: center;
+}
+
+/* Header: robot icon + title side-by-side */
+.bot-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.bot-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(79, 70, 229, 0.2));
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    color: #a78bfa;
+    flex-shrink: 0;
+}
+
+.bot-modal-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 0;
+    color: #fff;
+}
+
+.bot-modal-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    margin-top: 6px;
+}
+
+/* ---- Bot Side Picker ---- */
+/* Two side-by-side cards the player clicks to choose Goat or Tiger */
+.bot-side-picker {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.bot-side-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 20px;
+    background: var(--bg-primary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    font-family: var(--font);
+    flex: 1;
+    min-width: 130px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Goat card hover: sky-blue accent */
+.bot-side-goat:hover,
+.bot-side-goat:focus-visible {
+    border-color: var(--accent-goat);
+    background: rgba(56, 189, 248, 0.08);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(56, 189, 248, 0.25);
+}
+
+/* Tiger card hover: orange accent */
+.bot-side-tiger:hover,
+.bot-side-tiger:focus-visible {
+    border-color: var(--accent-tiger);
+    background: rgba(234, 88, 12, 0.08);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(234, 88, 12, 0.25);
+}
+
+/* Piece icon inside the picker card */
+.bot-side-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.22s ease;
+}
+
+.bot-side-btn:hover .bot-side-icon {
+    transform: scale(1.15);
+}
+
+.bot-side-name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.bot-side-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+}
+
 /* ---- Buy Me a Momo Widget ---- */
 .momo-container {
     position: fixed;
@@ -766,7 +896,7 @@ body {
     font-size: 15px;
 }
 
-.seo-content details {
+.seo-content .seo-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -775,62 +905,32 @@ body {
     transition: box-shadow 0.2s ease;
 }
 
-.seo-content details:hover {
+.seo-content .seo-card:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-.seo-content details[open] {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-
-.seo-content summary {
-    cursor: pointer;
+.seo-content .seo-card-header {
     padding: 16px 20px;
-    list-style: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    user-select: none;
-    transition: background 0.2s ease;
 }
 
-.seo-content summary:hover {
-    background: var(--bg-card);
-}
-
-.seo-content summary::after {
-    content: "+";
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    margin-left: 12px;
-    transition: transform 0.2s ease;
-}
-
-.seo-content details[open] summary::after {
-    content: "−";
-}
-
-.seo-content summary::-webkit-details-marker {
-    display: none;
-}
-
-.seo-content summary h3 {
+.seo-content .seo-card-header h3 {
     font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
 }
 
-.seo-content details>p,
-.seo-content details>ul,
-.seo-content details>dl {
+.seo-content .seo-card>p,
+.seo-content .seo-card>ul,
+.seo-content .seo-card>dl {
     padding: 0 20px 16px;
     font-size: 14px;
 }
 
-.seo-content details>p:first-of-type {
+.seo-content .seo-card>p:first-of-type {
     padding-top: 0;
 }
 

@@ -113,6 +113,10 @@ export function setupInput(canvas, ctx) {
       return;
     }
     if (state.gameOver) return;
+
+    // In bot mode, ignore input on the bot's turn — the bot handles its own moves
+    if (state.isBotMode && state.turn === state.botRole) return;
+
     const { x, y } = getCanvasCoords(canvas, e);
     const pos = posFromPixel(x, y);
 
@@ -187,6 +191,10 @@ export function setupInput(canvas, ctx) {
   function handleEnd(e) {
     if (state.gameOver) return;
     if (isReplaying()) return;
+
+    // In bot mode, ignore input on the bot's turn
+    if (state.isBotMode && state.turn === state.botRole) return;
+
     const { x, y } = getCanvasCoords(canvas, e);
 
     if (drag.active) {
