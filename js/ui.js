@@ -48,12 +48,43 @@ export function updateUI() {
     if (createBtn) createBtn.style.display = "none";
     const joinBtn = document.getElementById("btnJoinRoom");
     if (joinBtn) joinBtn.style.display = "none";
+    const botBtn = document.getElementById("btnPlayBot");
+    if (botBtn) botBtn.style.display = "none";
 
     const roomCodeDisplay = document.getElementById("roomCodeDisplay");
     if (state.players.length === 2 && roomCodeDisplay) {
         roomCodeDisplay.style.display = "none";
     }
+  } else if (state.isBotMode) {
+    // ---- Bot Mode UI ----
+    // Label panels as "YOU" and "BOT" based on which side the bot plays.
+    const humanRole = state.botRole === 'bagh' ? 'bakhra' : 'bagh';
+    if (goatNameEl) {
+      goatNameEl.textContent = humanRole === 'bakhra' ? 'YOU' : 'BOT';
+    }
+    if (tigerNameEl) {
+      tigerNameEl.textContent = humanRole === 'bagh' ? 'YOU' : 'BOT';
+    }
+
+    // Keep panel order default in bot mode
+    panelBakhra.style.order = "";
+    panelBagh.style.order = "";
+
+    // Hide multiplayer controls, show only the exit-bot button
+    const exitBtn = document.getElementById("btnExitRoom");
+    if (exitBtn) exitBtn.style.display = "none";
+    const roomCodeDisplay = document.getElementById("roomCodeDisplay");
+    if (roomCodeDisplay) roomCodeDisplay.style.display = "none";
+    const createBtn = document.getElementById("btnCreateRoom");
+    if (createBtn) createBtn.style.display = "none";
+    const joinBtn = document.getElementById("btnJoinRoom");
+    if (joinBtn) joinBtn.style.display = "none";
+    const botBtn = document.getElementById("btnPlayBot");
+    if (botBtn) botBtn.style.display = "none";
+    const exitBotBtn = document.getElementById("btnExitBot");
+    if (exitBotBtn) exitBotBtn.style.display = "inline-flex";
   } else {
+    // ---- Normal offline local-play UI ----
     if (goatNameEl) goatNameEl.textContent = "GOATS";
     if (tigerNameEl) tigerNameEl.textContent = "TIGERS";
 
@@ -67,9 +98,13 @@ export function updateUI() {
     if (roomCodeDisplay) roomCodeDisplay.style.display = "none";
 
     const createBtn = document.getElementById("btnCreateRoom");
-    if (createBtn) createBtn.style.display = "inline-flex";
+    if (createBtn) createBtn.style.display = state.roomId ? "none" : "inline-flex";
     const joinBtn = document.getElementById("btnJoinRoom");
-    if (joinBtn) joinBtn.style.display = "inline-flex";
+    if (joinBtn) joinBtn.style.display = state.roomId ? "none" : "inline-flex";
+    const botBtn = document.getElementById("btnPlayBot");
+    if (botBtn) botBtn.style.display = state.roomId ? "none" : "inline-flex";
+    const exitBotBtn = document.getElementById("btnExitBot");
+    if (exitBotBtn) exitBotBtn.style.display = "none";
   }
 
   if (vs.gameOver) {

@@ -168,7 +168,8 @@
         <h1>BAGHCHAL</h1>
       </div>
       <nav aria-label="Main navigation">
-        <button class="btn btn-restart" id="btnAbout" aria-label="About Baghchal">What is Baghchal?</button>
+        <a class="btn btn-restart" id="btnAbout" href="/about.html" aria-label="About Baghchal"
+          style="text-decoration: none;">What is Baghchal?</a>
       </nav>
     </header>
 
@@ -245,6 +246,8 @@
         </div>
 
         <div class="board-actions">
+          <!-- Play vs Bot: leftmost action button -->
+          <button class="btn btn-action btn-bot" id="btnPlayBot" aria-label="Play against the AI bot">vs Bot</button>
           <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
           <div id="roomCodeDisplay"
             style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--accent-goat); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
@@ -268,10 +271,11 @@
             <div class="spinner"
               style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite;">
             </div>
+            <button class="btn btn-action" id="btnCancelWaiting">Cancel</button>
           </div>
         </div>
 
-        <!-- Game Over Overlay- -->
+        <!-- Game Over Overlay -->
         <div class="game-over-overlay" id="gameOverOverlay">
           <div class="game-over-card">
             <h2 id="gameOverTitle">Game Over</h2>
@@ -280,6 +284,39 @@
               <button class="btn btn-restart" id="btnPlayAgain" aria-label="Play Again">Play Again</button>
               <button class="btn btn-cancel" id="btnCancelGame" aria-label="Cancel Game">Cancel</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Bot Side-Picker Modal -->
+        <!-- Shown centered on the board when the player clicks "vs Bot".
+             The player picks which piece (Goat or Tiger) they want to play;
+             the bot automatically takes the other side. -->
+        <div class="game-over-overlay" id="botModal">
+          <div class="game-over-card bot-modal-card">
+            <div class="bot-modal-header">
+              <h2>Play vs Bot</h2>
+            </div>
+            <p class="bot-modal-subtitle">Choose your side. The AI will play the other.</p>
+
+            <!-- Side selection cards -->
+            <div class="bot-side-picker">
+              <!-- Goat card -->
+              <button class="bot-side-btn bot-side-goat" data-side="bakhra" aria-label="Play as Goat against the bot">
+                <div class="bot-side-icon piece-icon piece-icon-bakhra"></div>
+                <span class="bot-side-name">Goat</span>
+                <span class="bot-side-desc">Place &amp; trap tigers</span>
+              </button>
+
+              <!-- Tiger card -->
+              <button class="bot-side-btn bot-side-tiger" data-side="bagh" aria-label="Play as Tiger against the bot">
+                <div class="bot-side-icon piece-icon piece-icon-bagh"></div>
+                <span class="bot-side-name">Tiger</span>
+                <span class="bot-side-desc">Hunt &amp; capture goats</span>
+              </button>
+            </div>
+
+            <button class="btn btn-cancel" id="btnCancelBot" aria-label="Cancel Play vs Bot"
+              style="margin-top: 12px;">Cancel</button>
           </div>
         </div>
 
@@ -361,96 +398,6 @@
       </div>
     </main>
 
-    <!-- About Baghchal board game -->
-    <div class="game-over-overlay" id="aboutModal" style="z-index: 1000;">
-      <div class="game-over-card"
-        style="max-width: 800px; width: 90%; text-align: left; max-height: 85vh; overflow-y: auto;">
-        <h2 style="text-align: center; margin-bottom: 24px;">About Baghchal (Tigers vs Goats)</h2>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">What is
-          Baghchal?</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
-          <strong><a href="https://baghchal.xyz">baghchal.xyz</a></strong> brings the classic experience of the
-          <strong>Traditional Nepali Board
-            Game</strong> to the digital world. Also known as Bagh Chal ("Move of the Tigers"), this famous
-          <strong>Nepali Board game</strong> is a two-player strategy game. One person plays as four tigers, and the
-          other plays as twenty goats, representing the classic struggle between predator and prey.
-        </p>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
-          If you are looking to <strong>Play Baghchal online Multiplayer mode</strong>, you've found the right place!
-          Whether you want to practice your strategy or enjoy a game of <strong>Baghchal with friend</strong>, our
-          platform offers a
-          seamless <strong>Baghchal Multiplayer</strong> experience.
-        </p>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">History and
-          Culture</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
-          This ancient <strong>Board game from nepal</strong> has been played in the Himalayan regions for hundreds of
-          years. People used to draw the board on the ground in villages. Today, playing Baghchal online has gained
-          global popularity, and there are even tournaments in Europe for strategy game lovers!
-        </p>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">How to Play
-          Baghchal (Rules)</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
-          The rules are easy to learn, but hard to master. The board is a 5x5 grid with lines connecting the points.
-          Here is the basic setup:
-        </p>
-        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
-          <li style="margin-bottom: 8px;"><strong>The Goal:</strong> Tigers want to capture 5 goats. Goats want to trap
-            all 4 tigers so they cannot move.</li>
-          <li style="margin-bottom: 8px;"><strong>Setup:</strong> The 4 tigers start in the four corners of the board.
-          </li>
-          <li style="margin-bottom: 8px;"><strong>Phase 1 (Placement):</strong> The goat player places their 20 goats on
-            the board one by one. During this phase, tigers can move one step along the lines and can capture goats by jumping.</li>
-          <li style="margin-bottom: 8px;"><strong>Phase 2 (Movement):</strong> After all 20 goats are on the board,
-            goats can finally move one step at a time along the lines.</li>
-          <li style="margin-bottom: 8px;"><strong>Capturing:</strong> Tigers can capture a goat by jumping over it into
-            an empty space (just like in checkers). Goats cannot jump or capture.</li>
-        </ul>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Goat Strategy:
-          How to Win</h3>
-        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
-          <li style="margin-bottom: 8px;"><strong>Control the Center:</strong> Place your first few goats in the middle
-            of the board to block the tigers early.</li>
-          <li style="margin-bottom: 8px;"><strong>Work as a Team:</strong> Keep your goats close together. If a goat is
-            left alone, a tiger will easily eat it.</li>
-          <li style="margin-bottom: 8px;"><strong>Be Patient:</strong> Slowly trap the tigers. Don't rush! Your starting
-            placement is the most important part of the game.</li>
-        </ul>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Tiger Strategy:
-          How to Win</h3>
-        <ul style="margin-left: 24px; margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
-          <li style="margin-bottom: 8px;"><strong>Hunt the Weak:</strong> Look for goats that are alone near the edges
-            or corners and capture them quickly.</li>
-          <li style="margin-bottom: 8px;"><strong>Keep Moving:</strong> Don't let your tigers get stuck in the corners.
-            Keep them in the open so they have room to jump.</li>
-          <li style="margin-bottom: 8px;"><strong>Break Formations:</strong> If you see the goats building a strong
-            wall, jump over them early before they finish it.</li>
-        </ul>
-
-        <h3 style="margin-top: 24px; margin-bottom: 12px; color: var(--text-primary); font-size: 18px;">Why Play
-          Strategy Games?</h3>
-        <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-secondary);">
-          Playing strategy games like Baghchal online is great for both kids and adults. It helps you practice critical
-          thinking, planning, and patience. Unlike chess, a game of Baghchal only takes 15 to 30 minutes, making it a
-          quick and fun way to learn about Nepali culture!
-        </p>
-
-        <p style="margin-bottom: 24px; line-height: 1.5; color: var(--text-secondary);">
-          <strong>💡 Tip for Beginners:</strong> If you are new, start by playing as the goats. It is usually easier to
-          learn the game from the defensive side!
-        </p>
-
-        <div class="game-over-buttons" style="margin-top: 0;">
-          <button class="btn btn-cancel" id="btnCloseAbout" aria-label="Close About Modal">Close</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Buy Me a Momo Widget -->
     <a href="https://buymemomo.com/bishalzy" target="_blank" class="momo-container" aria-label="Buy Me a Momo">
       <div class="momo-steam-container">
@@ -462,7 +409,7 @@
       <img src="momo.webp" alt="Momo" class="momo-img" />
     </a>
 
-    <!-- Exit Room Button -->
+    <!-- Exit Room Button (multiplayer) -->
     <button class="btn btn-action" id="btnExitRoom"
       style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #d32f2f; color: white; border: none; padding: 0.8rem 1.2rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); align-items: center; gap: 8px;">
       <svg class="exit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -471,7 +418,22 @@
         <polyline points="16 17 21 12 16 7"></polyline>
         <line x1="21" y1="12" x2="9" y2="12"></line>
       </svg>
-      <span class="exit-text">Exit Room</span>
+      <span class="exit-text">Exit Game</span>
+    </button>
+
+    <!-- Exit Bot Button (bot mode) —
+         Positioned bottom-right like Exit Room but uses a purple/indigo accent
+         so players can visually distinguish it from the multiplayer exit. -->
+    <button class="btn btn-action" id="btnExitBot"
+      style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; background-color: #6d28d9; color: white; border: none; padding: 0.8rem 1.2rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.15); align-items: center; gap: 8px; border-radius: 8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="15" rx="2" />
+        <path d="M16 7V5a2 2 0 0 0-4 0v2" />
+        <line x1="12" y1="11" x2="12" y2="16" />
+        <line x1="9" y1="14" x2="15" y2="14" />
+      </svg>
+      <span class="exit-text">Exit Game</span>
     </button>
 
     <!-- Visible SEO Content Section (crawlable by search engines) -->
@@ -484,28 +446,29 @@
         plays as four tigers and the other plays as twenty goats.
       </p>
 
-      <details open>
-        <summary>
+      <div class="seo-card">
+        <div class="seo-card-header">
           <h3>How to Play Baghchal (Rules)</h3>
-        </summary>
+        </div>
         <p>The Baghchal board is a 5×5 grid with lines connecting the intersection points. Here are the core rules:</p>
         <ul>
           <li><strong>The Goal:</strong> Tigers want to capture 5 goats. Goats want to trap all 4 tigers so they cannot
             move.</li>
           <li><strong>Setup:</strong> The 4 tigers start in the four corners of the board.</li>
           <li><strong>Phase 1 (Placement):</strong> The goat player places their 20 goats on the board one by one on
-            empty intersections. During this phase, tigers can move one step along the lines and can capture goats by jumping.</li>
+            empty intersections. During this phase, tigers can move one step along the lines and can capture goats by
+            jumping.</li>
           <li><strong>Phase 2 (Movement):</strong> After all 20 goats are placed, goats can finally move one step at a
             time along the lines.</li>
           <li><strong>Capturing:</strong> Tigers can capture a goat by jumping over it into an empty space beyond it
             (just like in checkers). Goats cannot jump or capture.</li>
         </ul>
-      </details>
+      </div>
 
-      <details>
-        <summary>
+      <div class="seo-card">
+        <div class="seo-card-header">
           <h3>Goat Strategy: How to Win</h3>
-        </summary>
+        </div>
         <ul>
           <li><strong>Control the Center:</strong> Place your first few goats in the middle of the board to block the
             tigers early. The center has the most connections.</li>
@@ -514,12 +477,12 @@
           <li><strong>Be Patient:</strong> Slowly trap the tigers by reducing their available moves. Don't rush — your
             starting placement is the most important part of the game.</li>
         </ul>
-      </details>
+      </div>
 
-      <details>
-        <summary>
+      <div class="seo-card">
+        <div class="seo-card-header">
           <h3>Tiger Strategy: How to Win</h3>
-        </summary>
+        </div>
         <ul>
           <li><strong>Hunt the Weak:</strong> Look for goats that are alone near the edges or corners and capture them
             quickly before formations solidify.</li>
@@ -528,26 +491,12 @@
           <li><strong>Break Formations:</strong> If you see the goats building a strong wall, jump over them early
             before they finish surrounding you.</li>
         </ul>
-      </details>
+      </div>
 
-      <details>
-        <summary>
-          <h3>History and Culture</h3>
-        </summary>
-        <p>This ancient <strong>board game from Nepal</strong> has been played in the Himalayan regions for hundreds of
-          years. Villagers would draw the board on the ground and play in community gathering places called
-          <em>chautaris</em>. Today, Baghchal has gained global recognition with tournaments held in Europe and
-          interest from game theory and AI researchers worldwide.
-        </p>
-        <p>Playing strategy games like Baghchal online is great for both kids and adults. It helps practice critical
-          thinking, planning, and patience. Unlike chess, a game of Baghchal typically takes only 15 to 30 minutes,
-          making it a quick and fun way to learn about Nepali culture!</p>
-      </details>
-
-      <details>
-        <summary>
+      <div class="seo-card">
+        <div class="seo-card-header">
           <h3>Frequently Asked Questions</h3>
-        </summary>
+        </div>
         <dl class="seo-faq">
           <dt>Is Baghchal free to play?</dt>
           <dd>Yes! Baghchal Online at baghchal.xyz is completely free — no sign-up or download required.</dd>
@@ -567,7 +516,7 @@
           <dd>While computer analysis exists, Baghchal isn't completely solved. Research suggests perfect goat play
             can achieve at least a draw, but the game remains challenging for human players.</dd>
         </dl>
-      </details>
+      </div>
     </section>
 
     <!-- Footer -->

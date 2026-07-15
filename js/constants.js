@@ -11,12 +11,10 @@ export const CLICK_RADIUS = 26;  // Strict radius for precise clicks
 export const DRAG_RADIUS = 100;  // Forgiving radius for drag-and-drop
 
 export const C = {
-    boardBg: '#313b4fff',
-    boardBgEdge: '#0f172a',
-    line: '#94a3b8',
-    lineThin: '#64748b',
-    labelText: '#cbd5e1',
-    legalDot: 'rgba(74, 222, 128, 0.7)',
+    boardBg: '#3f4650ff',
+    line: '#0e0f0eff',
+    labelText: '#94a3b8',
+    legalDot: 'rgba(110, 231, 183, 0.7)',
     captureDot: 'rgba(239, 68, 68, 0.7)',
     dotBorder: 'rgba(255, 255, 255, 0.1)',
 };

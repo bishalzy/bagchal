@@ -231,6 +231,8 @@ export function initNetwork(canvasCtx) {
     socket.on('room-destroyed', (data) => {
         sessionStorage.removeItem('baghchalSession');
         hideSystemBanner();
+        const waitingOverlay = document.getElementById('waitingOverlay');
+        if (waitingOverlay) waitingOverlay.classList.remove('show');
         if (!data || data.by !== socket.id) {
             showInfoModal('Room destroyed. You are now in local play mode.');
         }
@@ -285,7 +287,7 @@ export function playAgain() {
 }
 
 export function cancelGame() {
-    if (!socket || !state.isMultiplayer) return;
+    if (!socket || (!state.isMultiplayer && !state.roomId)) return;
     sessionStorage.removeItem('baghchalSession');
     socket.emit('cancel-game');
 }
