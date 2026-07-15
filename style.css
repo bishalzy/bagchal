@@ -563,10 +563,10 @@ body {
 }
 
 .momo-img {
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
     object-fit: contain;
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+    filter: brightness(0) invert(69%) sepia(11%) saturate(740%) hue-rotate(182deg) brightness(82%) contrast(84%) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
     animation: bounceFloat 3s ease-in-out infinite;
     transition: transform 0.3s ease;
 }

@@ -49,6 +49,21 @@ export function syncStateFromServer(serverState) {
         state.moveHistory = [...serverState.moveHistory];
     }
 
+    // Use server-provided lastMove if available, otherwise derive from moveHistory
+    if (serverState.lastMove) {
+        state.lastMove = { ...serverState.lastMove };
+    } else if (state.moveHistory && state.moveHistory.length > 0) {
+        // Fallback: derive from moveHistory text for backward compatibility
+        const lastMsg = state.moveHistory[state.moveHistory.length - 1];
+        const arrowMatch = lastMsg.match(/(\w\d)\s*(?:->|→)\s*(\w\d)/);
+        const placeMatch = lastMsg.match(/placed at (\w\d)/i);
+        if (arrowMatch) {
+            state.lastMove = { from: arrowMatch[1].toLowerCase(), to: arrowMatch[2].toLowerCase() };
+        } else if (placeMatch) {
+            state.lastMove = { from: null, to: placeMatch[1].toLowerCase() };
+        }
+    }
+
     // Clear selection state when updating from server
     state.selected = null;
     state.legalMoves = [];

@@ -30,16 +30,21 @@ function prepareCtx(ctx) {
 }
 
 let cachedBoardCanvas = null;
-let cachedBoardSize = 0;
+let cachedBoardDpr = 0;
 
 export function drawBoard(ctx) {
     prepareCtx(ctx);
 
-    if (!cachedBoardCanvas || cachedBoardSize !== CANVAS_SIZE) {
+    const dpr = window.devicePixelRatio || 1;
+    if (!cachedBoardCanvas || cachedBoardDpr !== dpr) {
         cachedBoardCanvas = document.createElement('canvas');
-        cachedBoardCanvas.width = CANVAS_SIZE;
-        cachedBoardCanvas.height = CANVAS_SIZE;
+        cachedBoardCanvas.width = Math.round(CANVAS_SIZE * dpr);
+        cachedBoardCanvas.height = Math.round(CANVAS_SIZE * dpr);
         const oCtx = cachedBoardCanvas.getContext('2d');
+
+        // Scale so we can draw in logical CANVAS_SIZE coordinates
+        oCtx.setTransform(1, 0, 0, 1, 0, 0);
+        oCtx.scale(dpr, dpr);
 
         oCtx.fillStyle = C.boardBg;
         oCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -91,9 +96,10 @@ export function drawBoard(ctx) {
         for (let c = 0; c < 5; c++) {
             oCtx.fillText(COLS[c], POS[COLS[c] + ROWS[0]].px, BOARD_SIZE + PADDING + PADDING / 2 + 2);
         }
-        cachedBoardSize = CANVAS_SIZE;
+        cachedBoardDpr = dpr;
     }
 
+    // Draw the high-res cached board into the logical coordinate space
     ctx.drawImage(cachedBoardCanvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
 }
 
@@ -118,7 +124,7 @@ export function drawPiece(ctx, key, type, isSelected) {
             ctx.drawImage(img, px - imgSize / 2, py - imgSize / 2, imgSize, imgSize);
         }
     } else {
-        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.fillStyle = isTiger ? '#ea580c' : '#38bdf8';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -222,7 +228,7 @@ export function renderDragging(ctx, drag) {
             ctx.drawImage(img, drag.mouseX - imgSize / 2, drag.mouseY - imgSize / 2, imgSize, imgSize);
         }
     } else {
-        ctx.fillStyle = isTiger ? '#5d3a1a' : '#5d3a1a';
+        ctx.fillStyle = isTiger ? '#ea580c' : '#38bdf8';
         ctx.font = `bold ${isTiger ? 16 : 13}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

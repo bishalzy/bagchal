@@ -40,7 +40,7 @@ export function isReplayAtEnd() {
 
 /** Returns the state object to render — snapshot if replaying, live state otherwise. */
 export function getViewState() {
-  if (history.length > 0 && viewIndex >= 0 && viewIndex < history.length) {
+  if (replayMode && history.length > 0 && viewIndex >= 0 && viewIndex < history.length) {
     return history[viewIndex];
   }
   return state;
