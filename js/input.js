@@ -47,6 +47,18 @@ export const drag = {
   moved: false,
 };
 
+/** Cancel any active drag operation (e.g., when server state changes mid-drag). */
+export function cancelDrag() {
+  if (!drag.active) return;
+  drag.active = false;
+  if (rAF_id) { cancelAnimationFrame(rAF_id); rAF_id = null; }
+  drag.pieceKey = null;
+  drag.pieceType = null;
+  if (ctxRef) {
+    ctxRef.canvas.style.cursor = "default";
+  }
+}
+
 function posFromPixel(px, py, radius = CLICK_RADIUS) {
   let nearest = null;
   let minDist = Infinity;

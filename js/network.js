@@ -4,6 +4,7 @@ import { render } from './render.js';
 import { countTrappedTigers } from './logic.js';
 import { saveSnapshot, resetReplay } from './replay.js';
 import { playSound } from './audio.js';
+import { cancelDrag } from './input.js';
 import { io } from 'socket.io-client';
 
 let socket = null;
@@ -66,6 +67,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-joined', (data) => {
+        resetReplay();
         state.isMultiplayer = true;
         state.roomId = data.roomId;
         sessionStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
@@ -98,10 +100,11 @@ export function initNetwork(canvasCtx) {
 
         hideSystemBanner();
 
-        showSystemBanner(`Joined room ${data.roomId}.`);
-
         syncStateFromServer(data.state);
         renderMoveHistory(state.moveHistory);
+        saveSnapshot(countTrappedTigers());
+
+        showSystemBanner(`Joined room ${data.roomId}. Game started!`);
         updateUI();
         render(canvasCtx);
     });
@@ -127,6 +130,9 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('state-update', (data) => {
+        // Cancel any active drag — the board state may have changed under the player's drag
+        cancelDrag();
+
         const move = data.move;
         // Derive who moved from server state (server already switched the turn)
         const turnWhoMoved = data.state.turn === 'bakhra' ? 'bagh' : 'bakhra';
@@ -172,8 +178,18 @@ export function initNetwork(canvasCtx) {
         showInfoModal('Opponent disconnected. The game has been converted to a local session.');
         state.isMultiplayer = false;
         state.roomId = null;
+        state.localRole = null;
+        state.players = [];
         sessionStorage.removeItem('baghchalSession');
+
+        // Clean up multiplayer UI elements
+        const waitingOverlay = document.getElementById('waitingOverlay');
+        if (waitingOverlay) waitingOverlay.classList.remove('show');
+        const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+        if (roomCodeDisplay) roomCodeDisplay.style.display = 'none';
+
         updateUI();
+        render(canvasCtx);
     });
 
     socket.on('player-disconnected', (data) => {
@@ -230,6 +246,7 @@ export function initNetwork(canvasCtx) {
         // Rollback state if server provided the valid state
         if (data.state) {
             syncStateFromServer(data.state);
+            renderMoveHistory(state.moveHistory);
             updateUI();
             render(canvasCtx);
         }

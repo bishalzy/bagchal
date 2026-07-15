@@ -202,34 +202,43 @@ export function showInfoModal(msg, onClose = null) {
 }
 
 let systemBannerTimeout = null;
+let isErrorBanner = false;
 
 export function showSystemBanner(msg, isError = false, useHTML = false) {
   const banner = document.getElementById("systemBanner");
-  if (banner) {
-    if (useHTML) banner.innerHTML = msg;
-    else banner.textContent = msg;
-    banner.style.display = "block";
+  if (!banner) return;
 
-    if (isError) {
-      banner.style.background = "rgba(239, 68, 68, 0.1)";
-      banner.style.color = "var(--danger)";
-      banner.style.borderBottom = "1px solid var(--danger)";
-    } else {
-      banner.style.background = "var(--bg-secondary)";
-      banner.style.color = "var(--text-primary)";
-      banner.style.borderBottom = "1px solid var(--border-color)";
-    }
+  // Don't let a non-error banner replace an active error banner
+  if (!isError && isErrorBanner && banner.style.display === "block") {
+    return;
+  }
 
-    if (systemBannerTimeout) {
-      clearTimeout(systemBannerTimeout);
-    }
+  if (useHTML) banner.innerHTML = msg;
+  else banner.textContent = msg;
+  banner.style.display = "block";
+  isErrorBanner = isError;
 
-    // Auto hide after 5 seconds unless it's an error
-    if (!isError) {
-      systemBannerTimeout = setTimeout(() => {
-        banner.style.display = "none";
-      }, 5000);
-    }
+  if (isError) {
+    banner.style.background = "rgba(239, 68, 68, 0.1)";
+    banner.style.color = "var(--danger)";
+    banner.style.borderBottom = "1px solid var(--danger)";
+  } else {
+    banner.style.background = "var(--bg-secondary)";
+    banner.style.color = "var(--text-primary)";
+    banner.style.borderBottom = "1px solid var(--border-color)";
+  }
+
+  if (systemBannerTimeout) {
+    clearTimeout(systemBannerTimeout);
+    systemBannerTimeout = null;
+  }
+
+  // Auto hide after 5 seconds unless it's an error
+  if (!isError) {
+    systemBannerTimeout = setTimeout(() => {
+      banner.style.display = "none";
+      isErrorBanner = false;
+    }, 5000);
   }
 }
 
@@ -237,6 +246,11 @@ export function hideSystemBanner() {
   const banner = document.getElementById("systemBanner");
   if (banner) {
     banner.style.display = "none";
+  }
+  isErrorBanner = false;
+  if (systemBannerTimeout) {
+    clearTimeout(systemBannerTimeout);
+    systemBannerTimeout = null;
   }
 }
 
@@ -264,9 +278,10 @@ export function addLog(msg, type) {
 }
 
 function inferLogType(msg) {
-  if (msg.startsWith('Goat')) return 'goat';
-  if (msg.startsWith('Tiger') && msg.includes('Captured')) return 'capture';
-  if (msg.startsWith('Tiger')) return 'tiger';
+  const lower = msg.toLowerCase();
+  if (lower.startsWith('goat')) return 'goat';
+  if (lower.startsWith('tiger') && (lower.includes('captured') || lower.includes('captures'))) return 'capture';
+  if (lower.startsWith('tiger')) return 'tiger';
   return 'goat';
 }
 

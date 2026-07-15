@@ -49,8 +49,11 @@ export function syncStateFromServer(serverState) {
         state.moveHistory = [...serverState.moveHistory];
     }
 
-    // Derive lastMove from moveHistory for board highlight after rejoin
-    if (state.moveHistory && state.moveHistory.length > 0) {
+    // Use server-provided lastMove if available, otherwise derive from moveHistory
+    if (serverState.lastMove) {
+        state.lastMove = { ...serverState.lastMove };
+    } else if (state.moveHistory && state.moveHistory.length > 0) {
+        // Fallback: derive from moveHistory text for backward compatibility
         const lastMsg = state.moveHistory[state.moveHistory.length - 1];
         const arrowMatch = lastMsg.match(/(\w\d)\s*(?:->|→)\s*(\w\d)/);
         const placeMatch = lastMsg.match(/placed at (\w\d)/i);
