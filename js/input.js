@@ -216,11 +216,8 @@ export function setupInput(canvas, ctx) {
         if (state.legalMoves.some((m) => m.to === dropPos)) {
           if (state.isMultiplayer) {
             makeNetworkMove(dragKey, dropPos);
-            state.selected = null;
-            state.legalMoves = [];
-          } else {
-            movePiece(dropPos);
           }
+          movePiece(dropPos);
           render(ctx);
           return;
         }
@@ -236,12 +233,10 @@ export function setupInput(canvas, ctx) {
 
     if (state.turn === "bakhra" && state.bakhrasPlaced < MAX_BAKHRA) {
       if (!state.isMultiplayer || state.localRole === "bakhra") {
-        if (state.isMultiplayer) {
-          if (!isOccupied(pos)) {
+        if (!isOccupied(pos)) {
+          if (state.isMultiplayer) {
             makeNetworkMove(undefined, pos);
-            acted = true;
           }
-        } else {
           acted = placeGoat(pos);
         }
       }
@@ -250,12 +245,8 @@ export function setupInput(canvas, ctx) {
         if (state.legalMoves.some((m) => m.to === pos)) {
           if (state.isMultiplayer) {
             makeNetworkMove(state.selected, pos);
-            state.selected = null;
-            state.legalMoves = [];
-            acted = true;
-          } else {
-            acted = movePiece(pos);
           }
+          acted = movePiece(pos);
         } else if (isOwnPiece(pos)) {
           acted = selectPiece(pos);
         } else {

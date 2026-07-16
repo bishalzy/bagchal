@@ -9,6 +9,7 @@ import { io } from 'socket.io-client';
 
 let socket = null;
 let playerId = null;
+let hasJoinedRoomThisSession = false;
 
 export function initNetwork(canvasCtx) {
 
@@ -19,13 +20,19 @@ export function initNetwork(canvasCtx) {
     socket = io(BACKEND_URL);
 
     socket.on('connected', (data) => {
-        const session = JSON.parse(sessionStorage.getItem('baghchalSession') || 'null');
+        const session = JSON.parse(localStorage.getItem('baghchalSession') || 'null');
         if (session && session.roomId && session.playerId) {
             playerId = session.playerId;
             socket.emit('rejoin-room', { roomId: session.roomId, playerId: session.playerId }, (res) => {
                 if (res && res.error) {
-                    sessionStorage.removeItem('baghchalSession');
+                    localStorage.removeItem('baghchalSession');
                     playerId = data.playerId;
+                    state.isMultiplayer = false;
+                    state.roomId = null;
+                    if (hasJoinedRoomThisSession) {
+                        showInfoModal('Room session expired or invalid. You are now in local play mode.');
+                    }
+                    updateUI();
                 }
             });
         } else {
@@ -35,9 +42,10 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-created', (data) => {
+        hasJoinedRoomThisSession = true;
         state.isMultiplayer = true;
         state.roomId = data.roomId;
-        sessionStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
+        localStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
         // Role is set locally when creating based on preference
         document.getElementById('roomCodeDisplay').style.display = 'flex';
         const codeText = document.getElementById('roomCodeText');
@@ -67,10 +75,11 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-joined', (data) => {
+        hasJoinedRoomThisSession = true;
         resetReplay();
         state.isMultiplayer = true;
         state.roomId = data.roomId;
-        sessionStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
+        localStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
         state.players = data.players;
         const myPlayer = data.players.find(p => p.id === playerId);
         if (myPlayer) state.localRole = myPlayer.side;
@@ -138,9 +147,15 @@ export function initNetwork(canvasCtx) {
         const turnWhoMoved = data.state.turn === 'bakhra' ? 'bagh' : 'bakhra';
         const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
 
+        // Check if this is just an echo of our optimistically applied move
+        const isEcho = move && state.lastMove && 
+                       state.lastMove.from == move.from && 
+                       state.lastMove.to == move.to && 
+                       turnWhoMoved === state.localRole;
+
         // Log and play sound BEFORE sync — sync will overwrite moveHistory
         // with the server's authoritative version, preventing duplicates
-        if (move) {
+        if (move && !isEcho) {
             const isTiger = turnWhoMoved === 'bagh';
 
             if (!move.from) {
@@ -180,7 +195,7 @@ export function initNetwork(canvasCtx) {
         state.roomId = null;
         state.localRole = null;
         state.players = [];
-        sessionStorage.removeItem('baghchalSession');
+        localStorage.removeItem('baghchalSession');
 
         // Clean up multiplayer UI elements
         const waitingOverlay = document.getElementById('waitingOverlay');
@@ -197,7 +212,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-destroyed-info', (data) => {
-        sessionStorage.removeItem('baghchalSession');
+        localStorage.removeItem('baghchalSession');
         hideSystemBanner();
         showInfoModal(data.message + " You are now in local play mode.");
         state.isMultiplayer = false;
@@ -229,7 +244,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-destroyed', (data) => {
-        sessionStorage.removeItem('baghchalSession');
+        localStorage.removeItem('baghchalSession');
         hideSystemBanner();
         const waitingOverlay = document.getElementById('waitingOverlay');
         if (waitingOverlay) waitingOverlay.classList.remove('show');
@@ -256,6 +271,12 @@ export function initNetwork(canvasCtx) {
 
     socket.on('error', (data) => {
         console.error('Server error:', data.message);
+        if (data.code === 'NOT_IN_ROOM') {
+            // Ignore this error; it usually happens when a buffered move is sent
+            // before the rejoin-room completes. The upcoming room-joined event will
+            // sync the state properly.
+            return;
+        }
         showErrorModal(`Error: ${data.message}`);
     });
 }
@@ -288,6 +309,6 @@ export function playAgain() {
 
 export function cancelGame() {
     if (!socket || (!state.isMultiplayer && !state.roomId)) return;
-    sessionStorage.removeItem('baghchalSession');
+    localStorage.removeItem('baghchalSession');
     socket.emit('cancel-game');
 }
