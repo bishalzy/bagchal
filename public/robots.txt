@@ -2,6 +2,16 @@ User-agent: *
 Allow: /
 Allow: /favicon.png
 Allow: /manifest.json
+User-agent: CCBot
+Allow: /
 
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
 
 Sitemap: https://baghchal.xyz/sitemap.xml
