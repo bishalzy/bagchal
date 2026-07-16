@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Page not found on Baghchal Online. The page you are looking for does not exist." />
+  <title>404 Not Found | Baghchal Online</title>
+  
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <meta name="theme-color" content="#2a2a38" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-primary);
+    }
+    .error-container h1 {
+      font-size: 6rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 12px rgba(239, 184, 16, 0.3);
+      line-height: 1;
+    }
+    .error-container h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+    .error-container p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      max-width: 500px;
+      line-height: 1.6;
+    }
+    .btn-home {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-title">
+        <h1>BAGHCHAL</h1>
+      </div>
+      <nav>
+        <a class="btn btn-restart" href="/" style="text-decoration: none;">Play Game</a>
+      </nav>
+    </header>
+
+    <main class="game-area" style="display: flex; justify-content: center; align-items: center;">
+      <div class="error-container">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+        <a href="/" class="btn btn-action btn-home">Return to Game</a>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Baghchal Multiplayer Online — The traditional Nepali strategy board game of Tigers vs Goats.</p>
+      <p>Play <a href="/">Baghchal online</a> for free. No download required.</p>
+    </footer>
+  </div>
+</body>
+</html>
