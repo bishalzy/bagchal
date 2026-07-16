@@ -1,14 +1,15 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Use relative paths for assets so it works on GitHub Pages subpaths or custom domains seamlessly.
-  base: './',
+  // Use absolute paths for assets so they resolve correctly on deep 404 paths (e.g. /fake/path/here)
+  base: '/',
   build: {
     target: 'esnext',
     rollupOptions: {
       input: {
         main: './index.html',
-        about: './about.html'
+        about: './about.html',
+        error: './404.html'
       },
       output: {
         manualChunks(id) {
