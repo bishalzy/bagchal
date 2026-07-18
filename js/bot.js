@@ -28,9 +28,16 @@ import {
 } from './constants.js';
 
 // ---- Search Configuration ----
-// Increasing SEARCH_DEPTH improves move quality but exponentially
-// increases computation time. 4 is a good balance for in-browser use.
-const SEARCH_DEPTH = 4;
+// Search depth per difficulty level.
+// Higher depth = stronger AI but exponentially more computation time.
+const DIFFICULTY_DEPTH = {
+    easy: 2,
+    medium: 3,
+    hard: 4,
+};
+
+// Default depth used by the legacy getBotMoveWithOpening entry point.
+const SEARCH_DEPTH = DIFFICULTY_DEPTH.hard;
 
 // ---- Utility Functions ----
 
@@ -396,11 +403,14 @@ function minimax(baghs, bakhras, bakhrasCaptured, bakhrasPlaced, turn, depth, al
  *
  * @param {string} botRole - 'bagh' (tiger) or 'bakhra' (goat)
  * @param {Object} gameState - The current game state object (from state.js)
+ * @param {number} [depthOverride] - Optional depth override (uses SEARCH_DEPTH if omitted)
+ * @param {Set<string>} [forbiddenMoveKeys] - Optional set of "from→to" keys to avoid
  * @returns {{ type: 'place'|'move', from: string|null, to: string, capture: string|null } | null}
  *   Returns null if no legal moves exist (should not happen in a valid game).
  */
-export function getBotMove(botRole, gameState) {
+export function getBotMove(botRole, gameState, depthOverride, forbiddenMoveKeys) {
     const { baghs, bakhras, bakhrasCaptured, bakhrasPlaced } = gameState;
+    const searchDepth = depthOverride ?? SEARCH_DEPTH;
 
     // It's only legal to call this when it IS the bot's turn
     if (gameState.turn !== botRole) {
@@ -419,6 +429,9 @@ export function getBotMove(botRole, gameState) {
     const isBotTiger = botRole === 'bagh';
     let bestMove = null;
     let bestScore = isBotTiger ? -Infinity : Infinity;
+    // Fallback: best move ignoring the forbidden filter (used only if ALL moves are forbidden)
+    let fallbackMove = null;
+    let fallbackScore = isBotTiger ? -Infinity : Infinity;
 
     for (const move of moves) {
         // Apply move to a cloned state
@@ -448,10 +461,20 @@ export function getBotMove(botRole, gameState) {
         const score = minimax(
             newBaghs, newBakhras, newCaptured, newPlaced,
             isBotTiger ? 'bakhra' : 'bagh',
-            SEARCH_DEPTH - 1,
+            searchDepth - 1,
             -Infinity, Infinity,
             !isBotTiger // Next turn is opponent: flip maximizing flag
         );
+
+        // Track the unconstrained best (fallback if all moves are forbidden)
+        if (isBotTiger ? score > fallbackScore : score < fallbackScore) {
+            fallbackScore = score;
+            fallbackMove = move;
+        }
+
+        // Skip moves the bot has already repeated too many times
+        const moveKey = `${move.from}→${move.to}`;
+        if (forbiddenMoveKeys && forbiddenMoveKeys.has(moveKey)) continue;
 
         if (isBotTiger ? score > bestScore : score < bestScore) {
             bestScore = score;
@@ -459,8 +482,15 @@ export function getBotMove(botRole, gameState) {
         }
     }
 
-    console.log(`[Bot] ${botRole} chose move:`, bestMove, `score: ${bestScore}`);
-    return bestMove;
+    // If all non-forbidden moves scored worse than the initial sentinel (no best was set),
+    // fall back to the unconstrained best to avoid returning null.
+    const chosen = bestMove ?? fallbackMove;
+    if (bestMove === null && fallbackMove !== null) {
+        console.warn('[Bot] All non-repeated moves were filtered; using fallback move to avoid stall.');
+    }
+
+    console.log(`[Bot] ${botRole} chose move:`, chosen, `score: ${bestMove ? bestScore : fallbackScore}`);
+    return chosen;
 }
 
 /**
@@ -478,10 +508,7 @@ export function getBotMove(botRole, gameState) {
  * but the "right" moves are well-known strategically.
  */
 const GOAT_OPENING_BOOK = [
-    'c3', // Center — best first move, maximum connections
-    'c4', // Strong central follow-up
-    'b3', // Expands central control westward
-    'd3', // Expands central control eastward
+    'c1',
 ];
 
 /**
@@ -490,18 +517,70 @@ const GOAT_OPENING_BOOK = [
  *
  * @param {string} botRole - 'bagh' or 'bakhra'
  * @param {Object} gameState - Current game state
+ * @param {number} [depthOverride] - Optional search depth override
+ * @param {Set<string>} [forbiddenMoveKeys] - Move keys to exclude (repetition guard)
  * @returns Move object or null
  */
-export function getBotMoveWithOpening(botRole, gameState) {
+export function getBotMoveWithOpening(botRole, gameState, depthOverride, forbiddenMoveKeys) {
     // For goat bot in early placement phase, use opening book
+    // (only on Medium/Hard — on Easy, skip the book so the bot feels less scripted)
     if (botRole === 'bakhra' && gameState.bakhrasPlaced < GOAT_OPENING_BOOK.length) {
-        const bookPos = GOAT_OPENING_BOOK[gameState.bakhrasPlaced];
-        // Validate the book position is still available
-        if (!gameState.baghs.has(bookPos) && !gameState.bakhras.has(bookPos)) {
-            return { type: 'place', from: null, to: bookPos, capture: null };
+        const effectiveDepth = depthOverride ?? SEARCH_DEPTH;
+        if (effectiveDepth > DIFFICULTY_DEPTH.easy) {
+            const bookPos = GOAT_OPENING_BOOK[gameState.bakhrasPlaced];
+            // Validate the book position is still available
+            if (!gameState.baghs.has(bookPos) && !gameState.bakhras.has(bookPos)) {
+                return { type: 'place', from: null, to: bookPos, capture: null };
+            }
+            // If opening book move is occupied, fall through to minimax
         }
-        // If opening book move is occupied, fall through to minimax
     }
 
-    return getBotMove(botRole, gameState);
+    return getBotMove(botRole, gameState, depthOverride, forbiddenMoveKeys);
+}
+
+/**
+ * Main difficulty-aware entry point for the bot.
+ *
+ * Detects consecutive oscillation in the bot's last 3 moves:
+ *   If the pattern is  A→B, B→A, A→B  (the last move repeats the one before last),
+ *   the move A→B is forbidden this turn, forcing the bot to choose something else.
+ *
+ * @param {string} botRole - 'bagh' or 'bakhra'
+ * @param {Object} gameState - Current game state (must include botMoveHistory)
+ * @param {'easy'|'medium'|'hard'} [difficulty='hard'] - Difficulty level
+ * @returns Move object or null
+ */
+export function getBotMoveWithDifficulty(botRole, gameState, difficulty = 'hard') {
+    const depth = DIFFICULTY_DEPTH[difficulty] ?? DIFFICULTY_DEPTH.hard;
+
+    // ---- Consecutive oscillation guard ----
+    // Detect the pattern: move[-3]=A→B, move[-2]=B→A, move[-1]=A→B
+    // i.e. the last move is identical to the one two moves ago AND
+    // the middle move is the exact reverse.
+    // If that pattern is found, forbid repeating A→B again.
+    const forbiddenMoveKeys = new Set();
+    const history = gameState.botMoveHistory || [];
+    const len = history.length;
+
+    if (len >= 3) {
+        const m1 = history[len - 3]; // A→B
+        const m2 = history[len - 2]; // B→A
+        const m3 = history[len - 1]; // A→B  (same as m1)
+
+        const isOscillating =
+            m1.from !== null &&                  // skip placement moves
+            m1.from === m3.from &&               // m1 and m3 have same from
+            m1.to   === m3.to   &&               // m1 and m3 have same to
+            m2.from === m1.to   &&               // m2 is the reverse
+            m2.to   === m1.from;
+
+        if (isOscillating) {
+            const forbidden = `${m3.from}→${m3.to}`;
+            forbiddenMoveKeys.add(forbidden);
+            console.log(`[Bot] Oscillation detected — forbidding ${forbidden} this turn.`);
+        }
+    }
+
+    return getBotMoveWithOpening(botRole, gameState, depth, forbiddenMoveKeys);
 }

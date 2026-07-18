@@ -679,6 +679,77 @@ body {
     text-align: center;
 }
 
+/* ---- Bot Difficulty Selector ---- */
+.bot-difficulty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    margin-bottom: 20px;
+}
+
+.bot-difficulty-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.bot-difficulty-select-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 180px;
+}
+
+.bot-difficulty-select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.bot-difficulty-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 32px 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bot-difficulty-select:hover {
+    border-color: rgba(124, 58, 237, 0.5);
+}
+
+.bot-difficulty-select:focus {
+    border-color: rgba(124, 58, 237, 0.7);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.bot-difficulty-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
 /* ---- Buy Me a Momo Widget ---- */
 .momo-container {
     position: fixed;

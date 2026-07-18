@@ -21,9 +21,14 @@ export function createInitialState() {
         // Bot mode additions
         // isBotMode: true when the player is playing against the AI.
         // botRole: which side the bot plays ('bagh' or 'bakhra').
+        // botDifficulty: 'easy' | 'medium' | 'hard'
+        // botMoveHistory: array of {from, to} for the bot's own moves — used
+        //   to detect and break oscillation (same move repeated 3+ times).
         // The human player always plays the opposite side.
         isBotMode: false,
         botRole: null,
+        botDifficulty: 'hard',
+        botMoveHistory: [],
     };
 }
 
@@ -38,6 +43,7 @@ export function resetState() {
     // Preserve bot mode across resets so "Play Again" keeps the bot active
     const isBotMode = state.isBotMode;
     const botRole = state.botRole;
+    const botDifficulty = state.botDifficulty;
 
     const initial = createInitialState();
     for (let key in state) delete state[key];
@@ -52,6 +58,7 @@ export function resetState() {
     // Restore bot mode properties
     state.isBotMode = isBotMode;
     state.botRole = botRole;
+    state.botDifficulty = botDifficulty;
 }
 
 export function syncStateFromServer(serverState) {
