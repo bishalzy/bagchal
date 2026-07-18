@@ -148,10 +148,10 @@ export function initNetwork(canvasCtx) {
         const wasCaptured = data.state.bakhrasCaptured > state.bakhrasCaptured;
 
         // Check if this is just an echo of our optimistically applied move
-        const isEcho = move && state.lastMove && 
-                       state.lastMove.from == move.from && 
-                       state.lastMove.to == move.to && 
-                       turnWhoMoved === state.localRole;
+        const isEcho = move && state.lastMove &&
+            state.lastMove.from == move.from &&
+            state.lastMove.to == move.to &&
+            turnWhoMoved === state.localRole;
 
         // Log and play sound BEFORE sync — sync will overwrite moveHistory
         // with the server's authoritative version, preventing duplicates
@@ -217,6 +217,8 @@ export function initNetwork(canvasCtx) {
         showInfoModal(data.message + " You are now in local play mode.");
         state.isMultiplayer = false;
         state.roomId = null;
+        state.localRole = null;
+        state.players = [];
         updateUI();
     });
 
@@ -253,6 +255,8 @@ export function initNetwork(canvasCtx) {
         }
         state.isMultiplayer = false;
         state.roomId = null;
+        state.localRole = null;
+        state.players = [];
         updateUI();
     });
 
