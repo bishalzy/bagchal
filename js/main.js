@@ -24,7 +24,7 @@ import {
 } from "./replay.js";
 import { countTrappedTigers, getLegalMovesFor, placeGoat, movePiece } from "./logic.js";
 import { initNetwork, createRoom, joinRoom, playAgain, cancelGame } from "./network.js";
-import { getBotMoveWithOpening } from "./bot.js";
+import { getBotMoveWithDifficulty } from "./bot.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -97,7 +97,7 @@ export function scheduleBotMove() {
     if (!state.isBotMode || state.gameOver || state.turn !== state.botRole) return;
 
     // ---- Get the bot's best move from the AI engine ----
-    const botMove = getBotMoveWithOpening(state.botRole, state);
+    const botMove = getBotMoveWithDifficulty(state.botRole, state, state.botDifficulty || 'hard');
     if (!botMove) {
       console.warn("[Bot] No legal moves found — this should not happen in normal play.");
       return;
@@ -120,6 +120,10 @@ export function scheduleBotMove() {
     }
 
     if (acted) {
+      // Record this move in the bot's history for repetition detection
+      if (botMove.from !== undefined) {
+        state.botMoveHistory.push({ from: botMove.from, to: botMove.to });
+      }
       render(ctx);
       // After the bot's move, check if somehow it's still the bot's turn
       // (this shouldn't happen but is a safety net for edge cases).
@@ -272,12 +276,15 @@ document.querySelectorAll(".bot-side-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const humanSide = btn.dataset.side;          // 'bakhra' or 'bagh'
     const botSide = humanSide === 'bakhra' ? 'bagh' : 'bakhra';
+    const difficultySelect = document.getElementById("botDifficultySelect");
+    const difficulty = difficultySelect ? difficultySelect.value : 'hard';
 
     if (botModal) botModal.classList.remove("show");
 
     // Activate bot mode — set flags BEFORE resetState so they are preserved
     state.isBotMode = true;
     state.botRole = botSide;
+    state.botDifficulty = difficulty;
 
     // Fresh game start
     resetState();
