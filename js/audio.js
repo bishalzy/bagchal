@@ -1,11 +1,20 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
-export function playSound(type) {
+export function initAudio() {
     try {
         if (!AudioContext) return;
         if (!audioCtx) audioCtx = new AudioContext();
         if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) {
+        console.warn('Audio init failed:', e);
+    }
+}
+
+export function playSound(type) {
+    try {
+        initAudio();
+        if (!audioCtx) return;
 
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();

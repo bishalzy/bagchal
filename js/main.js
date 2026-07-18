@@ -24,6 +24,7 @@ import {
 } from "./replay.js";
 import { countTrappedTigers, getLegalMovesFor, placeGoat, movePiece } from "./logic.js";
 import { initNetwork, createRoom, joinRoom, playAgain, cancelGame } from "./network.js";
+import { initAudio } from "./audio.js";
 import { getBotMoveWithDifficulty } from "./bot.js";
 
 const canvas = document.getElementById("gameCanvas");
@@ -393,6 +394,11 @@ setupAssets(() => resizeCanvas());
 
 // Initialize Socket.io multiplayer networking
 initNetwork(ctx);
+
+// Initialize audio on first user interaction to allow bot sounds
+['click', 'touchstart'].forEach(evt => 
+  document.addEventListener(evt, () => initAudio(), { once: true })
+);
 
 // Capture initial board state (all tigers at corners, no goats yet) as snapshot 0
 saveSnapshot(0);
