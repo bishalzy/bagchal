@@ -1,11 +1,26 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
+let audioUnlocked = false;
 
 export function initAudio() {
     try {
         if (!AudioContext) return;
         if (!audioCtx) audioCtx = new AudioContext();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+        }
+        
+        // Play a silent sound to reliably unlock audio on mobile/Safari
+        if (!audioUnlocked) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.01);
+            audioUnlocked = true;
+        }
     } catch (e) {
         console.warn('Audio init failed:', e);
     }

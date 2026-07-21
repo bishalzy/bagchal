@@ -78,10 +78,6 @@ body {
     gap: 10px;
 }
 
-.header-icon {
-    font-size: 24px;
-    color: var(--accent-gold);
-}
 
 .header h1 {
     font-size: 18px;
@@ -137,42 +133,6 @@ body {
     justify-content: center;
 }
 
-.btn-replay-launch {
-    width: 100%;
-    min-height: 48px;
-    background: linear-gradient(135deg,
-            rgba(34, 17, 5, 0.92),
-            rgba(72, 44, 18, 0.92));
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 10px 24px rgba(34, 17, 5, 0.18);
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.btn-replay-launch.show {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.btn-replay-launch:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 28px rgba(34, 17, 5, 0.24);
-}
-
-.btn-replay-launch:disabled,
-.replay-step-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-    box-shadow: none;
-    transform: none;
-}
 
 .logs-panel {
     flex: 1;
@@ -574,18 +534,6 @@ body {
     margin-bottom: 10px;
 }
 
-.bot-modal-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(79, 70, 229, 0.2));
-    border: 1px solid rgba(124, 58, 237, 0.4);
-    color: #a78bfa;
-    flex-shrink: 0;
-}
 
 .bot-modal-header h2 {
     font-size: 24px;
@@ -777,42 +725,6 @@ body {
     animation-play-state: paused;
 }
 
-.momo-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    margin-bottom: 12px;
-    background: #fff8e7;
-    color: #4a2e14;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 800;
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    animation: attentionTooltip 5s infinite;
-}
-
-.momo-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 40px;
-    transform: translateX(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: #fff8e7 transparent transparent transparent;
-}
-
-.momo-container:hover .momo-tooltip {
-    opacity: 1;
-    transform: translateY(0);
-    animation: none;
-}
 
 .momo-steam-container {
     position: absolute;
@@ -927,21 +839,6 @@ body {
     }
 }
 
-@keyframes attentionTooltip {
-
-    0%,
-    75%,
-    100% {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    80%,
-    95% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 /* ---- Visible SEO Content Section ---- */
 .seo-content {
@@ -1071,22 +968,10 @@ body {
         transform: none;
     }
 
-    .board-actions,
-    .replay-bar {
+    .board-actions {
         position: static;
         transform: none;
         margin: 10px 0;
-    }
-
-    .replay-bar {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .replay-bar.show {
-        opacity: 1;
-        transform: none;
-        pointer-events: auto;
     }
 
     .board-container {
@@ -1095,10 +980,6 @@ body {
         max-width: 600px;
     }
 
-    .btn-replay-launch {
-        max-width: 640px;
-        order: 2;
-    }
 
     .board-wrapper {
         height: auto;
