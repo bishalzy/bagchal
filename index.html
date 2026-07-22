@@ -239,29 +239,11 @@
       </div>
 
       <!-- Board -->
-      <div class="board-container">
+      <div class="board-col">
+        <div class="board-container">
 
         <div class="board-wrapper">
           <canvas id="gameCanvas" role="img" aria-label="Baghchal Game Board"></canvas>
-        </div>
-
-        <div class="board-actions">
-          <!-- Play vs Bot: leftmost action button -->
-          <button class="btn btn-action btn-bot" id="btnPlayBot" aria-label="Play against the AI bot">vs Bot</button>
-          <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
-          <div id="roomCodeDisplay"
-            style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--accent-goat); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
-            <span id="roomCodeText"></span>
-            <button id="btnCopyRoomCode" title="Copy Room Code" aria-label="Copy Room Code to Clipboard"
-              style="background: none; border: none; cursor: pointer; color: var(--accent-goat); display: flex; align-items: center; padding: 4px; border-radius: 4px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
-          </div>
-          <button class="btn btn-action" id="btnJoinRoom" aria-label="Join a multiplayer room">Join Room</button>
         </div>
         <!-- Waiting Overlay -->
         <div class="game-over-overlay" id="waitingOverlay" style="z-index: 5;">
@@ -391,7 +373,27 @@
             </div>
           </div>
         </div>
-      </div>
+        </div><!-- /.board-container -->
+
+        <div class="board-actions" id="boardActions">
+          <!-- Play vs Bot: leftmost action button -->
+          <button class="btn btn-action btn-bot" id="btnPlayBot" aria-label="Play against the AI bot">vs Bot</button>
+          <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
+          <div id="roomCodeDisplay"
+            style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--accent-goat); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
+            <span id="roomCodeText"></span>
+            <button id="btnCopyRoomCode" title="Copy Room Code" aria-label="Copy Room Code to Clipboard"
+              style="background: none; border: none; cursor: pointer; color: var(--accent-goat); display: flex; align-items: center; padding: 4px; border-radius: 4px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <button class="btn btn-action" id="btnJoinRoom" aria-label="Join a multiplayer room">Join Room</button>
+        </div><!-- /.board-actions -->
+      </div><!-- /.board-col -->
 
       <div class="logs-col desktop-only">
         <!-- Info Panel Right (Logs) -->
