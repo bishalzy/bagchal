@@ -10,6 +10,14 @@ import { io } from 'socket.io-client';
 let socket = null;
 let playerId = null;
 let hasJoinedRoomThisSession = false;
+let pendingMoveTimer = null;
+
+function clearPendingMoveTimer() {
+    if (pendingMoveTimer) {
+        clearTimeout(pendingMoveTimer);
+        pendingMoveTimer = null;
+    }
+}
 
 export function initNetwork(canvasCtx) {
 
@@ -81,8 +89,14 @@ export function initNetwork(canvasCtx) {
         state.roomId = data.roomId;
         localStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
         state.players = data.players;
-        const myPlayer = data.players.find(p => p.id === playerId);
-        if (myPlayer) state.localRole = myPlayer.side;
+        
+        // Find player by playerId or socketId fallback to ensure localRole is never null
+        const myPlayer = data.players.find(p => p.id === playerId || (socket && p.socketId === socket.id));
+        if (myPlayer) {
+            state.localRole = myPlayer.side;
+            playerId = myPlayer.id; // Keep client playerId in sync with room record
+            localStorage.setItem('baghchalSession', JSON.stringify({ roomId: data.roomId, playerId: playerId }));
+        }
 
         document.getElementById('roomCodeDisplay').style.display = 'flex';
         const codeText = document.getElementById('roomCodeText');
@@ -121,8 +135,13 @@ export function initNetwork(canvasCtx) {
     socket.on('game-start', (data) => {
         resetReplay();
         state.players = data.players;
-        const myPlayer = data.players.find(p => p.id === playerId);
-        if (myPlayer) state.localRole = myPlayer.side;
+        
+        // Find player by playerId or socketId fallback to ensure localRole is never null
+        const myPlayer = data.players.find(p => p.id === playerId || (socket && p.socketId === socket.id));
+        if (myPlayer) {
+            state.localRole = myPlayer.side;
+            playerId = myPlayer.id; // Keep client playerId in sync with room record
+        }
 
         syncStateFromServer(data.state);
         renderMoveHistory(state.moveHistory);
@@ -139,6 +158,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('state-update', (data) => {
+        clearPendingMoveTimer();
         // Cancel any active drag — the board state may have changed under the player's drag
         cancelDrag();
 
@@ -183,12 +203,14 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('game-over', (data) => {
+        clearPendingMoveTimer();
         syncStateFromServer(data.state);
         updateUI();
         render(canvasCtx);
     });
 
     socket.on('player-left', () => {
+        clearPendingMoveTimer();
         showSystemBanner('Opponent disconnected.', true);
         showInfoModal('Opponent disconnected. The game has been converted to a local session.');
         state.isMultiplayer = false;
@@ -212,6 +234,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-destroyed-info', (data) => {
+        clearPendingMoveTimer();
         localStorage.removeItem('baghchalSession');
         hideSystemBanner();
         showInfoModal(data.message + " You are now in local play mode.");
@@ -223,11 +246,15 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('rematch-started', (data) => {
+        clearPendingMoveTimer();
         resetState();
         resetReplay();
         state.players = data.players;
-        const myPlayer = data.players.find(p => p.id === playerId);
-        if (myPlayer) state.localRole = myPlayer.side;
+        const myPlayer = data.players.find(p => p.id === playerId || (socket && p.socketId === socket.id));
+        if (myPlayer) {
+            state.localRole = myPlayer.side;
+            playerId = myPlayer.id;
+        }
 
         syncStateFromServer(data.state);
         renderMoveHistory(state.moveHistory);
@@ -246,6 +273,7 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('room-destroyed', (data) => {
+        clearPendingMoveTimer();
         localStorage.removeItem('baghchalSession');
         hideSystemBanner();
         const waitingOverlay = document.getElementById('waitingOverlay');
@@ -261,10 +289,11 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('invalid-move', (data) => {
+        clearPendingMoveTimer();
         console.warn('Invalid move:', data.message);
-        showErrorModal(`Invalid move: ${data.message}`);
+        showErrorModal(`Move rejected: ${data.message}`);
 
-        // Rollback state if server provided the valid state
+        // Rollback state immediately to the valid server state
         if (data.state) {
             syncStateFromServer(data.state);
             renderMoveHistory(state.moveHistory);
@@ -274,11 +303,15 @@ export function initNetwork(canvasCtx) {
     });
 
     socket.on('error', (data) => {
+        clearPendingMoveTimer();
         console.error('Server error:', data.message);
         if (data.code === 'NOT_IN_ROOM') {
-            // Ignore this error; it usually happens when a buffered move is sent
-            // before the rejoin-room completes. The upcoming room-joined event will
-            // sync the state properly.
+            const session = JSON.parse(localStorage.getItem('baghchalSession') || 'null');
+            if (session && session.roomId && session.playerId) {
+                socket.emit('rejoin-room', { roomId: session.roomId, playerId: session.playerId });
+            } else {
+                showErrorModal('Session out of sync with room.');
+            }
             return;
         }
         showErrorModal(`Error: ${data.message}`);
@@ -287,6 +320,7 @@ export function initNetwork(canvasCtx) {
 
 export function createRoom(name, preferredSide) {
     if (!socket) return;
+    localStorage.removeItem('baghchalSession');
     state.localRole = preferredSide;
     socket.emit('create-room', { name, preferredSide }, (res) => {
         if (res.error) showErrorModal(res.error);
@@ -295,6 +329,7 @@ export function createRoom(name, preferredSide) {
 
 export function joinRoom(roomId, name) {
     if (!socket) return;
+    localStorage.removeItem('baghchalSession');
     socket.emit('join-room', { roomId, name }, (res) => {
         if (res.error) showErrorModal(res.error);
     });
@@ -302,7 +337,19 @@ export function joinRoom(roomId, name) {
 
 export function makeNetworkMove(from, to) {
     if (!socket || !state.isMultiplayer) return false;
+    clearPendingMoveTimer();
     socket.emit('make-move', { from, to });
+
+    // Set a 5-second fallback timer: if server doesn't respond with state-update/invalid-move,
+    // request room state sync to prevent silent desync.
+    pendingMoveTimer = setTimeout(() => {
+        console.warn('Move network timeout — verifying state with server.');
+        const session = JSON.parse(localStorage.getItem('baghchalSession') || 'null');
+        if (session && session.roomId) {
+            socket.emit('rejoin-room', { roomId: session.roomId, playerId: playerId });
+        }
+    }, 5000);
+
     return true;
 }
 
