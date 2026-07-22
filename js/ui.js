@@ -51,6 +51,13 @@ export function updateUI() {
     const botBtn = document.getElementById("btnPlayBot");
     if (botBtn) botBtn.style.display = "none";
 
+    // Hide the entire button row once game is active (both players joined).
+    // Keep it visible while waiting so the room code display remains accessible.
+    const boardActionsEl = document.getElementById("boardActions");
+    if (boardActionsEl) {
+      boardActionsEl.style.display = state.players.length >= 2 ? "none" : "flex";
+    }
+
     const roomCodeDisplay = document.getElementById("roomCodeDisplay");
     if (state.players.length === 2 && roomCodeDisplay) {
         roomCodeDisplay.style.display = "none";
@@ -83,6 +90,10 @@ export function updateUI() {
     if (botBtn) botBtn.style.display = "none";
     const exitBotBtn = document.getElementById("btnExitBot");
     if (exitBotBtn) exitBotBtn.style.display = "inline-flex";
+
+    // Hide the entire button row in bot mode — takes zero space for top/bottom symmetry
+    const boardActionsEl = document.getElementById("boardActions");
+    if (boardActionsEl) boardActionsEl.style.display = "none";
   } else {
     // ---- Normal offline local-play UI ----
     if (goatNameEl) goatNameEl.textContent = "GOATS";
@@ -105,6 +116,10 @@ export function updateUI() {
     if (botBtn) botBtn.style.display = state.roomId ? "none" : "inline-flex";
     const exitBotBtn = document.getElementById("btnExitBot");
     if (exitBotBtn) exitBotBtn.style.display = "none";
+
+    // Restore the button row in local play mode
+    const boardActionsEl = document.getElementById("boardActions");
+    if (boardActionsEl) boardActionsEl.style.display = "flex";
   }
 
   if (vs.gameOver) {

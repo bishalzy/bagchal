@@ -117,7 +117,7 @@ body {
     align-items: stretch;
     justify-content: center;
     gap: 24px;
-    padding: 60px 20px 80px 20px;
+    padding: 60px 20px 72px 20px;
     transform: none;
 }
 
@@ -292,12 +292,26 @@ body {
 
 .board-actions {
     position: absolute;
-    bottom: -60px;
+    bottom: -52px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
     width: max-content;
+}
+
+/* Outer column: anchors board + action buttons on desktop.
+   position:relative makes it the containing block for the absolutely-positioned
+   .board-actions, keeping buttons out of the normal flow so .board-col height
+   equals only the canvas — matching the side score panels exactly. */
+.board-col {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .board-wrapper {
@@ -963,15 +977,30 @@ body {
     .game-area {
         flex-direction: column;
         align-items: center;
-        gap: 32px;
-        padding: 40px 16px 60px 16px;
+        gap: 24px;
+        padding: 40px 16px 40px 16px;
         transform: none;
     }
 
+    /* Make board-col transparent to the flex layout so its children
+       (.board-container and .board-actions) join .game-area's flow directly,
+       enabling independent order control. */
+    .board-col {
+        display: contents;
+    }
+
+    /* Buttons row: placed after tiger panel via order.
+       Reset position so the mobile order-based flow works correctly. */
     .board-actions {
         position: static;
+        bottom: auto;
+        left: auto;
         transform: none;
-        margin: 10px 0;
+        order: 5;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 600px;
     }
 
     .board-container {
@@ -1053,7 +1082,7 @@ body {
 
 @media (max-width: 500px) {
     .game-area {
-        padding: 50px 8px 24px 8px;
+        padding: 50px 8px 40px 8px;
         /* Tighten up top/bottom padding */
         gap: 12px;
         /* Reduce empty space between panels and board */
@@ -1103,6 +1132,7 @@ body {
     .header {
         padding: 10px 16px;
     }
+
 
     /* Hide Momo for mobile */
     .momo-container {
