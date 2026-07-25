@@ -25,7 +25,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
-    content="Play Baghchal online for free. Experience the traditional Nepali strategy board game of Tigers vs Goats (Bagh-Chal) with local and real-time multiplayer modes." />
+    content="Play Baghchal online with bot or with friends. Experience the traditional Nepali strategy board game of Tigers vs Goats (Bagh-Chal) with local and real-time multiplayer modes." />
   <link rel="canonical" href="https://baghchal.xyz/" />
   <meta name="keywords"
     content="Baghchal, Bagh Chal, Bagchal, Bagh-Chal, baagh chal, Tigers vs Goats, Tigers and Goats game, Play Baghchal online, Baghchal Online, Baghchal game, बाघचाल, बाघ चाल, nepali board game, traditional nepali games, baghchal game in nepali, board game from nepal, himalayan board game, nepalese tiger game, baghchal rules, how to play baghchal, baghchal rules pdf, baghchal game rules, bagh chal instructions, baghchal board setup, how to win baghchal, baghchal goat rules, baghchal tiger rules, baghchal strategy, how to win as goats in baghchal, best baghchal opening moves, is baghchal a solved game, baghchal algorithm, baghchal minimax, baghchal tips and tricks, how to trap tigers in baghchal, baghchal opening traps, asymmetric board games, games like chess, asymmetric 2 player strategy games, baghchal vs chess, abstract strategy board games, two player strategy games no login, 2 player asymmetric board game online, play baghchal online with friends, baghchal multiplayer online, baghchal room code, baghchal vs computer, play baghchal bot free, free online board games no download, baghchal online free" />
@@ -168,8 +168,10 @@
         <h1>BAGHCHAL</h1>
       </div>
       <nav aria-label="Main navigation" style="display: flex; gap: 10px; align-items: center;">
-        <a class="btn btn-action" href="/rules.html" aria-label="Rules & Strategy" style="text-decoration: none;">Rules</a>
-        <a class="btn btn-action" href="/blog.html" aria-label="Blog & Strategy Guides" style="text-decoration: none;">Blog</a>
+        <a class="btn btn-action" href="/rules.html" aria-label="Rules & Strategy"
+          style="text-decoration: none;">Rules</a>
+        <a class="btn btn-action" href="/blog.html" aria-label="Blog & Strategy Guides"
+          style="text-decoration: none;">Blog</a>
         <a class="btn btn-restart" id="btnAbout" href="/about.html" aria-label="About Baghchal"
           style="text-decoration: none;">About</a>
       </nav>
@@ -244,137 +246,137 @@
       <div class="board-col">
         <div class="board-container">
 
-        <div class="board-wrapper">
-          <canvas id="gameCanvas" role="img" aria-label="Baghchal Game Board"></canvas>
-        </div>
-        <!-- Waiting Overlay -->
-        <div class="game-over-overlay" id="waitingOverlay" style="z-index: 5;">
-          <div class="game-over-card">
-            <h2>Waiting for opponent...</h2>
-            <p>Share the room code for them to join.</p>
-            <div class="spinner"
-              style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite;">
-            </div>
-            <button class="btn btn-action" id="btnCancelWaiting">Cancel</button>
+          <div class="board-wrapper">
+            <canvas id="gameCanvas" role="img" aria-label="Baghchal Game Board"></canvas>
           </div>
-        </div>
-
-        <!-- Game Over Overlay -->
-        <div class="game-over-overlay" id="gameOverOverlay">
-          <div class="game-over-card">
-            <h2 id="gameOverTitle">Game Over</h2>
-            <p id="gameOverMsg"></p>
-            <div class="game-over-buttons">
-              <button class="btn btn-restart" id="btnPlayAgain" aria-label="Play Again">Play Again</button>
-              <button class="btn btn-cancel" id="btnCancelGame" aria-label="Cancel Game">Cancel</button>
+          <!-- Waiting Overlay -->
+          <div class="game-over-overlay" id="waitingOverlay" style="z-index: 5;">
+            <div class="game-over-card">
+              <h2>Waiting for opponent...</h2>
+              <p>Share the room code for them to join.</p>
+              <div class="spinner"
+                style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite;">
+              </div>
+              <button class="btn btn-action" id="btnCancelWaiting">Cancel</button>
             </div>
           </div>
-        </div>
 
-        <!-- Bot Side-Picker Modal -->
-        <!-- Shown centered on the board when the player clicks "vs Bot".
-             The player picks which piece (Goat or Tiger) they want to play;
-             the bot automatically takes the other side. -->
-        <div class="game-over-overlay" id="botModal">
-          <div class="game-over-card bot-modal-card">
-            <div class="bot-modal-header">
-              <h2>Play vs Bot</h2>
-            </div>
-            <p class="bot-modal-subtitle">Choose your side. The AI will play the other.</p>
-
-            <!-- Difficulty selector -->
-            <div class="bot-difficulty-row">
-              <label class="bot-difficulty-label" for="botDifficultySelect">Difficulty</label>
-              <div class="bot-difficulty-select-wrap">
-                <select id="botDifficultySelect" class="bot-difficulty-select" aria-label="Select bot difficulty">
-                  <option value="easy"> Easy</option>
-                  <option value="medium"> Medium</option>
-                  <option value="hard" selected> Hard</option>
-                </select>
+          <!-- Game Over Overlay -->
+          <div class="game-over-overlay" id="gameOverOverlay">
+            <div class="game-over-card">
+              <h2 id="gameOverTitle">Game Over</h2>
+              <p id="gameOverMsg"></p>
+              <div class="game-over-buttons">
+                <button class="btn btn-restart" id="btnPlayAgain" aria-label="Play Again">Play Again</button>
+                <button class="btn btn-cancel" id="btnCancelGame" aria-label="Cancel Game">Cancel</button>
               </div>
             </div>
-
-            <!-- Side selection cards -->
-            <div class="bot-side-picker">
-              <!-- Goat card -->
-              <button class="bot-side-btn bot-side-goat" data-side="bakhra" aria-label="Play as Goat against the bot">
-                <div class="bot-side-icon piece-icon piece-icon-bakhra"></div>
-                <span class="bot-side-name">Goat</span>
-                <span class="bot-side-desc">Place &amp; trap tigers</span>
-              </button>
-
-              <!-- Tiger card -->
-              <button class="bot-side-btn bot-side-tiger" data-side="bagh" aria-label="Play as Tiger against the bot">
-                <div class="bot-side-icon piece-icon piece-icon-bagh"></div>
-                <span class="bot-side-name">Tiger</span>
-                <span class="bot-side-desc">Hunt &amp; capture goats</span>
-              </button>
-            </div>
-
-            <button class="btn btn-cancel" id="btnCancelBot" aria-label="Cancel Play vs Bot"
-              style="margin-top: 12px;">Cancel</button>
           </div>
-        </div>
 
-        <!-- Create Room Modal -->
-        <div class="game-over-overlay" id="createRoomModal">
-          <div class="game-over-card" style="width: 300px;">
-            <h2>Create Room</h2>
-            <div style="margin-bottom: 1rem; text-align: left;">
-              <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
-              <input type="text" id="createNameInput"
-                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
-                placeholder="Your Name">
-            </div>
-            <div style="margin-bottom: 1rem; text-align: left;">
-              <label style="display: block; margin-bottom: 0.5rem;">Choose Side</label>
-              <select id="createSideSelect"
-                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="bakhra">Goat</option>
-                <option value="bagh">Tiger</option>
-              </select>
-            </div>
-            <div class="game-over-buttons">
-              <button class="btn" id="btnConfirmCreate" aria-label="Confirm Create Room">Create</button>
-              <button class="btn btn-cancel" id="btnCancelCreate" aria-label="Cancel Create Room">Close</button>
-            </div>
-          </div>
-        </div>
+          <!-- Bot Side-Picker Modal -->
+          <!-- Shown centered on the board when the player clicks "vs Bot".
+             The player picks which piece (Goat or Tiger) they want to play;
+             the bot automatically takes the other side. -->
+          <div class="game-over-overlay" id="botModal">
+            <div class="game-over-card bot-modal-card">
+              <div class="bot-modal-header">
+                <h2>Play vs Bot</h2>
+              </div>
+              <p class="bot-modal-subtitle">Choose your side. The AI will play the other.</p>
 
-        <!-- Join Room Modal -->
-        <div class="game-over-overlay" id="joinRoomModal">
-          <div class="game-over-card" style="width: 300px;">
-            <h2>Join Room</h2>
-            <div style="margin-bottom: 1rem; text-align: left;">
-              <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
-              <input type="text" id="joinNameInput"
-                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
-                placeholder="Your Name">
-            </div>
-            <div style="margin-bottom: 1rem; text-align: left;">
-              <label style="display: block; margin-bottom: 0.5rem;">Room Code</label>
-              <input type="text" id="joinCodeInput"
-                style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase;"
-                placeholder="e.g. AB12CD">
-            </div>
-            <div class="game-over-buttons">
-              <button class="btn" id="btnConfirmJoin" aria-label="Confirm Join Room">Join</button>
-              <button class="btn btn-cancel" id="btnCancelJoin" aria-label="Cancel Join Room">Close</button>
+              <!-- Difficulty selector -->
+              <div class="bot-difficulty-row">
+                <label class="bot-difficulty-label" for="botDifficultySelect">Difficulty</label>
+                <div class="bot-difficulty-select-wrap">
+                  <select id="botDifficultySelect" class="bot-difficulty-select" aria-label="Select bot difficulty">
+                    <option value="easy"> Easy</option>
+                    <option value="medium"> Medium</option>
+                    <option value="hard" selected> Hard</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Side selection cards -->
+              <div class="bot-side-picker">
+                <!-- Goat card -->
+                <button class="bot-side-btn bot-side-goat" data-side="bakhra" aria-label="Play as Goat against the bot">
+                  <div class="bot-side-icon piece-icon piece-icon-bakhra"></div>
+                  <span class="bot-side-name">Goat</span>
+                  <span class="bot-side-desc">Place &amp; trap tigers</span>
+                </button>
+
+                <!-- Tiger card -->
+                <button class="bot-side-btn bot-side-tiger" data-side="bagh" aria-label="Play as Tiger against the bot">
+                  <div class="bot-side-icon piece-icon piece-icon-bagh"></div>
+                  <span class="bot-side-name">Tiger</span>
+                  <span class="bot-side-desc">Hunt &amp; capture goats</span>
+                </button>
+              </div>
+
+              <button class="btn btn-cancel" id="btnCancelBot" aria-label="Cancel Play vs Bot"
+                style="margin-top: 12px;">Cancel</button>
             </div>
           </div>
-        </div>
 
-        <!-- Error Modal -->
-        <div class="game-over-overlay" id="errorModal" style="z-index: 1000;">
-          <div class="game-over-card" style="width: 320px; padding: 24px 32px;">
-            <h2 style="color: var(--danger); font-size: 22px; margin-bottom: 12px;">Error</h2>
-            <p id="errorModalMsg"
-              style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
-            <div class="game-over-buttons" style="margin-top: 0;">
-              <button class="btn btn-cancel" id="btnDismissError" aria-label="Dismiss Error">Dismiss</button>
+          <!-- Create Room Modal -->
+          <div class="game-over-overlay" id="createRoomModal">
+            <div class="game-over-card" style="width: 300px;">
+              <h2>Create Room</h2>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+                <input type="text" id="createNameInput"
+                  style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+                  placeholder="Your Name">
+              </div>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Choose Side</label>
+                <select id="createSideSelect"
+                  style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                  <option value="bakhra">Goat</option>
+                  <option value="bagh">Tiger</option>
+                </select>
+              </div>
+              <div class="game-over-buttons">
+                <button class="btn" id="btnConfirmCreate" aria-label="Confirm Create Room">Create</button>
+                <button class="btn btn-cancel" id="btnCancelCreate" aria-label="Cancel Create Room">Close</button>
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Join Room Modal -->
+          <div class="game-over-overlay" id="joinRoomModal">
+            <div class="game-over-card" style="width: 300px;">
+              <h2>Join Room</h2>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Display Name</label>
+                <input type="text" id="joinNameInput"
+                  style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+                  placeholder="Your Name">
+              </div>
+              <div style="margin-bottom: 1rem; text-align: left;">
+                <label style="display: block; margin-bottom: 0.5rem;">Room Code</label>
+                <input type="text" id="joinCodeInput"
+                  style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase;"
+                  placeholder="e.g. AB12CD">
+              </div>
+              <div class="game-over-buttons">
+                <button class="btn" id="btnConfirmJoin" aria-label="Confirm Join Room">Join</button>
+                <button class="btn btn-cancel" id="btnCancelJoin" aria-label="Cancel Join Room">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Modal -->
+          <div class="game-over-overlay" id="errorModal" style="z-index: 1000;">
+            <div class="game-over-card" style="width: 320px; padding: 24px 32px;">
+              <h2 style="color: var(--danger); font-size: 22px; margin-bottom: 12px;">Error</h2>
+              <p id="errorModalMsg"
+                style="color: var(--text-primary); font-weight: 500; margin-bottom: 24px; line-height: 1.5;"></p>
+              <div class="game-over-buttons" style="margin-top: 0;">
+                <button class="btn btn-cancel" id="btnDismissError" aria-label="Dismiss Error">Dismiss</button>
+              </div>
+            </div>
+          </div>
         </div><!-- /.board-container -->
 
         <div class="board-actions" id="boardActions">
@@ -515,9 +517,12 @@
         </div>
         <p>Want to level up your game? Read our beginner-friendly strategy guides and game theory articles:</p>
         <ul style="padding-left: 20px; line-height: 1.8; margin-top: 8px;">
-          <li style="margin-bottom: 8px;"><a href="/blog-baghchal-vs-chess.html"><strong>Baghchal vs. Chess:</strong> A Complete Comparison of Himalayan Strategy and Western Classic</a></li>
-          <li style="margin-bottom: 8px;"><a href="/blog-goat-strategy-tips.html"><strong>5 Essential Strategy Tips for Goat Players:</strong> Learn How to Trap Tigers and Win</a></li>
-          <li style="margin-bottom: 8px;"><a href="/blog-ai-game-theory.html"><strong>Is Baghchal Solved?</strong> How AI Algorithms and Game Theory Evaluate Tigers vs Goats</a></li>
+          <li style="margin-bottom: 8px;"><a href="/blog-baghchal-vs-chess.html"><strong>Baghchal vs. Chess:</strong> A
+              Complete Comparison of Himalayan Strategy and Western Classic</a></li>
+          <li style="margin-bottom: 8px;"><a href="/blog-goat-strategy-tips.html"><strong>5 Essential Strategy Tips for
+                Goat Players:</strong> Learn How to Trap Tigers and Win</a></li>
+          <li style="margin-bottom: 8px;"><a href="/blog-ai-game-theory.html"><strong>Is Baghchal Solved?</strong> How
+              AI Algorithms and Game Theory Evaluate Tigers vs Goats</a></li>
         </ul>
       </div>
 
@@ -559,12 +564,14 @@
         <a href="/terms.html">Terms of Service</a> |
         <a href="/contact.html">Contact Us</a>
       </p>
-      <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">&copy; 2026 Baghchal Online. All rights reserved.</p>
+      <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">&copy; 2026 Baghchal Online. All rights
+        reserved.</p>
   </div>
 
   <!-- GDPR Cookie Consent Banner -->
   <div id="cookieBanner" class="cookie-banner" style="display: none;">
-    <span>We use cookies to analyze site usage and support advertising partners. Read our <a href="/privacy.html">Privacy Policy</a> for details.</span>
+    <span>We use cookies to analyze site usage and support advertising partners. Read our <a
+        href="/privacy.html">Privacy Policy</a> for details.</span>
     <button id="acceptCookies">Accept</button>
   </div>
   <script>
@@ -572,7 +579,7 @@
       var banner = document.getElementById('cookieBanner');
       if (banner) banner.style.display = 'flex';
     }
-    document.getElementById('acceptCookies')?.addEventListener('click', function() {
+    document.getElementById('acceptCookies')?.addEventListener('click', function () {
       localStorage.setItem('cookieConsent', 'true');
       var banner = document.getElementById('cookieBanner');
       if (banner) banner.style.display = 'none';
