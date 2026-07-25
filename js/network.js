@@ -195,7 +195,10 @@ export function initNetwork(canvasCtx) {
 
         // Sync state from server (authoritative)
         syncStateFromServer(data.state);
-        if (move) state.lastMove = move;
+        // Normalize move.from: the server sends `undefined` for goat placements,
+        // but the client always stores `null`. Keeping them consistent ensures
+        // the next echo-detection check (null == null) works correctly.
+        if (move) state.lastMove = { from: move.from ?? null, to: move.to };
 
         saveSnapshot(countTrappedTigers());
         updateUI();

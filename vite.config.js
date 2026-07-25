@@ -26,6 +26,8 @@ export default defineConfig({
         blogGoats: './blog-goat-strategy-tips.html',
         blogAI: './blog-ai-game-theory.html',
         blogMultiplayer: './blog-how-to-play-multiplayer.html',
+        blogOpenings: './blog-opening-traps.html',
+        blogHistory: './blog-history-and-culture.html',
         privacy: './privacy.html',
         terms: './terms.html',
         contact: './contact.html',
