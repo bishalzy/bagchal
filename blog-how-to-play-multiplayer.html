@@ -150,11 +150,9 @@
           <h1>BAGHCHAL</h1>
         </a>
       </div>
-      <nav aria-label="Main navigation" style="display: flex; gap: 12px; align-items: center;">
+      <nav aria-label="Main navigation" style="display: flex; gap: 10px; align-items: center;">
         <a class="btn btn-restart" href="/" aria-label="Play Game" style="text-decoration: none;">Play Game</a>
         <a class="btn btn-action" href="/rules.html" aria-label="Rules & Strategy" style="text-decoration: none;">Rules</a>
-        <a class="btn btn-action" href="/blog.html" aria-label="Blog & Strategy Guides" style="text-decoration: none;">Blog</a>
-        <a class="btn btn-action" href="/about.html" aria-label="About Baghchal" style="text-decoration: none;">About</a>
       </nav>
     </header>
 
@@ -294,6 +292,23 @@
       <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">&copy; 2026 Baghchal Online. All rights reserved.</p>
     </footer>
   </div>
+  <!-- GDPR Cookie Consent Banner -->
+  <div id="cookieBanner" class="cookie-banner" style="display: none;">
+    <span>We use cookies to analyze site usage and support advertising partners. Read our <a
+        href="/privacy.html">Privacy Policy</a> for details.</span>
+    <button id="acceptCookies">Accept</button>
+  </div>
+  <script>
+    if (!localStorage.getItem('cookieConsent')) {
+      var banner = document.getElementById('cookieBanner');
+      if (banner) banner.style.display = 'flex';
+    }
+    document.getElementById('acceptCookies')?.addEventListener('click', function () {
+      localStorage.setItem('cookieConsent', 'true');
+      var banner = document.getElementById('cookieBanner');
+      if (banner) banner.style.display = 'none';
+    });
+  </script>
 </body>
 
 </html>
