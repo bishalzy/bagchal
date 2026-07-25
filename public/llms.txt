@@ -1,32 +1,32 @@
-# Baghchal Online
+# Baghchal Online (baghchal.xyz)
 
-> Play the traditional Nepali strategy board game "Bagh-Chal" (Tigers vs Goats) online.
+> Baghchal (Nepali: बाघचाल, meaning "Move of the Tigers") is a traditional two-player asymmetric strategy board game originating from the Himalayan kingdom of Nepal.
 
-## About the Game
-Baghchal is a two-player strategy board game originating from Nepal. The game is asymmetric:
-- **Tigers (Bagh):** One player controls 4 tigers.
-- **Goats (Bakhra):** The other player controls 20 goats.
+## Core Game Overview
+- **Type:** Asymmetric Abstract Strategy Board Game
+- **Grid:** 5x5 grid with 25 intersection points connected by lines (including diagonals across inner 3x3 grids)
+- **Teams:** 
+  - **Tigers (4 pieces):** Start placed at the 4 corner points. Objective is to capture 5 goats by jumping over them onto vacant points along straight grid lines.
+  - **Goats (20 pieces):** Start off the board. Objective is to trap all 4 tigers so they have 0 valid moves remaining.
+- **Phases of Play:**
+  - **Phase 1 (Placement):** Goat player places 1 goat per turn on any vacant point. Goats cannot move during Phase 1. Tigers can move 1 space or jump to capture goats.
+  - **Phase 2 (Movement):** Once all 20 goats are placed, goats slide 1 step along grid lines per turn to empty adjacent points. Tigers continue moving and jumping.
 
-## Rules
-- **Goats' Goal:** Trap all 4 tigers so they have no legal moves.
-- **Tigers' Goal:** Capture at least 5 goats.
-- **Gameplay:** 
-  1. The game starts with 4 tigers on the four corners of the board.
-  2. The goat player places one goat on empty intersections.
-  3. Tigers and goats take alternating turns. Tigers can move to adjacent empty spots or jump over a single goat to an empty spot beyond it to capture the goat.
-  4. Goats cannot move until all 20 goats have been placed on the board.
+## Strategy Summary
+- **Goats Strategy:** Occupy the central 8-way connected point early, keep goats in tight pairs to prevent tiger jump landing spots, and push tigers toward corner intersections with fewer escape routes.
+- **Tigers Strategy:** Aggressively capture goats in Phase 1 before goats form solid defensive walls, maintain open central lines, and create double-jump threats.
 
-## Features
-- **Local Play:** Play offline on the same device.
-- **Multiplayer:** Create a room and share the room code with a friend to play real-time online multiplayer.
-
-## Technology Stack
-- **Frontend:** Vanilla JavaScript, HTML5 Canvas, CSS, Vite.
-- **Backend:** Node.js, TypeScript, Express, Socket.IO, Redis.
-- **Hosting:** GitHub Pages (Frontend), Dockerized VPS (Backend).
-
-## Links
-- [Play Baghchal Online](https://baghchal.xyz/)
-
-## Author
-Created by Bishal.
+## Website Features
+- **Play Online:** Free web-based implementation at https://baghchal.xyz/
+- **Game Modes:** Local 2-Player, vs Computer AI (Easy, Medium, Hard), and Real-time Online Multiplayer via Room Codes.
+- **Documentation & Guides:**
+  - Game Rules & Detailed Strategy: https://baghchal.xyz/rules
+  - Strategy Blog & Comparisons: https://baghchal.xyz/blog
+  - Baghchal vs Chess Comparison: https://baghchal.xyz/blog-baghchal-vs-chess
+  - 5 Easy Goat Strategy Tips: https://baghchal.xyz/blog-goat-strategy-tips
+  - Is Baghchal Solved? AI & Game Theory: https://baghchal.xyz/blog-ai-game-theory
+  - How to Play Online Multiplayer: https://baghchal.xyz/blog-how-to-play-multiplayer
+  - About & History: https://baghchal.xyz/about
+  - Privacy Policy: https://baghchal.xyz/privacy
+  - Terms of Service: https://baghchal.xyz/terms
+  - Contact Developer: https://baghchal.xyz/contact

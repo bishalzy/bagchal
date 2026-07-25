@@ -30,10 +30,36 @@
   <meta name="keywords"
     content="Baghchal rules, Baghchal strategy, Baghchal history, Tigers vs Goats rules, Nepali Board game history" />
   <meta name="author" content="Bishal" />
-  <!-- Favicon & Theme -->
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
-  <meta name="theme-color" content="#2a2a38" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://baghchal.xyz/about" />
+  <meta property="og:title" content="About Baghchal | Rules, Strategy & History" />
+  <meta property="og:description" content="Learn about Baghchal, the traditional Nepali strategy board game of Tigers vs Goats. Discover the rules, strategies, history, and culture." />
+  <meta property="og:image" content="https://baghchal.xyz/favicon.png" />
+  <meta property="og:site_name" content="Baghchal Online" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="About Baghchal | Rules, Strategy & History" />
+  <meta name="twitter:description" content="Learn about Baghchal, the traditional Nepali strategy board game of Tigers vs Goats." />
+  <meta name="twitter:image" content="https://baghchal.xyz/favicon.png" />
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About Baghchal Online",
+    "url": "https://baghchal.xyz/about",
+    "description": "History, rules, and development background of the traditional Nepali strategy board game Baghchal.",
+    "mainEntity": {
+      "@type": "Game",
+      "name": "Baghchal",
+      "sameAs": "https://en.wikipedia.org/wiki/Bagh-Chal",
+      "origin": "Nepal"
+    }
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -52,17 +78,33 @@
     <!-- Floating Header Elements -->
     <header class="header" id="header">
       <div class="header-title">
-        <h1>BAGHCHAL</h1>
+        <a href="/" style="text-decoration: none; color: inherit;"><h1>BAGHCHAL</h1></a>
       </div>
-      <nav aria-label="Main navigation">
-        <a class="btn btn-restart" href="/" aria-label="Back to Game" style="text-decoration: none;">Play Game</a>
+      <nav aria-label="Main navigation" style="display: flex; gap: 12px; align-items: center;">
+        <a class="btn btn-restart" href="/" aria-label="Play Game" style="text-decoration: none;">Play Game</a>
+        <a class="btn btn-action" href="/rules.html" aria-label="Rules & Strategy" style="text-decoration: none;">Rules</a>
+        <a class="btn btn-action" href="/blog.html" aria-label="Blog & Strategy Guides" style="text-decoration: none;">Blog</a>
       </nav>
     </header>
 
     <main style="display: block; padding-top: 80px;">
       <!-- Visible SEO Content Section (crawlable by search engines) -->
       <section class="seo-content" id="about-baghchal">
-        <h2 class="seo-content-title">About Baghchal</h2>
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="Breadcrumb" style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          <a href="/" style="color: var(--text-secondary); text-decoration: none;">Home</a> &rsaquo; <span>About</span>
+        </nav>
+
+        <h1 class="seo-content-title">About Baghchal</h1>
+
+        <!-- AEO Quick Answer Block -->
+        <div style="background: var(--bg-card); border-left: 4px solid var(--text-secondary); padding: 16px; border-radius: 6px; margin-bottom: 24px;">
+          <strong style="color: var(--text-primary); display: block; margin-bottom: 6px;">Quick Definition: What is Baghchal?</strong>
+          <p style="font-size: 14px; margin: 0; line-height: 1.6;">
+            <strong>Baghchal</strong> (Nepali: बाघचाल, meaning <em>"Move of the Tigers"</em>) is a traditional, ancient two-player asymmetric strategy board game from Nepal. One player controls 4 predatory Tigers that attempt to capture 5 goats by jumping over them, while the other player commands a defensive herd of 20 Goats working together to trap and immobilize all 4 tigers.
+          </p>
+        </div>
+
         <p class="seo-content-intro">
           Translating directly to "Move of the Tigers", <strong>Baghchal</strong> is a celebrated <strong>traditional
             Nepali board game</strong> that dates back centuries. Deeply rooted in the Himalayan lifestyle, this
@@ -73,17 +115,28 @@
 
         <div class="seo-card">
           <div class="seo-card-header">
-            <h3>History and Culture</h3>
+            <h3>History and Cultural Heritage</h3>
           </div>
           <p>This ancient <strong>board game from Nepal</strong> has been played in the Himalayan regions for hundreds
-            of
-            years. Villagers would draw the board on the ground and play in community gathering places called
-            <em>chautaris</em>. Today, Baghchal has gained global recognition with tournaments held in Europe and
-            interest from game theory and AI researchers worldwide.
+            of years. Villagers would draw the 5&times;5 grid on stone slabs or soil and play in community gathering places called
+            <em>chautaris</em>. Today, Baghchal has gained global recognition, documented in cultural archives such as <a href="https://en.wikipedia.org/wiki/Bagh-Chal" target="_blank" rel="noopener noreferrer">Wikipedia's Bagh-Chal Entry</a>, and analyzed by game theory researchers worldwide.
           </p>
           <p>Playing strategy games like Baghchal online is great for both kids and adults. It helps practice critical
             thinking, planning, and patience. Unlike chess, a game of Baghchal typically takes only 15 to 30 minutes,
             making it a quick and fun way to learn about Nepali culture!</p>
+        </div>
+
+        <!-- E-E-A-T Author & Publisher Bio -->
+        <div class="seo-card" style="margin-top: 24px;">
+          <div class="seo-card-header">
+            <h3>About the Developer &amp; Project</h3>
+          </div>
+          <p>
+            <strong>Baghchal Online</strong> was created by <strong>Bishal</strong> to preserve and promote traditional Himalayan games for modern web browsers. Built with real-time WebSocket architecture, progressive web app standards, and zero ads blocking core gameplay, our mission is to offer the crispest, most accessible Baghchal experience worldwide.
+          </p>
+          <p style="margin-top: 10px; font-size: 13px;">
+            Have questions or feedback? Contact us at <a href="mailto:bishaladhikari872@gmail.com">bishaladhikari872@gmail.com</a> or visit our <a href="/contact.html">Contact Page</a>.
+          </p>
         </div>
       </section>
     </main>
@@ -91,7 +144,16 @@
     <!-- Footer -->
     <footer class="site-footer">
       <p>Baghchal Multiplayer Online — The traditional Nepali strategy board game of Tigers vs Goats.</p>
-      <p>Play <a href="https://baghchal.xyz/">Baghchal online</a> for free. No download required.</p>
+      <p style="margin-top: 10px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <a href="/">Play Game</a> |
+        <a href="/rules.html">Rules &amp; Strategy</a> |
+        <a href="/blog.html">Blog &amp; Guides</a> |
+        <a href="/about.html">About</a> |
+        <a href="/privacy.html">Privacy Policy</a> |
+        <a href="/terms.html">Terms of Service</a> |
+        <a href="/contact.html">Contact Us</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">&copy; 2026 Baghchal Online. All rights reserved.</p>
     </footer>
   </div>
 </body>

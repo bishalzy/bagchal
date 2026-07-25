@@ -21,6 +21,15 @@ export default defineConfig({
       input: {
         main: './index.html',
         about: './about.html',
+        blog: './blog.html',
+        blogChess: './blog-baghchal-vs-chess.html',
+        blogGoats: './blog-goat-strategy-tips.html',
+        blogAI: './blog-ai-game-theory.html',
+        blogMultiplayer: './blog-how-to-play-multiplayer.html',
+        privacy: './privacy.html',
+        terms: './terms.html',
+        contact: './contact.html',
+        rules: './rules.html',
         error: './404.html'
       },
       output: {

@@ -167,9 +167,11 @@
       <div class="header-title">
         <h1>BAGHCHAL</h1>
       </div>
-      <nav aria-label="Main navigation">
+      <nav aria-label="Main navigation" style="display: flex; gap: 10px; align-items: center;">
+        <a class="btn btn-action" href="/rules.html" aria-label="Rules & Strategy" style="text-decoration: none;">Rules</a>
+        <a class="btn btn-action" href="/blog.html" aria-label="Blog & Strategy Guides" style="text-decoration: none;">Blog</a>
         <a class="btn btn-restart" id="btnAbout" href="/about.html" aria-label="About Baghchal"
-          style="text-decoration: none;">What is Baghchal?</a>
+          style="text-decoration: none;">About</a>
       </nav>
     </header>
 
@@ -380,10 +382,10 @@
           <button class="btn btn-action btn-bot" id="btnPlayBot" aria-label="Play against the AI bot">vs Bot</button>
           <button class="btn btn-action" id="btnCreateRoom" aria-label="Create a multiplayer room">Create Room</button>
           <div id="roomCodeDisplay"
-            style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--accent-goat); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
+            style="display: none; align-items: center; justify-content: center; background: var(--bg-card); color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; min-width: 120px; gap: 8px;">
             <span id="roomCodeText"></span>
             <button id="btnCopyRoomCode" title="Copy Room Code" aria-label="Copy Room Code to Clipboard"
-              style="background: none; border: none; cursor: pointer; color: var(--accent-goat); display: flex; align-items: center; padding: 4px; border-radius: 4px;">
+              style="background: none; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; padding: 4px; border-radius: 4px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -509,6 +511,18 @@
 
       <div class="seo-card">
         <div class="seo-card-header">
+          <h3>Strategy Articles &amp; Guides</h3>
+        </div>
+        <p>Want to level up your game? Read our beginner-friendly strategy guides and game theory articles:</p>
+        <ul style="padding-left: 20px; line-height: 1.8; margin-top: 8px;">
+          <li style="margin-bottom: 8px;"><a href="/blog-baghchal-vs-chess.html"><strong>Baghchal vs. Chess:</strong> A Complete Comparison of Himalayan Strategy and Western Classic</a></li>
+          <li style="margin-bottom: 8px;"><a href="/blog-goat-strategy-tips.html"><strong>5 Essential Strategy Tips for Goat Players:</strong> Learn How to Trap Tigers and Win</a></li>
+          <li style="margin-bottom: 8px;"><a href="/blog-ai-game-theory.html"><strong>Is Baghchal Solved?</strong> How AI Algorithms and Game Theory Evaluate Tigers vs Goats</a></li>
+        </ul>
+      </div>
+
+      <div class="seo-card">
+        <div class="seo-card-header">
           <h3>Frequently Asked Questions</h3>
         </div>
         <dl class="seo-faq">
@@ -535,10 +549,35 @@
 
     <!-- Footer -->
     <footer class="site-footer">
-      <p>Baghchal Multiplayer Online — The traditional Nepali strategy board game of Tigers vs Goats.</p>
-      <p>Play <a href="https://baghchal.xyz/">Baghchal online</a> for free. No download required.</p>
-    </footer>
+      <p>Baghchal Online — The traditional Nepali strategy board game of Tigers vs Goats.</p>
+      <p style="margin-top: 10px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <a href="/">Play Game</a> |
+        <a href="/rules.html">Rules &amp; Strategy</a> |
+        <a href="/blog.html">Blog &amp; Guides</a> |
+        <a href="/about.html">About</a> |
+        <a href="/privacy.html">Privacy Policy</a> |
+        <a href="/terms.html">Terms of Service</a> |
+        <a href="/contact.html">Contact Us</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">&copy; 2026 Baghchal Online. All rights reserved.</p>
   </div>
+
+  <!-- GDPR Cookie Consent Banner -->
+  <div id="cookieBanner" class="cookie-banner" style="display: none;">
+    <span>We use cookies to analyze site usage and support advertising partners. Read our <a href="/privacy.html">Privacy Policy</a> for details.</span>
+    <button id="acceptCookies">Accept</button>
+  </div>
+  <script>
+    if (!localStorage.getItem('cookieConsent')) {
+      var banner = document.getElementById('cookieBanner');
+      if (banner) banner.style.display = 'flex';
+    }
+    document.getElementById('acceptCookies')?.addEventListener('click', function() {
+      localStorage.setItem('cookieConsent', 'true');
+      var banner = document.getElementById('cookieBanner');
+      if (banner) banner.style.display = 'none';
+    });
+  </script>
 
   <script type="module" src="js/main.js"></script>
 </body>
