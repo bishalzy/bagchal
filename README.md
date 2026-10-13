@@ -1,1 +1,1 @@
-This is board for bagchal.
+https://baghchal.xyz
